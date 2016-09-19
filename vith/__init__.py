@@ -18,6 +18,7 @@ def get_parser():
     subparsers.add_parser('up')
     subparsers.add_parser('halt')
     subparsers.add_parser('provision')
+    subparsers.add_parser('destroy')
     return parser
 
 def get_workpath():
@@ -92,6 +93,20 @@ def action_provision(args):
         print("Provisioning with {}".format(provisioning_item['type']))
         provision(container, provisioning_item)
 
+def action_destroy(args):
+    workpath = get_workpath()
+    containerpath = workpath / WORK_CONTAINER_NAME
+    if not containerpath.exists():
+        print("Container doesn't exist, nothing to destroy.")
+        return
+
+    container = get_container()
+    print("Destroying...")
+    if not container.destroy():
+        print("Something went wrong when trying to destroy the container.")
+    else:
+        print("Destroyed!")
+
 def main():
     parser = get_parser()
     args = parser.parse_args()
@@ -102,6 +117,7 @@ def main():
         'up': action_up,
         'halt': action_halt,
         'provision': action_provision,
+        'destroy': action_destroy,
     }[args.action]
     try:
         action(args)
