@@ -1,4 +1,6 @@
-import lxc
+from pathlib import Path
+
+from .util import run_cmd
 
 def setup_debian_for_ansible(container):
     packages = [
@@ -10,12 +12,21 @@ def setup_debian_for_ansible(container):
         'python-apt',
         'aptitude',
     ]
-    cmd = ['apt-get', 'install', '-y'] + packages
-    container.attach_wait(lxc.attach_run_command, cmd)
-    cmd = ['pip', 'install', '-U', 'setuptools']
-    container.attach_wait(lxc.attach_run_command, cmd)
-    cmd = ['pip', 'install', 'ansible']
-    container.attach_wait(lxc.attach_run_command, cmd)
+    run_cmd(container, ['apt-get', 'install', '-y'] + packages)
+    run_cmd(container, ['pip', 'install', '-U', 'setuptools'])
+    run_cmd(container, ['pip', 'install', 'ansible'])
 
-def provision(container, config):
-    pass
+    def write_ansible_inventory():
+        p = Path('/etc/ansible/hosts')
+        if not p.parent.exists():
+            p.parent.mkdir(parents=True)
+        with p.open('w') as fp:
+            fp.write('127.0.0.1\n')
+
+    container.attach_wait(write_ansible_inventory)
+
+def provision(container, provisioning_item):
+    assert provisioning_item['type'] == 'ansible'
+    playbook_path = Path('/vithshare') / provisioning_item['playbook']
+    run_cmd(container, ['ansible-playbook', '--connection=local', str(playbook_path)])
+

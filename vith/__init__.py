@@ -4,7 +4,8 @@ import argparse
 import lxc
 
 from .config import Config
-from .provision import setup_debian_for_ansible
+from .provision import setup_debian_for_ansible, provision
+from .util import add_share_to_container, run_cmd
 
 WORK_CONTAINER_NAME = 'container'
 
@@ -52,6 +53,7 @@ def action_up(args):
         print("Container is already running!")
         return
     print("Starting container...")
+    add_share_to_container(container, Path('.'), Path('vithshare'))
     container.start()
     if not container.running:
         print("Something went wrong trying to start the container.")
@@ -75,13 +77,20 @@ def action_halt(args):
         print("Stopped!")
 
 def action_provision(args):
+    confpath = Path('Vithfile.yml')
+    conf = Config(confpath)
     container = get_container()
     if not container.running:
         print("The container is not running.")
         return
 
-    print("Provisioning container...")
+    print("Doing bare bone setup on the machine...")
     setup_debian_for_ansible(container)
+
+    print("Provisioning container...")
+    for provisioning_item in conf['provisioning']:
+        print("Provisioning with {}".format(provisioning_item['type']))
+        provision(container, provisioning_item)
 
 def main():
     parser = get_parser()
