@@ -1,32 +1,27 @@
+import os.path
 from pathlib import Path
+import tempfile
+import subprocess
 
-from .util import run_cmd
+from .util import run_cmd, get_ipv4_ip
 
-def setup_debian_for_ansible(container):
+def setup_ssh_access_on_debian(container):
     packages = [
-        'python-dev',
-        'python-setuptools',
-        'python-pip',
-        'libffi-dev',
-        'libssl-dev',
-        'python-apt',
-        'aptitude',
+        'openssh-server',
     ]
+    pubkey_path = Path(os.path.expanduser('~/.ssh/id_rsa.pub'))
+    pubkey = pubkey_path.open().read()
     run_cmd(container, ['apt-get', 'install', '-y'] + packages)
-    run_cmd(container, ['pip', 'install', '-U', 'setuptools'])
-    run_cmd(container, ['pip', 'install', 'ansible'])
-
-    def write_ansible_inventory():
-        p = Path('/etc/ansible/hosts')
-        if not p.parent.exists():
-            p.parent.mkdir(parents=True)
-        with p.open('w') as fp:
-            fp.write('127.0.0.1\n')
-
-    container.attach_wait(write_ansible_inventory)
+    run_cmd(container, ['mkdir', '-p', '/root/.ssh'])
+    print("Adding %s to machine's authorized keys" % pubkey)
+    container.files.put('/root/.ssh/authorized_keys', pubkey)
 
 def provision(container, provisioning_item):
     assert provisioning_item['type'] == 'ansible'
-    playbook_path = Path('/vithshare') / provisioning_item['playbook']
-    run_cmd(container, ['ansible-playbook', '--connection=local', str(playbook_path)])
+    ip = get_ipv4_ip(container)
+    with tempfile.NamedTemporaryFile() as tmpinv:
+        tmpinv.write("{} ansible_user=root host_key_checking=False".format(ip).encode('ascii'))
+        tmpinv.flush()
+        print(['ansible-playbook', '-i', tmpinv.name, provisioning_item['playbook']])
+        subprocess.call(['ansible-playbook', '-i', tmpinv.name, provisioning_item['playbook']])
 

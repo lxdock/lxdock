@@ -1,16 +1,12 @@
 from pathlib import Path
 import argparse
 
-import lxc
+import pylxd
 
 from .config import Config
-from .provision import setup_debian_for_ansible, provision
-from .util import add_share_to_container, run_cmd
+from .provision import setup_ssh_access_on_debian, provision
+from .util import ContainerStatus, get_ipv4_ip
 
-WORK_CONTAINER_NAME = 'container'
-
-class NeedsSuperuserError(Exception):
-    pass
 
 def get_parser():
     parser = argparse.ArgumentParser(description="")
@@ -21,91 +17,79 @@ def get_parser():
     subparsers.add_parser('destroy')
     return parser
 
-def get_workpath():
-    workpath = Path('.vith').resolve()
-    if not workpath.exists():
-        workpath.mkdir()
-    return workpath
+def get_config():
+    confpath = Path('Vithfile.yml')
+    return Config(confpath)
 
-def get_container():
-    workpath = get_workpath()
-    container = lxc.Container(WORK_CONTAINER_NAME, config_path=str(workpath))
-    if not container.defined:
-        print("Project container can't be opened. You should run vith as a superuser.")
-        raise NeedsSuperuserError()
-    return container
+def get_client():
+    return pylxd.Client()
+
+def get_container(create=True):
+    client = get_client()
+    config = get_config()
+    try:
+        return client.containers.get(config['name'])
+    except pylxd.exceptions.LXDAPIException as e:
+        print("Can't get container: %s" % e)
+        if not create:
+            return None
+        print("Creating new container from image %s" % config['image'])
+        c = {
+            'name': config['name'],
+            'source': {'type': 'image', 'alias': config['image']}
+        }
+        try:
+            return client.containers.create(c, wait=True)
+        except pylxd.exceptions.LXDAPIException as e:
+            print("Can't create container: %s" % e)
+            raise
 
 def action_up(args):
-    confpath = Path('Vithfile.yml')
-    conf = Config(confpath)
-    workpath = get_workpath()
-    containerpath = workpath / WORK_CONTAINER_NAME
-
-    if not containerpath.exists():
-        print("Cloning {} into local container...".format(conf['base_box']))
-        base_container = lxc.Container(conf['base_box'])
-        if not base_container.defined:
-            print("Container {} does not exist. Maybe retry as a superuser?".format(conf['base_box']))
-            return
-        base_container.clone(newname=WORK_CONTAINER_NAME, config_path=str(workpath))
-
     container = get_container()
-    if container.running:
+    if container.status_code == ContainerStatus.Running:
         print("Container is already running!")
         return
     print("Starting container...")
-    add_share_to_container(container, Path('.'), Path('vithshare'))
-    container.start()
-    if not container.running:
+    container.start(wait=True)
+    if container.status_code != ContainerStatus.Running:
         print("Something went wrong trying to start the container.")
         return
-
-    ips = container.get_ips(timeout=30)
-    if not ips:
-        print("There were problems trying to setup a network")
-        return
-    print("Started! IP: {}".format(', '.join(ips)))
+    print("Container is up! IP: %s" %(get_ipv4_ip(container)))
 
 def action_halt(args):
     container = get_container()
-    if not container.running:
+    if container.status_code == ContainerStatus.Stopped:
         print("The container is already stopped.")
         return
     print("Stopping...")
-    if not container.shutdown(timeout=30):
-        print("Something went wrong when trying to stop the container.")
-    else:
-        print("Stopped!")
+    container.stop(wait=True)
 
 def action_provision(args):
-    confpath = Path('Vithfile.yml')
-    conf = Config(confpath)
+    config = get_config()
     container = get_container()
-    if not container.running:
+    if container.status_code != ContainerStatus.Running:
         print("The container is not running.")
         return
 
     print("Doing bare bone setup on the machine...")
-    setup_debian_for_ansible(container)
+    setup_ssh_access_on_debian(container)
 
     print("Provisioning container...")
-    for provisioning_item in conf['provisioning']:
+    for provisioning_item in config['provisioning']:
         print("Provisioning with {}".format(provisioning_item['type']))
         provision(container, provisioning_item)
 
 def action_destroy(args):
-    workpath = get_workpath()
-    containerpath = workpath / WORK_CONTAINER_NAME
-    if not containerpath.exists():
+    container = get_container(create=False)
+    if container is None:
         print("Container doesn't exist, nothing to destroy.")
         return
 
+    action_halt(args)
     container = get_container()
     print("Destroying...")
-    if not container.destroy():
-        print("Something went wrong when trying to destroy the container.")
-    else:
-        print("Destroyed!")
+    container.delete(wait=True)
+    print("Destroyed!")
 
 def main():
     parser = get_parser()
@@ -119,8 +103,5 @@ def main():
         'provision': action_provision,
         'destroy': action_destroy,
     }[args.action]
-    try:
-        action(args)
-    except NeedsSuperuserError:
-        print("Superuser powers needed.")
+    action(args)
 

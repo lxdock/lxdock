@@ -1,10 +1,21 @@
 # vith: Vagrant Is Too Heavy
 
-vith is a wrapper around lxc that allows a workflow similar to Vagrant.
+vith is a wrapper around lxd that allows a workflow similar to Vagrant.
 
 ## Status
 
-Not functional, work in progress.
+Barely functional, work in progress.
+
+## Requirements
+
+* A functional LXD. You should be able to run `lxc launch` and have a container with an IPv4
+  address running.
+* Proper permissions to run the `lxc` command. That usually means adding your user to the `lxd`
+  group.
+* Local LXD images. Vith doesn't manage image copying. When you refer to `debian/jessie`, you need
+  to have already coplied the image locally and properly aliased it.
+* pylxd
+* ansible
 
 ## Usage
 
@@ -12,7 +23,8 @@ It's not functional, so you can't use it, but if you put a `Vithfile.yml` somewh
 like:
 
 ```
-base_box: jessie
+name: myproject
+image: debian/jessie
 provisioning:
   - type: ansible
     playbook: deploy/site.yml
@@ -20,8 +32,6 @@ provisioning:
 
 ... and that you have a pre-configured `jessie` container that works, you should be able to get
 *something* out of `vith` commands made in the same folder.
-
-Also, you need `sudo` all the time.
 
 ## Why?
 

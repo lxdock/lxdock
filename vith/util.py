@@ -1,22 +1,17 @@
-from pathlib import Path
-
-import lxc
-
-def add_share_to_container(container, host_path, guest_path):
-    host_path = host_path.resolve()
-    if guest_path.is_absolute():
-        # for some reason, guest path in mount entries don't have a leading /
-        guest_path = guest_path.relative_to('/')
-    rootfs = Path(container.get_config_item('lxc.rootfs'))
-    guest_bind = rootfs / guest_path
-    if not guest_bind.exists():
-        guest_bind.mkdir(parents=True)
-    entry_to_add = '{} {} none bind 0 0'.format(host_path, guest_path)
-    mount_entries = container.get_config_item('lxc.mount.entry')
-    if not entry_to_add in mount_entries:
-        mount_entries.append(entry_to_add)
-        container.set_config_item('lxc.mount.entry', mount_entries)
+class ContainerStatus:
+    Stopped = 102
+    Running = 103
 
 def run_cmd(container, cmd):
-    return container.attach_wait(lxc.attach_run_command, cmd)
+    print("Running %s" % (' '.join(cmd)))
+    stdout, stderr = container.execute(cmd)
+    print(stdout)
+    print(stderr)
 
+def get_ipv4_ip(container):
+    state = container.state()
+    eth0 = state.network['eth0']
+    for addr in eth0['addresses']:
+        if addr['family'] == 'inet':
+            return addr['address']
+    return ''
