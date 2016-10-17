@@ -2,7 +2,7 @@ import argparse
 
 import pylxd
 
-from .provision import setup_ssh_access_on_debian, provision, set_static_ip_on_debian
+from .provision import prepare_debian, provision, set_static_ip_on_debian
 from .util import (
     ContainerStatus, get_ipv4_ip, get_config, get_client, get_default_gateway, find_free_ip,
     wait_for_ipv4_ip
@@ -83,7 +83,7 @@ def action_provision(args):
         return
 
     print("Doing bare bone setup on the machine...")
-    setup_ssh_access_on_debian(container)
+    prepare_debian(container)
 
     print("Provisioning container...")
     for provisioning_item in config['provisioning']:

@@ -5,9 +5,11 @@ import subprocess
 
 from .util import run_cmd, get_ipv4_ip
 
-def setup_ssh_access_on_debian(container):
+def prepare_debian(container):
     packages = [
+        'apt-utils',
         'openssh-server',
+        'python',
     ]
     pubkey_path = Path(os.path.expanduser('~/.ssh/id_rsa.pub'))
     pubkey = pubkey_path.open().read()
@@ -37,8 +39,13 @@ def provision(container, provisioning_item):
     assert provisioning_item['type'] == 'ansible'
     ip = get_ipv4_ip(container)
     with tempfile.NamedTemporaryFile() as tmpinv:
-        tmpinv.write("{} ansible_user=root host_key_checking=False".format(ip).encode('ascii'))
+        tmpinv.write("{} ansible_user=root".format(ip).encode('ascii'))
         tmpinv.flush()
+        env = {'ANSIBLE_HOST_KEY_CHECKING': 'False'}
         print(['ansible-playbook', '-i', tmpinv.name, provisioning_item['playbook']])
-        subprocess.call(['ansible-playbook', '-i', tmpinv.name, provisioning_item['playbook']])
+        p = subprocess.Popen(
+            ['ansible-playbook', '-i', tmpinv.name, provisioning_item['playbook']],
+            env=env,
+        )
+        p.wait()
 
