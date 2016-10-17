@@ -5,7 +5,7 @@ import pylxd
 from .provision import prepare_debian, provision, set_static_ip_on_debian
 from .util import (
     ContainerStatus, get_ipv4_ip, get_config, get_client, get_default_gateway, find_free_ip,
-    wait_for_ipv4_ip
+    wait_for_ipv4_ip, boolval
 )
 
 
@@ -39,10 +39,14 @@ def get_container(create=True):
             raise
 
 def action_up(args):
+    config = get_config()
     container = get_container()
     if container.status_code == ContainerStatus.Running:
         print("Container is already running!")
         return
+    privileged = config.get('privileged', False)
+    container.config['security.privileged'] = boolval(privileged)
+    container.save()
     print("Starting container...")
     container.start(wait=True)
     if container.status_code != ContainerStatus.Running:

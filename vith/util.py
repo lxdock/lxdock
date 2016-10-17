@@ -64,3 +64,6 @@ def find_free_ip(gateway):
             return ip
     return None
 
+def boolval(val):
+    return 'true' if val else 'false'
+

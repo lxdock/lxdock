@@ -25,6 +25,7 @@ like:
 ```
 name: myproject
 image: debian/jessie
+privileged: true # jessie is systemd
 provisioning:
   - type: ansible
     playbook: deploy/site.yml
@@ -32,6 +33,13 @@ provisioning:
 
 ... and that you have a pre-configured `jessie` container that works, you should be able to get
 *something* out of `vith` commands made in the same folder.
+
+## Privileged containers
+
+There seems to be some problems with containers running systemd-based systems. Their init system
+seem broken. You can confirm this by trying to `exec bash` into the container and try to execute
+`systemctl`. If you get a dbus-related error, then yup, your container is broken and you need to
+run the container as privileged.
 
 ## Why?
 
