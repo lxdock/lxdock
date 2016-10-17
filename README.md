@@ -51,6 +51,6 @@ To have a functional vagrant-based project tha can run, for example, on an ARM m
 need to fudge your `Vagrantfile` to dynamically change the active box based on the current arch.
 
 Also, when working with containers, much of the complexity of Vagrant becomes useless. Why
-provision over SSH when you can use `lxc-attach`? Why fudge around with shared folders when mounting
-a folder through lxc works so well? Why global box naming shemes when lxc supports containers in
-any folder?
+the need for special "vagrant-prepared" boxes when `lxc exec` is available? It's much simpler to
+use whatever images are provided directly by lxd. By removing the need to manage boxes, `vith`
+suddenly becomes much simpler (a simple wrapper around lxd, really).
