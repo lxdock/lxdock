@@ -62,7 +62,11 @@ def action_halt(args):
         print("The container is already stopped.")
         return
     print("Stopping...")
-    container.stop(wait=True)
+    try:
+        container.stop(timeout=30, force=False, wait=True)
+    except pylxd.exceptions.LXDAPIException:
+        print("Can't stop the container. Forcing...")
+        container.stop(force=True, wait=True)
 
 def action_provision(args):
     config = get_config()
