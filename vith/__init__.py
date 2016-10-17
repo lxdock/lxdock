@@ -1,11 +1,12 @@
-from pathlib import Path
 import argparse
 
 import pylxd
 
-from .config import Config
-from .provision import setup_ssh_access_on_debian, provision
-from .util import ContainerStatus, get_ipv4_ip
+from .provision import setup_ssh_access_on_debian, provision, set_static_ip_on_debian
+from .util import (
+    ContainerStatus, get_ipv4_ip, get_config, get_client, get_default_gateway, find_free_ip,
+    wait_for_ipv4_ip
+)
 
 
 def get_parser():
@@ -16,13 +17,6 @@ def get_parser():
     subparsers.add_parser('provision')
     subparsers.add_parser('destroy')
     return parser
-
-def get_config():
-    confpath = Path('Vithfile.yml')
-    return Config(confpath)
-
-def get_client():
-    return pylxd.Client()
 
 def get_container(create=True):
     client = get_client()
@@ -54,7 +48,20 @@ def action_up(args):
     if container.status_code != ContainerStatus.Running:
         print("Something went wrong trying to start the container.")
         return
-    print("Container is up! IP: %s" %(get_ipv4_ip(container)))
+    ip = get_ipv4_ip(container)
+    if not ip:
+        print("No IP yet, waiting 10 seconds...")
+        ip = wait_for_ipv4_ip(container)
+    if not ip:
+        print("Still no IP! Forcing a static IP...")
+        gateway = get_default_gateway()
+        forced_ip = find_free_ip(gateway)
+        set_static_ip_on_debian(container, forced_ip, gateway)
+        ip = wait_for_ipv4_ip(container)
+    if ip:
+        print("Container is up! IP: %s" % ip)
+    else:
+        print("STILL no IP! Container is up, but probably broken.")
 
 def action_halt(args):
     container = get_container()

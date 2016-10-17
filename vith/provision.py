@@ -16,6 +16,23 @@ def setup_ssh_access_on_debian(container):
     print("Adding %s to machine's authorized keys" % pubkey)
     container.files.put('/root/.ssh/authorized_keys', pubkey)
 
+def set_static_ip_on_debian(container, ip, gateway):
+    contents = """
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+\taddress {ip}
+\tnetmask 255.255.255.0
+\tgateway {gateway}
+""".format(ip=ip, gateway=gateway)
+    container.files.put('/etc/network/interfaces', contents)
+    resolvconf = "nameserver %s" % gateway
+    container.files.put('/etc/resolv.conf', resolvconf)
+    run_cmd(container, ['/etc/init.d/networking', 'stop'])
+    run_cmd(container, ['/etc/init.d/networking', 'start'])
+
 def provision(container, provisioning_item):
     assert provisioning_item['type'] == 'ansible'
     ip = get_ipv4_ip(container)
