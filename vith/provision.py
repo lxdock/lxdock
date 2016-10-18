@@ -8,6 +8,7 @@ from .util import run_cmd, get_ipv4_ip
 def prepare_debian(container):
     packages = [
         'apt-utils',
+        'aptitude',
         'openssh-server',
         'python',
     ]
