@@ -56,9 +56,11 @@ def action_up(args):
         ip = wait_for_ipv4_ip(container)
     if not ip:
         print("Still no IP! Forcing a static IP...")
+        container.stop(wait=True)
         gateway = get_default_gateway()
         forced_ip = find_free_ip(gateway)
         set_static_ip_on_debian(container, forced_ip, gateway)
+        container.start(wait=True)
         ip = wait_for_ipv4_ip(container)
     if ip:
         print("Container is up! IP: %s" % ip)

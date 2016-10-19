@@ -33,8 +33,6 @@ iface eth0 inet static
     container.files.put('/etc/network/interfaces', contents)
     resolvconf = "nameserver %s" % gateway
     container.files.put('/etc/resolv.conf', resolvconf)
-    run_cmd(container, ['/etc/init.d/networking', 'stop'])
-    run_cmd(container, ['/etc/init.d/networking', 'start'])
 
 def provision(container, provisioning_item):
     assert provisioning_item['type'] == 'ansible'
