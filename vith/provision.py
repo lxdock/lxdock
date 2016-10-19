@@ -42,11 +42,8 @@ def provision(container, provisioning_item):
     with tempfile.NamedTemporaryFile() as tmpinv:
         tmpinv.write("{} ansible_user=root".format(ip).encode('ascii'))
         tmpinv.flush()
-        env = {'ANSIBLE_HOST_KEY_CHECKING': 'False'}
-        print(['ansible-playbook', '-i', tmpinv.name, provisioning_item['playbook']])
-        p = subprocess.Popen(
-            ['ansible-playbook', '-i', tmpinv.name, provisioning_item['playbook']],
-            env=env,
-        )
+        cmd = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i {} {}".format(tmpinv.name, provisioning_item['playbook'])
+        print(cmd)
+        p = subprocess.Popen(cmd, shell=True)
         p.wait()
 
