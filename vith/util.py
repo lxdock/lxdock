@@ -16,6 +16,28 @@ def get_config():
 def get_client():
     return pylxd.Client()
 
+def get_container(create=True):
+    client = get_client()
+    config = get_config()
+    try:
+        return client.containers.get(config['name'])
+    except pylxd.exceptions.LXDAPIException as e:
+        print("Can't get container: %s" % e)
+        if not create:
+            return None
+        print("Creating new container from image %s" % config['image'])
+        privileged = config.get('privileged', False)
+        c = {
+            'name': config['name'],
+            'source': {'type': 'image', 'alias': config['image']},
+            'config': {'security.privileged': boolval(privileged)},
+        }
+        try:
+            return client.containers.create(c, wait=True)
+        except pylxd.exceptions.LXDAPIException as e:
+            print("Can't create container: %s" % e)
+            raise
+
 def run_cmd(container, cmd):
     print("Running %s" % (' '.join(cmd)))
     stdout, stderr = container.execute(cmd)

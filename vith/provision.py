@@ -34,7 +34,7 @@ iface eth0 inet static
     resolvconf = "nameserver %s" % gateway
     container.files.put('/etc/resolv.conf', resolvconf)
 
-def provision(container, provisioning_item):
+def provision_with_ansible(container, provisioning_item):
     assert provisioning_item['type'] == 'ansible'
     ip = get_ipv4_ip(container)
     with tempfile.NamedTemporaryFile() as tmpinv:
