@@ -89,3 +89,6 @@ def find_free_ip(gateway):
 def boolval(val):
     return 'true' if val else 'false'
 
+def is_provisioned(container):
+    return container.config.get('user.vith.provisioned') == 'true'
+
