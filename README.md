@@ -26,6 +26,8 @@ like:
 name: myproject
 image: debian/jessie
 privileged: true # jessie is systemd
+hostnames:
+  - myproject.local
 provisioning:
   - type: ansible
     playbook: deploy/site.yml

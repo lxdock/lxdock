@@ -1,21 +1,10 @@
 import pylxd
 
 from .provision import prepare_debian, provision_with_ansible, set_static_ip_on_debian
-from .util import (
-    ContainerStatus, get_ipv4_ip, get_config, get_default_gateway, find_free_ip,
-    wait_for_ipv4_ip, get_container, is_provisioned
-)
+from .util import ContainerStatus, get_config, get_container, is_provisioned
+from .network import get_ipv4_ip, get_default_gateway, find_free_ip, wait_for_ipv4_ip, EtcHosts
 
-def up():
-    container = get_container()
-    if container.status_code == ContainerStatus.Running:
-        print("Container is already running!")
-        return
-    print("Starting container...")
-    container.start(wait=True)
-    if container.status_code != ContainerStatus.Running:
-        print("Something went wrong trying to start the container.")
-        return
+def _setup_ip(container):
     ip = get_ipv4_ip(container)
     if not ip:
         print("No IP yet, waiting 10 seconds...")
@@ -31,19 +20,63 @@ def up():
     if not ip:
         print("STILL no IP! Container is up, but probably broken.")
         print("Maybe that restarting it will help? Not trying to provision.")
+    return ip
+
+def _setup_hostnames(container, hostnames, target_ip):
+    etchosts = EtcHosts()
+    for hostname in hostnames:
+        print("Setting {} to point to {}. sudo needed.".format(hostname, target_ip))
+        etchosts.ensure_binding_present(hostname, target_ip)
+    if etchosts.changed:
+        etchosts.save()
+
+def up():
+    config = get_config()
+    container = get_container()
+    if container.status_code == ContainerStatus.Running:
+        print("Container is already running!")
         return
+
+    print("Starting container...")
+    container.start(wait=True)
+    if container.status_code != ContainerStatus.Running:
+        print("Something went wrong trying to start the container.")
+        return
+
+    ip = _setup_ip(container)
+    if not ip:
+        return
+
     print("Container is up! IP: %s" % ip)
+
+    hostnames = config.get('hostnames', [])
+    if hostnames:
+        _setup_hostnames(container, hostnames, ip)
 
     if is_provisioned(container):
         print("Already provisioned, not provisioning.")
         return
     provision(barebone=True)
 
+def _unsetup_hostnames(container, hostnames):
+    etchosts = EtcHosts()
+    for hostname in hostnames:
+        print("Unsetting {}. sudo needed.".format(hostname))
+        etchosts.ensure_binding_absent(hostname)
+    if etchosts.changed:
+        etchosts.save()
+
 def halt():
+    config = get_config()
     container = get_container()
     if container.status_code == ContainerStatus.Stopped:
         print("The container is already stopped.")
         return
+
+    hostnames = config.get('hostnames', [])
+    if hostnames:
+        _unsetup_hostnames(container, hostnames)
+
     print("Stopping...")
     try:
         container.stop(timeout=30, force=False, wait=True)

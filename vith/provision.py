@@ -3,7 +3,8 @@ from pathlib import Path
 import tempfile
 import subprocess
 
-from .util import run_cmd, get_ipv4_ip
+from .util import run_cmd
+from .network import get_ipv4_ip
 
 def prepare_debian(container):
     packages = [
