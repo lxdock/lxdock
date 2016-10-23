@@ -1,8 +1,15 @@
 import pylxd
 
 from .provision import prepare_debian, provision_with_ansible, set_static_ip_on_debian
-from .util import ContainerStatus, get_config, get_container, is_provisioned
+from .util import ContainerStatus, get_config, get_container, is_provisioned, has_static_ip
 from .network import get_ipv4_ip, get_default_gateway, find_free_ip, wait_for_ipv4_ip, EtcHosts
+
+def _assign_free_static_ip(container):
+    gateway = get_default_gateway()
+    forced_ip = find_free_ip(gateway)
+    set_static_ip_on_debian(container, forced_ip, gateway)
+    container.config['user.nomad.static_ip'] = 'true'
+    container.save(wait=True)
 
 def _setup_ip(container):
     ip = get_ipv4_ip(container)
@@ -12,9 +19,7 @@ def _setup_ip(container):
     if not ip:
         print("Still no IP! Forcing a static IP...")
         container.stop(wait=True)
-        gateway = get_default_gateway()
-        forced_ip = find_free_ip(gateway)
-        set_static_ip_on_debian(container, forced_ip, gateway)
+        _assign_free_static_ip(container)
         container.start(wait=True)
         ip = wait_for_ipv4_ip(container)
     if not ip:
@@ -36,6 +41,11 @@ def up():
     if container.status_code == ContainerStatus.Running:
         print("Container is already running!")
         return
+
+    if has_static_ip(container):
+        # If the container already previously received a static IP, we don't need to wait until
+        # the container has started to assign it a new (and free) static IP. We do it now.
+        _assign_free_static_ip(container)
 
     print("Starting container...")
     container.start(wait=True)

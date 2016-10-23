@@ -48,3 +48,6 @@ def boolval(val):
 
 def is_provisioned(container):
     return container.config.get('user.nomad.provisioned') == 'true'
+
+def has_static_ip(container):
+    return container.config.get('user.nomad.static_ip') == 'true'
