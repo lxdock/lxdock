@@ -9,7 +9,7 @@ class ContainerStatus:
     Running = 103
 
 def get_config():
-    confpath = Path('Vithfile.yml')
+    confpath = Path('.nomad.yml')
     return Config(confpath)
 
 def get_client():
@@ -47,5 +47,4 @@ def boolval(val):
     return 'true' if val else 'false'
 
 def is_provisioned(container):
-    return container.config.get('user.vith.provisioned') == 'true'
-
+    return container.config.get('user.nomad.provisioned') == 'true'

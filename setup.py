@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="vith",
+    name="nomad",
     version="0.2",
     packages=find_packages(),
     install_requires=['pyyaml', 'pylxd'],
     entry_points={
         'console_scripts': [
-            'vith = vith:main',
+            'nomad = nomad:main',
         ],
     },
 )

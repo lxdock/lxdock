@@ -103,7 +103,7 @@ def provision(barebone=None):
         print("Provisioning with {}".format(provisioning_item['type']))
         provision_with_ansible(container, provisioning_item)
 
-    container.config['user.vith.provisioned'] = 'true'
+    container.config['user.nomad.provisioned'] = 'true'
     container.save(wait=True)
 
 def destroy():
@@ -117,5 +117,3 @@ def destroy():
     print("Destroying...")
     container.delete(wait=True)
     print("Destroyed!")
-
-

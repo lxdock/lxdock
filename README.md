@@ -1,6 +1,6 @@
-# vith: Vagrant Is Too Heavy
+# LXD-Nomad
 
-vith is a wrapper around lxd that allows a workflow similar to Vagrant.
+*LXD-Nomad* is a wrapper around lxd that allows a workflow similar to Vagrant.
 
 ## Status
 
@@ -12,14 +12,14 @@ Barely functional, work in progress.
   address running.
 * Proper permissions to run the `lxc` command. That usually means adding your user to the `lxd`
   group.
-* Local LXD images. Vith doesn't manage image copying. When you refer to `debian/jessie`, you need
+* Local LXD images. *LXD-Nomad* doesn't manage image copying. When you refer to `debian/jessie`, you need
   to have already coplied the image locally and properly aliased it.
 * pylxd
 * ansible
 
 ## Usage
 
-It's not functional, so you can't use it, but if you put a `Vithfile.yml` somewhere that looks
+It's not functional, so you can't use it, but if you put a `.nomad.yml` somewhere that looks
 like:
 
 ```
@@ -34,7 +34,7 @@ provisioning:
 ```
 
 ... and that you have a pre-configured `jessie` container that works, you should be able to get
-*something* out of `vith` commands made in the same folder.
+*something* out of `nomad` commands made in the same folder.
 
 ## Privileged containers
 
@@ -54,5 +54,5 @@ need to fudge your `Vagrantfile` to dynamically change the active box based on t
 
 Also, when working with containers, much of the complexity of Vagrant becomes useless. Why
 the need for special "vagrant-prepared" boxes when `lxc exec` is available? It's much simpler to
-use whatever images are provided directly by lxd. By removing the need to manage boxes, `vith`
+use whatever images are provided directly by lxd. By removing the need to manage boxes, `nomad`
 suddenly becomes much simpler (a simple wrapper around lxd, really).
