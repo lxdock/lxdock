@@ -18,18 +18,30 @@ def get_client():
 def get_container(create=True):
     client = get_client()
     config = get_config()
-    try:
-        return client.containers.get(config['name'])
-    except pylxd.exceptions.LXDAPIException as e:
-        print("Can't get container: %s" % e)
+    for container in client.containers.all():
+        if container.config.get('user.nomad.homedir') == str(config.homedir):
+            return container
+    else:
+        print("Can't find container for homedir %s" % config.homedir)
         if not create:
             return None
-        print("Creating new container from image %s" % config['image'])
+
+        allnames = {c.name for c in client.containers.all()}
+        name = config['name']
+        counter = 1
+        while name in allnames:
+            name = "%s%d" % (config['name'], counter)
+            counter += 1
+
+        print("Creating new container %s from image %s" % (name, config['image']))
         privileged = config.get('privileged', False)
         c = {
-            'name': config['name'],
+            'name': name,
             'source': {'type': 'image', 'alias': config['image']},
-            'config': {'security.privileged': boolval(privileged)},
+            'config': {
+                'security.privileged': boolval(privileged),
+                'user.nomad.homedir': str(config.homedir),
+            },
         }
         try:
             return client.containers.create(c, wait=True)
