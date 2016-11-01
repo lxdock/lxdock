@@ -1,13 +1,14 @@
-import time
-import re
-import tempfile
-import subprocess
+# -*- coding: utf-8 -*-
 
-from .util import get_client
+import re
+import subprocess
+import tempfile
+
 
 def get_ipv4_ip(container):
+    """ Returns the IP adress of a specific container. """
     state = container.state()
-    if state.network is None: # container is not running
+    if state.network is None:  # container is not running
         return ''
     eth0 = state.network['eth0']
     for addr in eth0['addresses']:
@@ -15,22 +16,16 @@ def get_ipv4_ip(container):
             return addr['address']
     return ''
 
-def wait_for_ipv4_ip(container, seconds=10):
-    for i in range(seconds):
-        time.sleep(1)
-        ip = get_ipv4_ip(container)
-        if ip:
-            return ip
-    return ''
 
-def get_default_gateway():
-    client = get_client()
+def get_default_gateway(client):
+    """ Given a PyLXD client, returns the default gateway of the associaited bridge. """
     lxdbr0 = client.networks.get('lxdbr0')
     cidr = lxdbr0.config['ipv4.address']
     return cidr.split('/')[0]
 
-def get_used_ips():
-    client = get_client()
+
+def get_used_ips(client):
+    """ Returns the IP addresses that are already used by other containers. """
     result = []
     for c in client.containers.all():
         ip = get_ipv4_ip(c)
@@ -38,16 +33,21 @@ def get_used_ips():
             result.append(ip)
     return result
 
-def find_free_ip(gateway):
+
+def find_free_ip(client):
+    """ Given a PyLXD client, returns a free IP address (and the related gateway). """
+    gateway = get_default_gateway(client)
     prefix = '.'.join(gateway.split('.')[:-1])
-    used_ips = set(get_used_ips())
+    used_ips = set(get_used_ips(client))
     for i in range(1, 256):
         ip = '%s.%s' % (prefix, i)
         if ip != gateway and ip not in used_ips:
-            return ip
-    return None
+            return ip, gateway
+    return None, None
+
 
 RE_ETCHOST_LINE = re.compile(r'^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+([\w\-_.]+)$')
+
 
 class EtcHosts:
     def __init__(self, path='/etc/hosts'):

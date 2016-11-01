@@ -1,10 +1,16 @@
+# -*- coding: utf-8 -*-
+
+import logging
 import os.path
 from pathlib import Path
-import tempfile
 import subprocess
+import tempfile
 
 from .util import run_cmd
 from .network import get_ipv4_ip
+
+logger = logging.getLogger(__name__)
+
 
 def prepare_debian(container):
     packages = [
@@ -17,8 +23,9 @@ def prepare_debian(container):
     pubkey = pubkey_path.open().read()
     run_cmd(container, ['apt-get', 'install', '-y'] + packages)
     run_cmd(container, ['mkdir', '-p', '/root/.ssh'])
-    print("Adding %s to machine's authorized keys" % pubkey)
+    logger.info("Adding %s to machine's authorized keys" % pubkey)
     container.files.put('/root/.ssh/authorized_keys', pubkey)
+
 
 def set_static_ip_on_debian(container, ip, gateway):
     contents = """
@@ -35,6 +42,7 @@ iface eth0 inet static
     resolvconf = "nameserver %s" % gateway
     container.files.put('/etc/resolv.conf', resolvconf)
 
+
 def provision_with_ansible(container, provisioning_item):
     assert provisioning_item['type'] == 'ansible'
     ip = get_ipv4_ip(container)
@@ -42,7 +50,6 @@ def provision_with_ansible(container, provisioning_item):
         tmpinv.write("{} ansible_user=root".format(ip).encode('ascii'))
         tmpinv.flush()
         cmd = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i {} {}".format(tmpinv.name, provisioning_item['playbook'])
-        print(cmd)
+        logger.debug(cmd)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()
-

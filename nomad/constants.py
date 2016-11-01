@@ -1,0 +1,8 @@
+# -*- coding: utf-8 -*-
+
+
+# CONTAINERS
+# --
+
+CONTAINER_STOPPED = 102
+CONTAINER_RUNNING = 103
