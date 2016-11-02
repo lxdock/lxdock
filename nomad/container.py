@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import os
+import subprocess
 import time
 
 import pylxd
@@ -87,6 +89,10 @@ class Container(object):
         if self.is_running:
             logger.info('Container "{name}" is already running'.format(name=self.name))
             return
+
+        if 'shares' in self.options:
+            logger.info("Setting up shares...")
+            self._setup_shares()
 
         if self._has_static_ip:
             # If the container already previously received a static IP, we don't need to wait until
@@ -197,6 +203,32 @@ class Container(object):
             etchosts.ensure_binding_present(hostname, ip)
         if etchosts.changed:
             etchosts.save()
+
+    def _setup_shares(self):
+        container = self._container
+
+        # First, let's make an inventory of shared sources that were already there.
+        existing_shares = {k: d for k, d in container.devices.items() if k.startswith('nomadshare')}
+        existing_sources = {d['source'] for d in existing_shares.values()}
+
+        # Let's get rid of previously set up nomad shares.
+        for k in existing_shares:
+            del container.devices[k]
+
+        for i, share in enumerate(self.options.get('shares', []), start=1):
+            source = os.path.join(self.homedir, share['source'])
+            if True or source not in existing_sources:
+                logger.info("Setting host-side ACL for {}".format(source))
+                cmd = "setfacl -Rdm u:{}:rwX {}".format(os.getuid(), source)
+                subprocess.Popen(cmd, shell=True).wait()
+
+            shareconf = {
+                'type': 'disk',
+                'source': source,
+                'path': share['dest'],
+            }
+            container.devices['nomadshare%s' % i] = shareconf
+        container.save(wait=True)
 
     def _setup_ip(self):
         """ Setup the IP address of the considered container. """
