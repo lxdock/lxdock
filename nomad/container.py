@@ -217,7 +217,7 @@ class Container(object):
 
         for i, share in enumerate(self.options.get('shares', []), start=1):
             source = os.path.join(self.homedir, share['source'])
-            if True or source not in existing_sources:
+            if source not in existing_sources:
                 logger.info("Setting host-side ACL for {}".format(source))
                 cmd = "setfacl -Rdm u:{}:rwX {}".format(os.getuid(), source)
                 subprocess.Popen(cmd, shell=True).wait()
