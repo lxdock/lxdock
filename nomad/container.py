@@ -187,7 +187,7 @@ class Container(object):
         try:
             return self.client.containers.create(container_config, wait=True)
         except pylxd.exceptions.LXDAPIException as e:
-            logger.error("Can't create container: {error}".format(e))
+            logger.error("Can't create container: {error}".format(error=e))
             raise ContainerOperationFailed()
 
     def _setup_hostnames(self, ip):
