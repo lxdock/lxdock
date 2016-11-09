@@ -22,6 +22,9 @@ logger = logging.getLogger(__name__)
 class Container(object):
     """ Represents a specific container that is managed by LXD-Nomad. """
 
+    # The default image server that will be used to pull images in "pull" mode.
+    _default_image_server = 'https://images.linuxcontainers.org'
+
     def __init__(self, project_name, homedir, client, name=None, **options):
         self.project_name = project_name
         self.homedir = homedir
@@ -176,9 +179,28 @@ class Container(object):
             'Creating new container "{name}" '
             'from image {image}'.format(name=name, image=self.options['image']))
         privileged = self.options.get('privileged', False)
+        mode = self.options.get('mode', 'local')
         container_config = {
             'name': name,
-            'source': {'type': 'image', 'alias': self.options['image']},
+            'source': {
+                'alias': self.options['image'],
+                # The 'mode' defines how the container will be retrieved. In "local" mode the image
+                # will be determined using a local alias. In "pull" mode the image will be fetched
+                # from a remote server using a remote alias.
+                'mode': mode,
+                # The 'protocol' to use. LXD supports two protocol: 'lxd' (RESTful API that is used
+                # between the clients and a LXD daemon) and 'simplestreams' (an image server
+                # description format, using JSON to describe a list of images and allowing to get
+                # image information and import images). We use "simplestreams" by default (as the
+                # lxc command do).
+                'protocol': self.options.get('protocol', 'simplestreams'),
+                # The 'server' that should be used to fetch the images. We use the default
+                # linuxcontainers server for LXC and LXD when no value is provided (and if we are
+                # not in "local" mode).
+                'server': (self.options.get('server', self._default_image_server) if mode == 'pull'
+                           else ''),
+                'type': 'image',
+            },
             'config': {
                 'security.privileged': 'true' if privileged else 'false',
                 'user.nomad.homedir': self.homedir,
