@@ -1,0 +1,6 @@
+include LICENSE
+include MANIFEST.in
+include *.md
+include *.rst
+global-exclude *.pyc
+recursive-exclude tests *
