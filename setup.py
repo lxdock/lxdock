@@ -18,7 +18,7 @@ setup(
     keywords='lxd lxc containers environments orchestration devops',
     zip_safe=False,
     install_requires=[
-        'pylxd',
+        'pylxd>=2.2',
         'pyyaml',
     ],
     entry_points={
