@@ -87,6 +87,22 @@ class Container(object):
         self._container.config['user.nomad.provisioned'] = 'true'
         self._container.save(wait=True)
 
+    def shell(self):
+        """Opens a new interactive shell in the container. """
+        # For now, it's much easier to call `lxc`, but eventually, we might want to contribute
+        # to pylxd so it supports `interactive = True` in `exec()`.
+        shellcfg = self.options.get('shell', {})
+        shelluser = shellcfg.get('user')
+        if shelluser:
+            # This part is the result of quite a bit of `su` args trial-and-error.
+            shellhome = shellcfg.get('home')
+            homearg = '--env HOME={}'.format(shellhome) if shellhome else ''
+            cmd = 'lxc exec {} {} -- su -m {}'.format(self.name, homearg, shelluser)
+            subprocess.call(cmd, shell=True)
+        else:
+            cmd = 'lxc exec {} -- bash'.format(self.name)
+            subprocess.call(cmd, shell=True)
+
     def up(self):
         """ Creates, starts and provisions the container. """
         if self.is_running:

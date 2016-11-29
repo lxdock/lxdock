@@ -18,25 +18,36 @@ Barely functional, work in progress.
 
 ## Usage
 
-It's not functional, so you can't use it, but if you put a `.nomad.yml` somewhere that looks
-like:
+It's barely functional, but if you put a `.nomad.yml` somewhere that looks like:
 
 ```
 name: myproject
 image: debian/jessie
 privileged: true # jessie is systemd
+
+# Those hostnames will be bound to the container's IP in your host's /etc/hosts file
 hostnames:
   - myproject.local
+
+# Will mount the project's root folder to /myshare in the container
 shares:
   - source: .
     dest: /myshare
+
+# When doing "nomad shell", you'll be having a shell for the specified user/home
+shell:
+  user: deployuser
+  home: /opt/myproject
+
+# Upon our first "nomad up", this ansible playbook will be ran from the host with the container's
+# IP in the inventory.
 provisioning:
   - type: ansible
     playbook: deploy/site.yml
 ```
 
-... and that you have a pre-configured `jessie` container that works, you should be able to get
-*something* out of `nomad` commands made in the same folder.
+... and that you have a pre-configured `jessie` container that works, you should manage to get
+a workflow similar to Vagrant's.
 
 You can also choose to define a container that will be created by pulling directly one of the image
 hosted on https://images.linuxcontainers.org/. This is the "pull" mode:
@@ -55,11 +66,11 @@ provisioning:
     playbook: deploy/site.yml
 ```
 
-It should be noted that the ``image`` value can also contain a name of a container alias that
-includes the targetted architecture (eg. ``debian/jessie/amd64`` or ``ubuntu/xenial/armhf``). The
+It should be noted that the `image` value can also contain a name of a container alias that
+includes the targetted architecture (eg. `debian/jessie/amd64` or `ubuntu/xenial/armhf`). The
 image will be pulled from the https://images.linuxcontainers.org/ image server by default (so you
-can get a list of supported aliases by using the ``lxc image alias list images:`` command). You can
-also choose to use another server by manually setting the ``server`` value.
+can get a list of supported aliases by using the `lxc image alias list images:` command). You can
+also choose to use another server by manually setting the `server` value.
 
 ## Privileged containers
 

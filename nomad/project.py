@@ -39,6 +39,10 @@ class Project(object):
         for container in self.containers:
             container.provision()
 
+    def shell(self):
+        """Opens a new shell in our first container. """
+        self.containers[0].shell()
+
     def up(self):
         """ Creates, starts and provisions the containers of the project. """
         for container in self.containers:

@@ -26,12 +26,13 @@ class Nomad(object):
         subparsers.add_parser('destroy', help='Stop and remove containers.')
         subparsers.add_parser('halt', help='Stop containers.')
         subparsers.add_parser('provision', help='Provision containers.')
+        subparsers.add_parser('shell', help='Opens a shell in the container.')
         subparsers.add_parser('up', help='Create, start and provisions containers.')
 
         # Parses the arguments
         args = parser.parse_args()
 
-        # Handles vertbosity
+        # Handles verbosity
         if args.verbose:
             console_handler.setLevel(logging.DEBUG)
         else:
@@ -51,6 +52,9 @@ class Nomad(object):
 
     def provision(self, args):
         self.project.provision()
+
+    def shell(self, args):
+        self.project.shell()
 
     def up(self, args):
         self.project.up()
