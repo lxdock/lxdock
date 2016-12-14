@@ -72,6 +72,31 @@ image will be pulled from the https://images.linuxcontainers.org/ image server b
 can get a list of supported aliases by using the `lxc image alias list images:` command). You can
 also choose to use another server by manually setting the `server` value.
 
+## Multiple containers
+
+You can define multiple containers in your `.nomad.yml` file.
+
+```
+image: ubuntu/xenial
+mode: pull
+
+containers:
+  - name: web
+    hostnames:
+      - myproject.local
+
+  - name: ci
+    image: debian/jessie
+    privileged: true
+    hostnames:
+      - ci.local
+
+```
+
+If you define some global values (eg. `images`, `mode` or `provision`) outside of the scope of the
+`containers` block, these values will be used when creating each container unless you re-define them
+in the container's configuration scope.
+
 ## Privileged containers
 
 There seems to be some problems with containers running systemd-based systems. Their init system

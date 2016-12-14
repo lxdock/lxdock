@@ -20,6 +20,9 @@ class Config(object):
         self.containers = []
         self._dict = {}
 
+    def __contains__(self, key):
+        return key in self._dict
+
     def __getitem__(self, key):
         return self._dict[key]
 
@@ -55,10 +58,26 @@ class Config(object):
 
     def load_containers(self):
         """ Loads each container configuration and store it inside the `containers` attribute. """
-        # TODO: support multiple containers
-        # For now we consider that the configuration file holds only one container, so we just pass
-        # the full dictionary to initialize the `ContainerConfig` instance.
-        self.containers.append(ContainerConfig(self._dict))
+        containers = [ContainerConfig(self._get_container_config_dict(cdict))
+                      for cdict in self._dict.get('containers', [])]
+        # If we cannot consider multiple containers, we just pass the full dictionary to initialize
+        # the `ContainerConfig` instance.
+        if not len(containers):
+            containers = [ContainerConfig(self._dict)]
+
+        self.containers.extend(containers)
+
+    def _get_container_config_dict(self, container_dict):
+        """ Returns a dictionary containing the container's configuration.
+
+        The dictionary that is returned contains the container's configuration and the global config
+        values. These global values can be defined outside of the scope of the container's config
+        and can be used by each container.
+        """
+        container_config = dict(self._dict)
+        container_config.update(container_dict)
+        del container_config['containers']
+        return container_config
 
     def _load_yml(self):
         """ Loads the YML configuration file. """
