@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
-
 import logging
 
+from . import constants
 from .container import Container
 from .exceptions import ProjectError
 from .logging import console_handler
+from .network import EtcHosts, ContainerEtcHosts
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +36,7 @@ class Project(object):
             else self.containers
         for container in self._containers_generator(containers=containers):
             container.destroy()
+        self._update_guest_etchosts()
 
     def halt(self, container_name=None):
         """ Stops containers of the project. """
@@ -43,6 +44,7 @@ class Project(object):
             else self.containers
         for container in self._containers_generator(containers=containers):
             container.halt()
+        self._update_guest_etchosts()
 
     def provision(self, container_name=None):
         """ Provisions the containers of the project. """
@@ -68,6 +70,7 @@ class Project(object):
         [logger.info('Bringing container "{}" up'.format(c.name)) for c in containers]
         for container in self._containers_generator(containers=containers):
             container.up()
+        self._update_guest_etchosts()
 
     ##################################
     # UTILITY METHODS AND PROPERTIES #
@@ -97,3 +100,21 @@ class Project(object):
             yield container
         console_handler.setFormatter(logging.Formatter('%(message)s'))
         logger.addHandler(console_handler)
+
+    def _update_guest_etchosts(self):
+        """ Updates /etc/hosts on **all** running nomad-managed containers.
+
+        ... even those outside the current project. This way, containers can contact themselves
+        using the same domain names the host uses.
+        """
+        def should_update(c):
+            return c.config.get('user.nomad.nid') and c.status_code == constants.CONTAINER_RUNNING
+        # At this point, our host's /etc/hosts is fully updated. No need to go fetch IP's and stuff
+        # we can just re-use what we've already computed in every container up/halt ops before.
+        etchosts = EtcHosts()
+        containers = (c for c in self.client.containers.all() if should_update(c))
+        for container in containers:
+            container_etchosts = ContainerEtcHosts(container)
+            container_etchosts.nomad_bindings = etchosts.nomad_bindings
+            container_etchosts.save()
+

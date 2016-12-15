@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-
+import io
 import re
 import subprocess
 import tempfile
@@ -49,10 +48,9 @@ def find_free_ip(client):
 RE_ETCHOST_LINE = re.compile(r'^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+([\w\-_.]+)$')
 
 
-class EtcHosts:
-    def __init__(self, path='/etc/hosts'):
-        self.path = path
-        self.lines = open(self.path, 'rt', encoding='utf-8').readlines()
+class EtcHostsBase:
+    def __init__(self, etchosts_fp):
+        self.lines = etchosts_fp.readlines()
         self.changed = False
         self.nomad_bindings = {}
         self.nomad_section_begin = None
@@ -81,7 +79,7 @@ class EtcHosts:
             del self.nomad_bindings[hostname]
             self.changed = True
 
-    def save(self):
+    def get_mangled_contents(self):
         tosave = self.lines[:]
         if self.nomad_bindings:
             toinsert = ['# BEGIN LXD-Nomad section\n']
@@ -97,9 +95,35 @@ class EtcHosts:
         else:
             # Append a new nomad section at the end of the file
             tosave += toinsert
+        return tosave
+
+
+class EtcHosts(EtcHostsBase):
+    def __init__(self, path='/etc/hosts'):
+        self.path = path
+        etchosts_fp = open(self.path, 'rt', encoding='utf-8')
+        super().__init__(etchosts_fp)
+
+    def save(self):
+        tosave = self.get_mangled_contents()
         with tempfile.NamedTemporaryFile('wt', encoding='utf-8') as fp:
             fp.writelines(tosave)
             fp.flush()
             cmd = "sudo cp {} {}".format(fp.name, self.path)
             p = subprocess.Popen(cmd, shell=True)
             p.wait()
+
+
+class ContainerEtcHosts(EtcHostsBase):
+    def __init__(self, container, path='/etc/hosts'):
+        self.path = path
+        self.container = container
+        etchosts_contents = container.files.get(path).decode('utf-8')
+        etchosts_fp = io.StringIO(etchosts_contents)
+        super().__init__(etchosts_fp)
+
+    def save(self):
+        tosave = self.get_mangled_contents()
+        towrite = ''.join(tosave).encode('utf-8')
+        self.container.files.put(self.path, towrite)
+
