@@ -18,7 +18,7 @@ Barely functional, work in progress.
 
 ### Is your lxd install working properly?
 
-After you've installed LXD, you can verify that its nomad ready with these commands:
+After you've installed LXD, you can verify that its nomad-ready with these commands:
 
 ```
 $ lxc image copy images:debian/jessie local: --copy-aliases
@@ -53,9 +53,9 @@ If your output is similar, then you should be nomad-ready!
 ## Installation
 
 ```
-git clone https://github.com/lxd-nomad/lxd-nomad.git
-cd lxd-nomad
-pip3 install --user .
+$ git clone https://github.com/lxd-nomad/lxd-nomad.git
+$ cd lxd-nomad
+$ pip3 install --user .
 $ nomad --version
 LXD-Nomad 0.2.0.dev
 ```
@@ -69,6 +69,7 @@ It's barely functional, but if you put a `.nomad.yml` somewhere that looks like:
 ```
 name: myproject
 image: debian/jessie
+mode: pull # with this mode, debian/jessie is automatically pulled from LXD's public images repo
 privileged: true # jessie is systemd
 
 # Those hostnames will be bound to the container's IP in your host's /etc/hosts file
@@ -95,21 +96,14 @@ provisioning:
 ... and that you have a pre-configured `jessie` container that works, you should manage to get
 a workflow similar to Vagrant's.
 
-You can also choose to define a container that will be created by pulling directly one of the image
-hosted on https://images.linuxcontainers.org/. This is the "pull" mode:
-
 ```
-name: myproject
-image: ubuntu/xenial
-mode: pull
-hostnames:
-  - myproject.local
-shares:
-  - source: .
-    dest: /myshare
-provisioning:
-  - type: ansible
-    playbook: deploy/site.yml
+$ nomad up
+[ lot's of output because the conatiner is provisioned]
+$ curl http://myproject.local
+$ nomad shell
+# echo "in my container!"
+# exit
+$ nomad halt
 ```
 
 It should be noted that the `image` value can also contain a name of a container alias that
