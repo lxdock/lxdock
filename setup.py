@@ -1,9 +1,12 @@
-# -*- coding: utf-8 -*-
+import sys
 
 from setuptools import find_packages
 from setuptools import setup
 
 import nomad
+
+if sys.version_info < (3, 4):
+    sys.exit("lxd-nomad requires Python 3.4+ to run")
 
 setup(
     name='lxd-nomad',
