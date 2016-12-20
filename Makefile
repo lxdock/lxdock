@@ -19,3 +19,5 @@ coverage:
 
 spec:
 	py.test --spec -p no:sugar
+
+travis: install lint isort coverage
