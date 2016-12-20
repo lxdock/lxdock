@@ -1,6 +1,7 @@
 ipython>=5.1.0
 
 # Testing
+codecov>=1.6
 pytest>=3.0
 pytest-cov>=1.8
 pytest-spec>=0.2

@@ -1,0 +1,16 @@
+sudo: false
+
+language: python
+
+python:
+  - "3.4"
+  - "3.5"
+  - "3.6-dev"
+
+script:
+  - make travis
+after_success:
+  - codecov
+branches:
+  only:
+    - master
