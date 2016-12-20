@@ -4,7 +4,7 @@ from . import constants
 from .container import Container
 from .exceptions import ProjectError
 from .logging import console_handler
-from .network import EtcHosts, ContainerEtcHosts
+from .network import ContainerEtcHosts, EtcHosts
 
 logger = logging.getLogger(__name__)
 
@@ -117,4 +117,3 @@ class Project(object):
             container_etchosts = ContainerEtcHosts(container)
             container_etchosts.nomad_bindings = etchosts.nomad_bindings
             container_etchosts.save()
-

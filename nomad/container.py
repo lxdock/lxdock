@@ -9,12 +9,8 @@ import pylxd
 
 from . import constants
 from .exceptions import ContainerOperationFailed
-from .network import EtcHosts
-from .network import find_free_ip
-from .network import get_ipv4_ip
-from .provision import prepare_debian
-from .provision import provision_with_ansible
-from .provision import set_static_ip_on_debian
+from .network import EtcHosts, find_free_ip, get_ipv4_ip
+from .provision import prepare_debian, provision_with_ansible, set_static_ip_on_debian
 
 logger = logging.getLogger(__name__)
 

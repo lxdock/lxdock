@@ -126,4 +126,3 @@ class ContainerEtcHosts(EtcHostsBase):
         tosave = self.get_mangled_contents()
         towrite = ''.join(tosave).encode('utf-8')
         self.container.files.put(self.path, towrite)
-

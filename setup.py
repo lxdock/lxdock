@@ -24,6 +24,9 @@ setup(
         'pylxd>=2.2',
         'pyyaml',
     ],
+    tests_require=[
+        'pytest',
+    ],
     entry_points={
         'console_scripts': [
             'nomad = nomad.cli.main:main',

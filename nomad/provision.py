@@ -2,12 +2,12 @@
 
 import logging
 import os.path
-from pathlib import Path
 import subprocess
 import tempfile
+from pathlib import Path
 
-from .util import run_cmd
 from .network import get_ipv4_ip
+from .util import run_cmd
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,8 @@ def provision_with_ansible(container, provisioning_item):
     with tempfile.NamedTemporaryFile() as tmpinv:
         tmpinv.write("{} ansible_user=root".format(ip).encode('ascii'))
         tmpinv.flush()
-        cmd = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i {} {}".format(tmpinv.name, provisioning_item['playbook'])
+        cmd = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i {} {}".format(
+            tmpinv.name, provisioning_item['playbook'])
         logger.debug(cmd)
         p = subprocess.Popen(cmd, shell=True)
         p.wait()

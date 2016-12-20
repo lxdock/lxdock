@@ -1,0 +1,12 @@
+ipython>=5.1.0
+
+# Testing
+pytest>=3.0
+pytest-cov>=1.8
+pytest-spec>=0.2
+pytest-sugar>=0.7.0
+tox>=1.7
+
+# Lint / isort
+isort>=4.2
+flake8>=2.2.5
