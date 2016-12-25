@@ -7,7 +7,7 @@
 
 ## Status
 
-Barely functional, work in progress.
+Somewhat functional, work in progress.
 
 ## Requirements
 
@@ -167,6 +167,14 @@ provisioning. Here's what it could look like:
 ```
 - acl: name=/myshare entity=myuser etype=user permissions=rwX state=present
 ```
+
+## Tired of sudoing for hostname bindings?
+
+Every time a `nomad up` or `nomad halt` is made, we mangle `/etc/hosts` to make our configured
+hostname bindings work. In a typical setup, your user doesn't have write access to that file. This
+means that lxd-nomad requires you to type your sudo password all the time. If you're tired of that,
+give your user write access to `/etc/hosts`. Sure, there are some security implications in doing
+that, but on a typical developer box and in this HTTPS Everywhere world, the risk ain't that great.
 
 ## Why LXD-Nomad?
 

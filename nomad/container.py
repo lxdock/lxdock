@@ -255,10 +255,11 @@ class Container(object):
 
         etchosts = EtcHosts()
         for hostname in hostnames:
-            logger.info('Setting {hostname} to point to {ip}. sudo needed'.format(
+            logger.info('Setting {hostname} to point to {ip}.'.format(
                 hostname=hostname, ip=ip))
             etchosts.ensure_binding_present(hostname, ip)
         if etchosts.changed:
+            logger.info("Saving host bindings to /etc/hosts. sudo may be needed")
             etchosts.save()
 
     def _setup_shares(self):

@@ -106,12 +106,19 @@ class EtcHosts(EtcHostsBase):
 
     def save(self):
         tosave = self.get_mangled_contents()
-        with tempfile.NamedTemporaryFile('wt', encoding='utf-8') as fp:
-            fp.writelines(tosave)
-            fp.flush()
-            cmd = "sudo cp {} {}".format(fp.name, self.path)
-            p = subprocess.Popen(cmd, shell=True)
-            p.wait()
+        # First, let's try to write the file directly. Who knows, it might work!
+        try:
+            with open(self.path, 'wt', encoding='utf-8') as fp:
+                fp.writelines(tosave)
+        except PermissionError:
+            # Ok, we don't have permission to /etc/hosts. Let's save it to a temp file and
+            # "sudo cp" it to /etc/hosts
+            with tempfile.NamedTemporaryFile('wt', encoding='utf-8') as fp:
+                fp.writelines(tosave)
+                fp.flush()
+                cmd = "sudo cp {} {}".format(fp.name, self.path)
+                p = subprocess.Popen(cmd, shell=True)
+                p.wait()
 
 
 class ContainerEtcHosts(EtcHostsBase):
