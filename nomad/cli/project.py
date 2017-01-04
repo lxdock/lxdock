@@ -16,8 +16,9 @@ def get_project():
     config = Config.from_base_dir(base_dir)
 
     # Determines the name of the project from the config file or using the base directory.
-    project_name = config['name'] if 'name' in config \
-        else os.path.basename(os.path.abspath(base_dir))
+    # TODO: add validation checks before this line in order to ensure required values are present
+    # and validate them.
+    project_name = config['name']
 
     # Initializes the client instance that will be used to orchestrate containers.
     client = get_client()

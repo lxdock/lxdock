@@ -38,7 +38,7 @@ class Nomad(object):
         shell_parser = subparsers.add_parser('shell', help='Open a shell in the container.')
 
         # Creates the 'up' action.
-        up_parser = subparsers.add_parser('up', help='Create, start and provisions containers.')
+        up_parser = subparsers.add_parser('up', help='Create, start and provision containers.')
 
         # Add common arguments to the action parsers that can be used with a specific container.
         per_container_parsers = [

@@ -63,7 +63,11 @@ class Config(object):
         # If we cannot consider multiple containers, we just pass the full dictionary to initialize
         # the `ContainerConfig` instance.
         if not len(containers):
-            containers = [ContainerConfig(self._dict)]
+            unique_container_config = ContainerConfig(self._dict)
+            # We associate a specific name to the unique container if it wasn't explicitly defined
+            # under the 'containers' section of the nomad file.
+            unique_container_config['name'] = 'default'
+            containers = [unique_container_config, ]
 
         self.containers.extend(containers)
 

@@ -7,7 +7,7 @@ import tempfile
 from pathlib import Path
 
 from .network import get_ipv4_ip
-from .util import run_cmd
+from .utils.container import run_cmd
 
 logger = logging.getLogger(__name__)
 

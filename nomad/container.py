@@ -6,11 +6,13 @@ import subprocess
 import time
 
 import pylxd
+from pylxd.exceptions import NotFound
 
 from . import constants
 from .exceptions import ContainerOperationFailed
 from .network import EtcHosts, find_free_ip, get_ipv4_ip
 from .provision import prepare_debian, provision_with_ansible, set_static_ip_on_debian
+from .utils.identifier import folderid
 
 logger = logging.getLogger(__name__)
 
@@ -21,21 +23,11 @@ class Container(object):
     # The default image server that will be used to pull images in "pull" mode.
     _default_image_server = 'https://images.linuxcontainers.org'
 
-    # The cration counter is used to ensure that container names remain consistent if they are not
-    # explicitly set.
-    _creation_counter = 1
-
-    def __init__(self, project_name, homedir, client, name=None, **options):
+    def __init__(self, project_name, homedir, client, **options):
         self.project_name = project_name
         self.homedir = homedir
         self.client = client
         self.options = options
-        self.container_name = name
-
-        # Updates the creation counter to allow containers instances to have a unique name - in the
-        # scope of the considered projec - when container names are not defined.
-        self._creation_counter = Container._creation_counter
-        Container._creation_counter += 1
 
     #####################
     # CONTAINER ACTIONS #
@@ -102,10 +94,10 @@ class Container(object):
             # This part is the result of quite a bit of `su` args trial-and-error.
             shellhome = shellcfg.get('home')
             homearg = '--env HOME={}'.format(shellhome) if shellhome else ''
-            cmd = 'lxc exec {} {} -- su -m {}'.format(self.name, homearg, shelluser)
+            cmd = 'lxc exec {} {} -- su -m {}'.format(self.lxd_name, homearg, shelluser)
             subprocess.call(cmd, shell=True)
         else:
-            cmd = 'lxc exec {} -- bash'.format(self.name)
+            cmd = 'lxc exec {} -- bash'.format(self.lxd_name)
             subprocess.call(cmd, shell=True)
 
     def up(self):
@@ -165,17 +157,27 @@ class Container(object):
         return self._container.status_code == constants.CONTAINER_STOPPED
 
     @property
-    def name(self):
-        """ Returns the name of the container. """
-        return self.container_name or (self.project_name + str(self._creation_counter))
+    def lxd_name(self):
+        """ Returns the name of the container that is used in the scope of LXD.
+
+        This name id supposed to be unique among all the containers managed by LXD.
+        """
+        # Note: all container names must be a valid hostname! That is: maximum 63 characters, no
+        # dots, no digit at first position, made entirely of letters/digits/hyphens, ...
+        if not hasattr(self, '_lxd_name'):
+            lxd_name_prefix = '{project_name}-{name}'.format(
+                project_name=self.project_name, name=self.name)
+            # We compute a project ID based on inode numbers in order to ensure that our LXD names
+            # are unique.
+            project_id = folderid(self.homedir)
+            self._lxd_name = '{prefix}-{id}'.format(
+                prefix=lxd_name_prefix[:63 - len(project_id)], id=project_id)
+        return self._lxd_name
 
     @property
-    def nid(self):
-        """ Returns the Nomad identifier of the container.
-
-        NID stands for Nomad IDentifier. Just an internal ID used for container recognition, though.
-        """
-        return self.homedir + '--' + self.name
+    def name(self):
+        """ Returns the "local" name of the container. """
+        return self.options['name']
 
     ##################################
     # PRIVATE METHODS AND PROPERTIES #
@@ -190,11 +192,11 @@ class Container(object):
 
     def _get_container(self, create=True):
         """ Gets or creates the PyLXD container. """
-        container = None
-        for _container in self.client.containers.all():
-            if _container.config.get('user.nomad.nid') == str(self.nid):
-                container = _container
-        if container is not None:
+        try:
+            container = self.client.containers.get(self.lxd_name)
+        except NotFound:
+            container = None
+        else:
             return container
 
         logger.warn('Unable to find container "{name}" for directory "{homedir}"'.format(
@@ -202,20 +204,13 @@ class Container(object):
         if not create:
             return
 
-        allnames = {c.name for c in self.client.containers.all()}
-        counter = 1
-        name = self.name
-        while name in allnames:
-            name = '{name}--{counter}'.format(name=self.name, counter=counter)
-            counter += 1
-
         logger.info(
             'Creating new container "{name}" '
-            'from image {image}'.format(name=name, image=self.options['image']))
+            'from image {image}'.format(name=self.lxd_name, image=self.options['image']))
         privileged = self.options.get('privileged', False)
         mode = self.options.get('mode', 'local')
         container_config = {
-            'name': name,
+            'name': self.lxd_name,
             'source': {
                 'alias': self.options['image'],
                 # The 'mode' defines how the container will be retrieved. In "local" mode the image
@@ -237,8 +232,8 @@ class Container(object):
             },
             'config': {
                 'security.privileged': 'true' if privileged else 'false',
+                'user.nomad.made': '1',
                 'user.nomad.homedir': self.homedir,
-                'user.nomad.nid': self.nid,
             },
         }
         try:

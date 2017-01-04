@@ -78,8 +78,7 @@ class Project(object):
 
     def get_container_by_name(self, name):
         """ Returns the `Container` instance associated with the given name. """
-        containers_dict = {
-            c.container_name: c for c in self.containers if c.container_name is not None}
+        containers_dict = {c.name: c for c in self.containers}
         if name in containers_dict:
             return containers_dict[name]
 
@@ -108,7 +107,7 @@ class Project(object):
         using the same domain names the host uses.
         """
         def should_update(c):
-            return c.config.get('user.nomad.nid') and c.status_code == constants.CONTAINER_RUNNING
+            return c.config.get('user.nomad.made') and c.status_code == constants.CONTAINER_RUNNING
         # At this point, our host's /etc/hosts is fully updated. No need to go fetch IP's and stuff
         # we can just re-use what we've already computed in every container up/halt ops before.
         etchosts = EtcHosts()
