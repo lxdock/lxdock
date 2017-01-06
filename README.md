@@ -3,21 +3,38 @@
 [![Build Status](https://img.shields.io/travis/lxd-nomad/lxd-nomad.svg?style=flat-square&branch=master)](https://secure.travis-ci.org/lxd-nomad/lxd-nomad?branch=master)
 [![Build Status](https://img.shields.io/codecov/c/github/lxd-nomad/lxd-nomad.svg?style=flat-square&branch=master)](https://codecov.io/github/lxd-nomad/lxd-nomad)
 
-*LXD-Nomad* is a wrapper around lxd that allows a workflow similar to Vagrant.
+*LXD-Nomad* is a wrapper around [LXD][lxd] that allows a workflow similar to [Vagrant][vagrant].
+
+## Why LXD-Nomad?
+
+**It's fast.** LXD-Nomad is much *much* faster than a typical Vagrant + Virtualbox setup.
+
+**Multi-arch.** Vagrant has been designed with Virtualbox and x86 in mind. Even if you use
+alternative providers, you're going to have to jump through inelegant hoops to have your
+`Vagrantfile` work on x86 and arm (for example) at the same time because the very concept of a
+Vagrant box is arch-specific.
+
+LXD transparently refers to containers of your native arch in the same namespace. Pulling
+`debian/jessie` gets you an image of the proper arch whether you're on `x86_64` or `arm`.
+
+**Simpler.** When working with containers, much of the complexity of Vagrant becomes useless. Why
+the need for special "vagrant-prepared" boxes when `lxc exec` is available? It's much simpler to
+use whatever images are provided directly by lxd. By removing the need to manage boxes, `nomad`
+suddenly becomes much simpler (a simple wrapper around lxd, really).
 
 ## Status
 
-Somewhat functional, work in progress.
+Pretty usable, work in progress.
 
 ## Requirements
 
 * Python 3.4+
-* A functional LXD. You should be able to run `lxc launch` and have a container with an IPv4
+* A functional [LXD][lxd]. You should be able to run `lxc launch` and have a container with an IPv4
   address running
 * Proper permissions to run the `lxc` command. That usually means adding your user to the `lxd`
   group
 * `getfacl/setfacl` if you use shared folders
-* ansible
+* [ansible][ansible]
 
 ### Is your lxd install working properly?
 
@@ -67,7 +84,7 @@ Alternatively, you can create yourself a virtualenv to install lxd-nomad in.
 
 ## Usage
 
-It's barely functional, but if you put a `.nomad.yml` somewhere that looks like:
+We don't have proper documentation yet, but if you put a `.nomad.yml` somewhere that looks like:
 
 ```
 name: myproject
@@ -96,8 +113,7 @@ provisioning:
     playbook: deploy/site.yml
 ```
 
-... and that you have a pre-configured `jessie` container that works, you should manage to get
-a workflow similar to Vagrant's.
+... you should manage to get a workflow similar to Vagrant's.
 
 ```
 $ nomad up
@@ -176,16 +192,6 @@ means that lxd-nomad requires you to type your sudo password all the time. If yo
 give your user write access to `/etc/hosts`. Sure, there are some security implications in doing
 that, but on a typical developer box and in this HTTPS Everywhere world, the risk ain't that great.
 
-## Why LXD-Nomad?
-
-Vagrant has been designed with Virtualbox and x86 in mind. Yes, there are plugins like
-`vagrant-lxc` that work quite well, but the main problem is when you try getting outside the x86
-architecture. Vagrant boxes supports multiple providers, but not multiple arches.
-
-To have a functional vagrant-based project tha can run, for example, on an ARM machine, you would
-need to fudge your `Vagrantfile` to dynamically change the active box based on the current arch.
-
-Also, when working with containers, much of the complexity of Vagrant becomes useless. Why
-the need for special "vagrant-prepared" boxes when `lxc exec` is available? It's much simpler to
-use whatever images are provided directly by lxd. By removing the need to manage boxes, `nomad`
-suddenly becomes much simpler (a simple wrapper around lxd, really).
+[lxd]: https://linuxcontainers.org/lxd/
+[vagrant]: https://www.vagrantup.com/
+[ansible]: https://www.ansible.com/
