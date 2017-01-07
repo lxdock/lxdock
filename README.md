@@ -26,6 +26,17 @@ suddenly becomes much simpler (a simple wrapper around lxd, really).
 
 Pretty usable, work in progress.
 
+## Limitations
+
+Except for the first one, all these limitations are temporary.
+
+**Linux only.** LXD is a manager for Linux containers it only runs on Linux. It doesn't have a thin
+VM layer like Docker has (yet?).
+
+**Debian family guests.** So far, basic guest provisioning has been debian-centric.
+
+**Ansible provisioning.** There isn't support for other provisioning tools yet.
+
 ## Requirements
 
 * Python 3.4+
