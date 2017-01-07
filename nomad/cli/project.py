@@ -15,9 +15,7 @@ def get_project():
     # Note/TODO: this could be improved by adding a parameter allowing to manually set the base dir.
     config = Config.from_base_dir(base_dir)
 
-    # Determines the name of the project from the config file or using the base directory.
-    # TODO: add validation checks before this line in order to ensure required values are present
-    # and validate them.
+    # Determines the name of the project from the config file.
     project_name = config['name']
 
     # Initializes the client instance that will be used to orchestrate containers.

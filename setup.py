@@ -21,8 +21,9 @@ setup(
     keywords='lxd lxc containers environments orchestration devops',
     zip_safe=False,
     install_requires=[
-        'pylxd>=2.2',
+        'pylxd>=2.2,<3.0',
         'pyyaml',
+        'voluptuous>=0.9,<1.0',
     ],
     tests_require=[
         'pytest',

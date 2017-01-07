@@ -7,6 +7,7 @@ import yaml
 
 from . import constants
 from .exceptions import ConfigFileNotFound
+from .schema import schema
 
 logger = logging.getLogger(__name__)
 
@@ -45,8 +46,9 @@ class Config(object):
         # Initializes the config instance.
         config = cls(base_dir, config_filename)
         # Loads the YML.
-        # Note/TODO: some validation checks should be triggered here.
         config.load()
+        # Validates the content of the configuration.
+        schema(config._dict)
         # Loads the containers.
         config.load_containers()
 

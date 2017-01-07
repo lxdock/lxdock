@@ -4,6 +4,8 @@ import argparse
 import logging
 import sys
 
+from voluptuous.error import Invalid as NomadFileValidationError
+
 from .. import __version__
 from ..exceptions import ProjectError
 from ..logging import console_handler
@@ -61,7 +63,13 @@ class Nomad(object):
             console_handler.setLevel(logging.INFO)
 
         # Initializes the LXD-Nomad project
-        self.project = get_project()
+        try:
+            self.project = get_project()
+        except NomadFileValidationError as e:
+            # Formats the voluptuous error
+            path = ' @ %s' % '.'.join(map(str, e.path)) if e.path else ''
+            logger.error('The Nomad file is invalid because: {0}'.format(e.msg + path))
+            return
 
         try:
             # use dispatch pattern to invoke method with same name
