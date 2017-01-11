@@ -5,8 +5,7 @@ import yaml
 from voluptuous.error import Invalid
 
 from . import constants
-from .exceptions import ConfigFileNotFoundError
-from .exceptions import ConfigFileValidationError
+from .exceptions import ConfigFileNotFoundError, ConfigFileValidationError
 from .schema import schema
 
 logger = logging.getLogger(__name__)
