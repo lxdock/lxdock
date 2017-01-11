@@ -2,9 +2,11 @@ import logging
 import os
 
 import yaml
+from voluptuous.error import Invalid
 
 from . import constants
-from .exceptions import ConfigFileNotFound
+from .exceptions import ConfigFileNotFoundError
+from .exceptions import ConfigFileValidationError
 from .schema import schema
 
 logger = logging.getLogger(__name__)
@@ -33,7 +35,11 @@ class Config(object):
             if os.path.exists(os.path.join(base_dir, filename))]
 
         if not existing_config_filenames:
-            raise ConfigFileNotFound
+            raise ConfigFileNotFoundError(
+                'Unable to find a suitable configuration file in this directory. '
+                'Are you in the right directory?\n'
+                'The supported filenames are: {}'.format(', '.join(constants.ALLOWED_FILENAMES))
+            )
 
         config_filename = os.path.join(base_dir, existing_config_filenames[0])
         if len(existing_config_filenames) > 1:
@@ -43,10 +49,19 @@ class Config(object):
 
         # Initializes the config instance.
         config = cls(base_dir, config_filename)
+
         # Loads the YML.
         config.load()
+
         # Validates the content of the configuration.
-        schema(config._dict)
+        try:
+            schema(config._dict)
+        except Invalid as e:
+            # Formats the voluptuous error
+            path = ' @ %s' % '.'.join(map(str, e.path)) if e.path else ''
+            msg = 'The Nomad file is invalid because: {0}'.format(e.msg + path)
+            raise ConfigFileValidationError(msg)
+
         # Loads the containers.
         config.load_containers()
 

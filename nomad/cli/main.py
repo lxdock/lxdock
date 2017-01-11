@@ -2,9 +2,8 @@ import argparse
 import logging
 import sys
 
-from voluptuous.error import Invalid as NomadFileValidationError
-
 from .. import __version__
+from ..conf.exceptions import ConfigError
 from ..exceptions import ProjectError
 from ..logging import console_handler
 
@@ -75,12 +74,7 @@ class Nomad(object):
         try:
             # use dispatch pattern to invoke method with same name
             getattr(self, args.action)(args)
-        except NomadFileValidationError as e:
-            # Formats the voluptuous error
-            path = ' @ %s' % '.'.join(map(str, e.path)) if e.path else ''
-            logger.error('The Nomad file is invalid because: {0}'.format(e.msg + path))
-            sys.exit(1)
-        except (CLIError, ProjectError) as e:
+        except (CLIError, ConfigError, ProjectError) as e:
             logger.error(e.msg)
             sys.exit(1)
 
