@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import re
 
 from voluptuous.schema_builder import message

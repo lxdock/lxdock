@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from voluptuous import In, IsDir, Required, Schema, Url
 
 from .validators import Hostname, LXDIdentifier

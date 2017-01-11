@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 class ProjectError(Exception):
     """ An error occured while excuting some action at the project level. """
 
