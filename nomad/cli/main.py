@@ -10,6 +10,7 @@ from .. import __version__
 from ..exceptions import ProjectError
 from ..logging import console_handler
 
+from .exceptions import CLIError
 from .project import get_project
 
 logger = logging.getLogger(__name__)
@@ -19,34 +20,45 @@ class Nomad(object):
     """ Wrapper around  the LXD-Nomad argument parser and the related actions. """
 
     def __init__(self):
+        self._parsers = {}
+
         # Creates the argument parsers
         parser = argparse.ArgumentParser(
             description='Orchestrate and run multiple containers using LXD.', prog='LXD-Nomad')
         parser.add_argument(
             '--version', action='version', version='%(prog)s {v}'.format(v=__version__))
         parser.add_argument('-v', '--verbose', action='store_true')
+        self._parsers['main'] = parser
+
         subparsers = parser.add_subparsers(dest='action')
 
         # Creates the 'destroy' action.
-        destroy_parser = subparsers.add_parser('destroy', help='Stop and remove containers.')
+        self._parsers['destroy'] = subparsers.add_parser(
+            'destroy', help='Stop and remove containers.')
 
         # Creates the 'halt' action.
-        halt_parser = subparsers.add_parser('halt', help='Stop containers.')
+        self._parsers['halt'] = subparsers.add_parser('halt', help='Stop containers.')
+
+        # Creates the 'help' action.
+        self._parsers['help'] = subparsers.add_parser('help', help='Show help information.')
+        self._parsers['help'].add_argument('subcommand', nargs='?', help='Subcommand name.')
 
         # Creates the 'provision' action.
-        provision_parser = subparsers.add_parser('provision', help='Provision containers.')
+        self._parsers['provision'] = subparsers.add_parser(
+            'provision', help='Provision containers.')
 
         # Creates the 'shell' action.
-        shell_parser = subparsers.add_parser('shell', help='Open a shell in the container.')
+        self._parsers['shell'] = subparsers.add_parser(
+            'shell', help='Open a shell in the container.')
 
         # Creates the 'up' action.
-        up_parser = subparsers.add_parser('up', help='Create, start and provision containers.')
+        self._parsers['up'] = subparsers.add_parser(
+            'up', help='Create, start and provision containers.')
 
         # Add common arguments to the action parsers that can be used with a specific container.
-        per_container_parsers = [
-            destroy_parser, halt_parser, provision_parser, shell_parser, up_parser, ]
-        for p in per_container_parsers:
-            p.add_argument('name', nargs='?', help='Container name.')
+        per_container_parsers = ['destroy', 'halt', 'provision', 'shell', 'up', ]
+        for pkey in per_container_parsers:
+            self._parsers[pkey].add_argument('name', nargs='?', help='Container name.')
 
         # Parses the arguments
         args = parser.parse_args()
@@ -62,26 +74,33 @@ class Nomad(object):
         else:
             console_handler.setLevel(logging.INFO)
 
-        # Initializes the LXD-Nomad project
         try:
-            self.project = get_project()
+            # use dispatch pattern to invoke method with same name
+            getattr(self, args.action)(args)
         except NomadFileValidationError as e:
             # Formats the voluptuous error
             path = ' @ %s' % '.'.join(map(str, e.path)) if e.path else ''
             logger.error('The Nomad file is invalid because: {0}'.format(e.msg + path))
-            return
-
-        try:
-            # use dispatch pattern to invoke method with same name
-            getattr(self, args.action)(args)
-        except ProjectError as e:
+            sys.exit(1)
+        except (CLIError, ProjectError) as e:
             logger.error(e.msg)
+            sys.exit(1)
 
     def destroy(self, args):
         self.project.destroy(container_name=args.name)
 
     def halt(self, args):
         self.project.halt(container_name=args.name)
+
+    def help(self, args):
+        try:
+            assert args.subcommand is not None
+            self._parsers[args.subcommand].print_help()
+        except AssertionError:
+            self._parsers['main'].print_help()
+        except KeyError:
+            # args.subcommand is not a valid subcommand!
+            raise CLIError('No such command: {}'.format(args.subcommand))
 
     def provision(self, args):
         self.project.provision(container_name=args.name)
@@ -91,6 +110,17 @@ class Nomad(object):
 
     def up(self, args):
         self.project.up(container_name=args.name)
+
+    ##################################
+    # UTILITY METHODS AND PROPERTIES #
+    ##################################
+
+    @property
+    def project(self):
+        """ Initializes a LXD-Nomad project instance and returns it. """
+        if not hasattr(self, '_project'):
+            self._project = get_project()
+        return self._project
 
 
 def main():
