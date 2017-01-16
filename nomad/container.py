@@ -3,8 +3,7 @@ import os
 import subprocess
 import time
 
-import pylxd
-from pylxd.exceptions import NotFound
+from pylxd.exceptions import LXDAPIException, NotFound
 
 from . import constants
 from .exceptions import ContainerOperationFailed
@@ -57,7 +56,7 @@ class Container(object):
         logger.info('Stopping...')
         try:
             self._container.stop(timeout=30, force=False, wait=True)
-        except pylxd.exceptions.LXDAPIException:
+        except LXDAPIException:
             logger.warn("Can't stop the container. Forcing...")
             self._container.stop(force=True, wait=True)
 
@@ -117,7 +116,7 @@ class Container(object):
         self._container.start(wait=True)
         if not self.is_running:
             logger.error('Something went wrong trying to start the container.')
-            raise ContainerOperationFailed
+            raise ContainerOperationFailed()
 
         ip = self._setup_ip()
         if not ip:
@@ -236,7 +235,7 @@ class Container(object):
         }
         try:
             return self.client.containers.create(container_config, wait=True)
-        except pylxd.exceptions.LXDAPIException as e:
+        except LXDAPIException as e:
             logger.error("Can't create container: {error}".format(error=e))
             raise ContainerOperationFailed()
 

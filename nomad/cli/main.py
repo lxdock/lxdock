@@ -4,7 +4,7 @@ import sys
 
 from .. import __version__
 from ..conf.exceptions import ConfigError
-from ..exceptions import ProjectError
+from ..exceptions import NomadException
 from ..logging import console_handler
 
 from .exceptions import CLIError
@@ -74,8 +74,9 @@ class Nomad(object):
         try:
             # use dispatch pattern to invoke method with same name
             getattr(self, args.action)(args)
-        except (CLIError, ConfigError, ProjectError) as e:
-            logger.error(e.msg)
+        except (CLIError, ConfigError, NomadException) as e:
+            if e.msg is not None:
+                logger.error(e.msg)
             sys.exit(1)
 
     def destroy(self, args):

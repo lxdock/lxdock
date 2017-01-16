@@ -1,9 +1,11 @@
-class ProjectError(Exception):
-    """ An error occured while excuting some action at the project level. """
-
-    def __init__(self, msg):
+class NomadException(Exception):
+    def __init__(self, msg=None):
         self.msg = msg
 
 
-class ContainerOperationFailed(Exception):
+class ProjectError(NomadException):
+    """ An error occured while excuting some action at the project level. """
+
+
+class ContainerOperationFailed(NomadException):
     """ An operation on a specific container failed. """
