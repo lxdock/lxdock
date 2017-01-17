@@ -3,7 +3,7 @@ import logging
 from . import constants
 from .container import Container
 from .exceptions import ProjectError
-from .logging import console_handler
+from .logging import console_handler, get_default_formatter, get_per_container_formatter
 from .network import ContainerEtcHosts, EtcHosts
 
 logger = logging.getLogger(__name__)
@@ -94,10 +94,9 @@ class Project(object):
     def _containers_generator(self, containers=None):
         containers = containers or self.containers
         for container in containers:
-            console_handler.setFormatter(logging.Formatter(
-                '==> {name}: %(message)s'.format(name=container.name)))
+            console_handler.setFormatter(get_per_container_formatter(container.name))
             yield container
-        console_handler.setFormatter(logging.Formatter('%(message)s'))
+        console_handler.setFormatter(get_default_formatter())
         logger.addHandler(console_handler)
 
     def _update_guest_etchosts(self):
