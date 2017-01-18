@@ -61,7 +61,8 @@ class Project(object):
             raise ProjectError(
                 'This action requires a container name to be specified because {count} '
                 'containers are defined in this project.'.format(count=len(self.containers)))
-        containers[0].shell()
+        for container in self._containers_generator(containers=containers):
+            container.shell()
 
     def up(self, container_name=None):
         """ Creates, starts and provisions the containers of the project. """
