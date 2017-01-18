@@ -2,6 +2,7 @@ import logging
 import os
 import subprocess
 import time
+from functools import wraps
 
 from pylxd.exceptions import LXDAPIException, NotFound
 
@@ -14,7 +15,18 @@ from .utils.identifier import folderid
 logger = logging.getLogger(__name__)
 
 
-class Container(object):
+def must_be_running(method):
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if not self.is_running:
+            logger.error('The container is not running.')
+            return
+        return method(self, *args, **kwargs)
+
+    return wrapper
+
+
+class Container:
     """ Represents a specific container that is managed by LXD-Nomad. """
 
     # The default image server that will be used to pull images in "pull" mode.
@@ -60,12 +72,9 @@ class Container(object):
             logger.warn("Can't stop the container. Forcing...")
             self._container.stop(force=True, wait=True)
 
+    @must_be_running
     def provision(self, barebone=None):
         """ Provisions the container. """
-        if not self.is_running:
-            logger.error('The container is not running.')
-            return
-
         if barebone is None:  # None == only if the container isn't provisioned.
             barebone = not self.is_provisioned
 
@@ -81,6 +90,7 @@ class Container(object):
         self._container.config['user.nomad.provisioned'] = 'true'
         self._container.save(wait=True)
 
+    @must_be_running
     def shell(self):
         """ Opens a new interactive shell in the container. """
         # For now, it's much easier to call `lxc`, but eventually, we might want to contribute
