@@ -31,26 +31,40 @@ class Nomad(object):
 
         # Creates the 'destroy' action.
         self._parsers['destroy'] = subparsers.add_parser(
-            'destroy', help='Stop and remove containers.')
+            'destroy', help='Stop and remove containers.',
+            description='Destroy all the containers of a project or destroy a specific container '
+                        'if a container name is specified.')
 
         # Creates the 'halt' action.
-        self._parsers['halt'] = subparsers.add_parser('halt', help='Stop containers.')
+        self._parsers['halt'] = subparsers.add_parser(
+            'halt', help='Stop containers.',
+            description='Stop all the containers of a project or stop a specific container if a '
+                        'container name is specified.')
 
         # Creates the 'help' action.
-        self._parsers['help'] = subparsers.add_parser('help', help='Show help information.')
+        self._parsers['help'] = subparsers.add_parser(
+            'help', help='Show help information.',
+            description='Show general help information or show help information about a specific '
+                        'subcommand.')
         self._parsers['help'].add_argument('subcommand', nargs='?', help='Subcommand name.')
 
         # Creates the 'provision' action.
         self._parsers['provision'] = subparsers.add_parser(
-            'provision', help='Provision containers.')
+            'provision', help='Provision containers.',
+            description='Provision all the containers of a project or provision a specific '
+                        'container if a container name is specified.')
 
         # Creates the 'shell' action.
         self._parsers['shell'] = subparsers.add_parser(
-            'shell', help='Open a shell in the container.')
+            'shell', help='Open a shell in a container.',
+            description='Open an interactive shell inside a specific container.')
 
         # Creates the 'up' action.
         self._parsers['up'] = subparsers.add_parser(
-            'up', help='Create, start and provision containers.')
+            'up', help='Create, start and provision containers.',
+            description='Create, start and provision all the containers of the project according '
+                        'to your nomad file. If a container name is specified, only the related '
+                        'container is created, started and provisioned.')
 
         # Add common arguments to the action parsers that can be used with a specific container.
         per_container_parsers = ['destroy', 'halt', 'provision', 'shell', 'up', ]
