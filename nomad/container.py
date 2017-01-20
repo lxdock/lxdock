@@ -149,6 +149,16 @@ class Container:
     ##################################
 
     @property
+    def exists(self):
+        """ Returns True if the considered container has already been created. """
+        try:
+            self.client.containers.get(self.lxd_name)
+        except NotFound:
+            return False
+        else:
+            return True
+
+    @property
     def is_provisioned(self):
         """ Returns a boolean indicating of the container is provisioned. """
         return self._container.config.get('user.nomad.provisioned') == 'true'

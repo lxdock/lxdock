@@ -9,12 +9,13 @@ from ..logging import console_handler
 
 from .exceptions import CLIError
 from .project import get_project
+from .utils import yesno
 
 logger = logging.getLogger(__name__)
 
 
 class Nomad(object):
-    """ Wrapper around  the LXD-Nomad argument parser and the related actions. """
+    """ Wrapper around the LXD-Nomad argument parser and the related actions. """
 
     def __init__(self):
         self._parsers = {}
@@ -34,6 +35,8 @@ class Nomad(object):
             'destroy', help='Stop and remove containers.',
             description='Destroy all the containers of a project or destroy a specific container '
                         'if a container name is specified.')
+        self._parsers['destroy'].add_argument(
+            '-f', '--force', action='store_true', help='Destroy without confirmation')
 
         # Creates the 'halt' action.
         self._parsers['halt'] = subparsers.add_parser(
@@ -94,7 +97,29 @@ class Nomad(object):
             sys.exit(1)
 
     def destroy(self, args):
-        self.project.destroy(container_name=args.name)
+        # Builds a list of containers by ensuring that these containers are actually associated with
+        # the considered project.
+        container_names = [args.name, ] if args.name else [c.name for c in self.project.containers]
+        containers = [self.project.get_container_by_name(name) for name in container_names]
+        # At this point we are sure that the containers we are manipulating are defined for the
+        # project because we used the `get_container_by_name` method, which raises an error if a
+        # container is not defined for the considered project.
+        existing_containers = [c for c in containers if c.exists]
+
+        should_destroy = False
+        if len(container_names) and not len(existing_containers):
+            should_destroy = True
+        else:
+            # We display a confirmation input to the user only if there are existing containers for
+            # the considered project. Otherwise we just go through the destroy methods of the
+            # containers and let the logger tell the user that the containers were not created.
+            logging.warning(
+                'The following containers will be removed: {}'.format(', '.join(container_names)))
+            if len(container_names) and (args.force or yesno('Are you sure?')):
+                should_destroy = True
+
+        if should_destroy:
+            self.project.destroy(container_name=args.name)
 
     def halt(self, args):
         self.project.halt(container_name=args.name)
