@@ -11,6 +11,7 @@ Requirements
   ``lxd`` group
 - ``getfacl/setfacl`` if you use shared folders
 - Ansible_
+- The equivalent of these ubuntu packages: python3-pip, python3-dev, libffi-dev
 
 Is your lxd install working properly?
 -------------------------------------
