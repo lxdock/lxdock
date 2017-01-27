@@ -63,6 +63,12 @@ class Nomad(object):
             description='Open an interactive shell inside a specific container.')
         self._parsers['shell'].add_argument('name', nargs='?', help='Container name.')
 
+        # Creates the 'status' action.
+        self._parsers['status'] = subparsers.add_parser(
+            'status', help='Show containers\' statuses.',
+            description='Show the status of all the containers of a project or show the status of '
+                        'specific containers if container names are specified.')
+
         # Creates the 'up' action.
         self._parsers['up'] = subparsers.add_parser(
             'up', help='Create, start and provision containers.',
@@ -72,7 +78,7 @@ class Nomad(object):
 
         # Add common arguments to the action parsers that can be used with one or more specific
         # containers.
-        per_container_parsers = ['destroy', 'halt', 'provision', 'up', ]
+        per_container_parsers = ['destroy', 'halt', 'provision', 'status', 'up', ]
         for pkey in per_container_parsers:
             self._parsers[pkey].add_argument('name', nargs='*', help='Container name.')
 
@@ -141,6 +147,9 @@ class Nomad(object):
 
     def shell(self, args):
         self.project.shell(container_name=args.name)
+
+    def status(self, args):
+        self.project.status(container_names=args.name)
 
     def up(self, args):
         self.project.up(container_names=args.name)

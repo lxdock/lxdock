@@ -196,6 +196,20 @@ class Container:
         """ Returns the "local" name of the container. """
         return self.options['name']
 
+    @property
+    def status(self):
+        """ Returns a string identifier representing the current status of the container. """
+        default_status = 'undefined'  # Note: this status should not be displayed at all...
+        container = self._get_container(create=False)
+        if container is None:
+            status = 'not-created'
+        else:
+            status = {
+                constants.CONTAINER_RUNNING: 'running',
+                constants.CONTAINER_STOPPED: 'stopped',
+            }.get(container.status_code, default_status)
+        return status
+
     ##################################
     # PRIVATE METHODS AND PROPERTIES #
     ##################################
@@ -216,10 +230,11 @@ class Container:
         else:
             return container
 
-        logger.warn('Unable to find container "{name}" for directory "{homedir}"'.format(
-            name=self.name, homedir=self.homedir))
         if not create:
             return
+
+        logger.warn('Unable to find container "{name}" for directory "{homedir}"'.format(
+            name=self.name, homedir=self.homedir))
 
         logger.info(
             'Creating new container "{name}" '

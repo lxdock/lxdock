@@ -9,7 +9,7 @@ from .network import ContainerEtcHosts, EtcHosts
 logger = logging.getLogger(__name__)
 
 
-class Project(object):
+class Project:
     """ A project is used to orchestrate a collection of containers. """
 
     def __init__(self, name, homedir, client, containers):
@@ -63,6 +63,16 @@ class Project(object):
                 'containers are defined in this project.'.format(count=len(self.containers)))
         for container in self._containers_generator(containers=containers):
             container.shell()
+
+    def status(self, container_names=None):
+        """ Shows the statuses of the containers of the project. """
+        containers = [self.get_container_by_name(name) for name in container_names] \
+            if container_names else self.containers
+        max_name_length = max(len(c.name) for c in containers)
+        logger.info('Current container states:')
+        for container in containers:
+            logger.info('{container_name} ({status})'.format(
+                container_name=container.name.ljust(max_name_length + 10), status=container.status))
 
     def up(self, container_names=None):
         """ Creates, starts and provisions the containers of the project. """
