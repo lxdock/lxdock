@@ -30,26 +30,26 @@ class Project(object):
     # CONTAINER ACTIONS #
     #####################
 
-    def destroy(self, container_name=None):
+    def destroy(self, container_names=None):
         """ Destroys the containers of the project. """
-        containers = [self.get_container_by_name(container_name)] if container_name \
-            else self.containers
+        containers = [self.get_container_by_name(name) for name in container_names] \
+            if container_names else self.containers
         for container in self._containers_generator(containers=containers):
             container.destroy()
         self._update_guest_etchosts()
 
-    def halt(self, container_name=None):
+    def halt(self, container_names=None):
         """ Stops containers of the project. """
-        containers = [self.get_container_by_name(container_name)] if container_name \
-            else self.containers
+        containers = [self.get_container_by_name(name) for name in container_names] \
+            if container_names else self.containers
         for container in self._containers_generator(containers=containers):
             container.halt()
         self._update_guest_etchosts()
 
-    def provision(self, container_name=None):
+    def provision(self, container_names=None):
         """ Provisions the containers of the project. """
-        containers = [self.get_container_by_name(container_name)] if container_name \
-            else self.containers
+        containers = [self.get_container_by_name(name) for name in container_names] \
+            if container_names else self.containers
         for container in self._containers_generator(containers=containers):
             container.provision()
 
@@ -64,10 +64,10 @@ class Project(object):
         for container in self._containers_generator(containers=containers):
             container.shell()
 
-    def up(self, container_name=None):
+    def up(self, container_names=None):
         """ Creates, starts and provisions the containers of the project. """
-        containers = [self.get_container_by_name(container_name)] if container_name \
-            else self.containers
+        containers = [self.get_container_by_name(name) for name in container_names] \
+            if container_names else self.containers
         [logger.info('Bringing container "{}" up'.format(c.name)) for c in containers]
         for container in self._containers_generator(containers=containers):
             container.up()

@@ -33,16 +33,16 @@ class Nomad(object):
         # Creates the 'destroy' action.
         self._parsers['destroy'] = subparsers.add_parser(
             'destroy', help='Stop and remove containers.',
-            description='Destroy all the containers of a project or destroy a specific container '
-                        'if a container name is specified.')
+            description='Destroy all the containers of a project or destroy specific containers '
+                        'if container names are specified.')
         self._parsers['destroy'].add_argument(
             '-f', '--force', action='store_true', help='Destroy without confirmation')
 
         # Creates the 'halt' action.
         self._parsers['halt'] = subparsers.add_parser(
             'halt', help='Stop containers.',
-            description='Stop all the containers of a project or stop a specific container if a '
-                        'container name is specified.')
+            description='Stop all the containers of a project or stop specific containers if '
+                        'container names are specified.')
 
         # Creates the 'help' action.
         self._parsers['help'] = subparsers.add_parser(
@@ -54,25 +54,27 @@ class Nomad(object):
         # Creates the 'provision' action.
         self._parsers['provision'] = subparsers.add_parser(
             'provision', help='Provision containers.',
-            description='Provision all the containers of a project or provision a specific '
-                        'container if a container name is specified.')
+            description='Provision all the containers of a project or provision specific '
+                        'containers if container names are specified.')
 
         # Creates the 'shell' action.
         self._parsers['shell'] = subparsers.add_parser(
             'shell', help='Open a shell in a container.',
             description='Open an interactive shell inside a specific container.')
+        self._parsers['shell'].add_argument('name', nargs='?', help='Container name.')
 
         # Creates the 'up' action.
         self._parsers['up'] = subparsers.add_parser(
             'up', help='Create, start and provision containers.',
             description='Create, start and provision all the containers of the project according '
-                        'to your nomad file. If a container name is specified, only the related '
-                        'container is created, started and provisioned.')
+                        'to your nomad file. If container names are specified, only the related '
+                        'containers are created, started and provisioned.')
 
-        # Add common arguments to the action parsers that can be used with a specific container.
-        per_container_parsers = ['destroy', 'halt', 'provision', 'shell', 'up', ]
+        # Add common arguments to the action parsers that can be used with one or more specific
+        # containers.
+        per_container_parsers = ['destroy', 'halt', 'provision', 'up', ]
         for pkey in per_container_parsers:
-            self._parsers[pkey].add_argument('name', nargs='?', help='Container name.')
+            self._parsers[pkey].add_argument('name', nargs='*', help='Container name.')
 
         # Parses the arguments
         args = parser.parse_args()
@@ -99,7 +101,7 @@ class Nomad(object):
     def destroy(self, args):
         # Builds a list of containers by ensuring that these containers are actually associated with
         # the considered project.
-        container_names = [args.name, ] if args.name else [c.name for c in self.project.containers]
+        container_names = args.name or [c.name for c in self.project.containers]
         containers = [self.project.get_container_by_name(name) for name in container_names]
         # At this point we are sure that the containers we are manipulating are defined for the
         # project because we used the `get_container_by_name` method, which raises an error if a
@@ -119,10 +121,10 @@ class Nomad(object):
                 should_destroy = True
 
         if should_destroy:
-            self.project.destroy(container_name=args.name)
+            self.project.destroy(container_names=args.name)
 
     def halt(self, args):
-        self.project.halt(container_name=args.name)
+        self.project.halt(container_names=args.name)
 
     def help(self, args):
         try:
@@ -135,13 +137,13 @@ class Nomad(object):
             raise CLIError('No such command: {}'.format(args.subcommand))
 
     def provision(self, args):
-        self.project.provision(container_name=args.name)
+        self.project.provision(container_names=args.name)
 
     def shell(self, args):
         self.project.shell(container_name=args.name)
 
     def up(self, args):
-        self.project.up(container_name=args.name)
+        self.project.up(container_names=args.name)
 
     ##################################
     # UTILITY METHODS AND PROPERTIES #
