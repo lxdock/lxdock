@@ -1,0 +1,3 @@
+name: project01
+image: ubuntu/xenial
+mode: pull
