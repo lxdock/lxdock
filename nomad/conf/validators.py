@@ -26,4 +26,6 @@ def Hostname(v):
 @truth
 def LXDIdentifier(v):
     """ Validates an identifier that should obey to the same rules as RFC 952 hostnames. """
+    if len(v) > 63:
+        return False
     return lxd_identifier_re.match(v)
