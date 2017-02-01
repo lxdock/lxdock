@@ -11,6 +11,7 @@ from .exceptions import ContainerOperationFailed
 from .network import EtcHosts, find_free_ip, get_ipv4_ip
 from .provision import prepare_debian, provision_with_ansible, set_static_ip_on_debian
 from .utils.identifier import folderid
+from .utils.lxd import get_lxd_dir
 
 logger = logging.getLogger(__name__)
 
@@ -159,18 +160,23 @@ class Container:
             return True
 
     @property
+    def is_privileged(self):
+        """ Returns a boolean indicating if the container is privileged. """
+        return self._container.config.get('security.privileged') == 'true'
+
+    @property
     def is_provisioned(self):
-        """ Returns a boolean indicating of the container is provisioned. """
+        """ Returns a boolean indicating if the container is provisioned. """
         return self._container.config.get('user.nomad.provisioned') == 'true'
 
     @property
     def is_running(self):
-        """ Returns a boolean indicating of the container is running. """
+        """ Returns a boolean indicating if the container is running. """
         return self._container.status_code == constants.CONTAINER_RUNNING
 
     @property
     def is_stopped(self):
-        """ Returns a boolean indicating of the container is stopped. """
+        """ Returns a boolean indicating if the container is stopped. """
         return self._container.status_code == constants.CONTAINER_STOPPED
 
     @property
@@ -300,12 +306,32 @@ class Container:
         for k in existing_shares:
             del container.devices[k]
 
+        # LXD uses user namespaces when running safe containers. This means that it maps a set of
+        # uids and gids on the host to a set of uids and gids in the container.
+        # When considering unprivileged containers we want to ensure that "root user" of such
+        # containers have the proper rights to write in shared folders. To do so we have to retrieve
+        # the UserID on the host-side that is mapped to the "root"'s UserID on the guest-side. This
+        # will allow to set ACL on the host-side for this UID. By doing this we will also allow
+        # "root" user on the guest-side to read/write in shared folders.
+        host_root_uid = None
+        if not self.is_privileged:
+            container_path = os.path.join(get_lxd_dir(), 'containers', self.lxd_name, 'rootfs')
+            container_path_stats = os.stat(container_path)
+            host_root_uid = container_path_stats.st_uid
+
         for i, share in enumerate(self.options.get('shares', []), start=1):
             source = os.path.join(self.homedir, share['source'])
             if source not in existing_sources:
-                logger.info("Setting host-side ACL for {}".format(source))
-                cmd = "setfacl -Rdm u:{}:rwX {}".format(os.getuid(), source)
-                subprocess.Popen(cmd, shell=True).wait()
+                logger.info('Setting host-side ACL for {}'.format(source))
+                subprocess.Popen(
+                    'setfacl -Rdm u:{}:rwX {}'.format(os.getuid(), source), shell=True).wait()
+                if host_root_uid is not None:
+                    # We are considering a safe container. So give the mapped root user permissions
+                    # to read/write contents in the shared folders too.
+                    subprocess.Popen(
+                        'setfacl -Rm user:lxd:rwx,default:user:lxd:rwx,'
+                        'user:{0}:rwx,default:user:{0}:rwx {1}'.format(host_root_uid, source),
+                        shell=True).wait()
 
             shareconf = {
                 'type': 'disk',
