@@ -1,0 +1,12 @@
+name: project01
+image: ubuntu/xenial
+mode: pull
+
+containers:
+  - name: web
+
+  - hostnames:
+      - ci.local
+    name: ci
+    image: debian/jessie
+    privileged: true

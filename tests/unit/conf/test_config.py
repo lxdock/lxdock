@@ -40,3 +40,21 @@ class TestConfig:
         project_dir = os.path.join(FIXTURE_ROOT, 'project01')
         config = Config.from_base_dir(project_dir)
         assert 'name' in config
+
+    def test_can_load_container_config_from_top_level_options_if_no_containers_are_defined(self):
+        project_dir = os.path.join(FIXTURE_ROOT, 'project01')
+        config = Config.from_base_dir(project_dir)
+        assert config.containers == [
+            {'image': 'ubuntu/xenial', 'mode': 'pull', 'name': 'default'},
+        ]
+
+    def test_can_properly_handle_configurations_defining_multiple_containers(self):
+        project_dir = os.path.join(FIXTURE_ROOT, 'project02')
+        config = Config.from_base_dir(project_dir)
+        assert config.containers == [
+            {'mode': 'pull', 'image': 'ubuntu/xenial', 'name': 'web'},
+            {
+                'mode': 'pull', 'hostnames': ['ci.local'], 'image': 'debian/jessie', 'name': 'ci',
+                'privileged': True,
+            },
+        ]
