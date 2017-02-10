@@ -49,5 +49,6 @@ def remove_persistent_container():
     yield
     # Removes the persistent container after tests execution.
     global _persistent_container
-    _persistent_container.destroy()
+    if _persistent_container is not None:
+        _persistent_container.destroy()
     del _persistent_container

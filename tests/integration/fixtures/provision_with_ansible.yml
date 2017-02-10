@@ -1,0 +1,5 @@
+- name: Dummy provisioning
+  hosts: all
+  become: yes
+  tasks:
+    - shell: "echo 'dummytest' > /dummytest"

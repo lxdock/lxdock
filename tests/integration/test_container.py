@@ -1,11 +1,25 @@
 import os
+import types
+import unittest.mock
 
 from nomad import constants
-from nomad.container import Container
+from nomad.container import Container, must_be_running
 from nomad.test.testcases import LXDTestCase
 
 
 THIS_DIR = os.path.join(os.path.dirname(__file__))
+
+
+def test_must_be_running_decorator_works(persistent_container):
+    @must_be_running
+    def dummy_action(self):
+        return 42
+    persistent_container.dummy_action = types.MethodType(dummy_action, persistent_container)
+    persistent_container.halt()
+    assert persistent_container.dummy_action() is None
+    persistent_container.up()
+    assert persistent_container.dummy_action() == 42
+    del persistent_container.dummy_action
 
 
 class TestContainer(LXDTestCase):
@@ -27,6 +41,59 @@ class TestContainer(LXDTestCase):
         assert persistent_container._container.status_code == constants.CONTAINER_STOPPED
         persistent_container.up()
         assert persistent_container._container.status_code == constants.CONTAINER_RUNNING
+
+    def test_can_destroy_a_container_and_run_this_action_for_a_container_that_does_not_exist(self):
+        container_options = {
+            'name': self.containername('dummy'), 'image': 'ubuntu/xenial', 'mode': 'pull', }
+        container = Container('myproject', THIS_DIR, self.client, **container_options)
+        container.destroy()
+        assert not container.exists
+        container.up()
+        assert container.exists
+        container.destroy()
+        assert not container.exists
+
+    def test_can_halt_a_container_that_is_running(self, persistent_container):
+        persistent_container.halt()
+        assert persistent_container._container.status_code == constants.CONTAINER_STOPPED
+
+    def test_can_try_to_halt_a_container_that_is_already_stoppeds(self, persistent_container):
+        persistent_container.halt()
+        persistent_container.halt()
+        assert persistent_container._container.status_code == constants.CONTAINER_STOPPED
+
+    def test_can_provision_a_container(self):
+        container_options = {
+            'name': self.containername('dummy'), 'image': 'ubuntu/xenial', 'mode': 'pull',
+            'provisioning': [
+                {'type': 'ansible',
+                 'playbook': os.path.join(THIS_DIR, 'fixtures/provision_with_ansible.yml'), }
+            ],
+        }
+        container = Container('myproject', THIS_DIR, self.client, **container_options)
+        container.up()
+        assert container._container.config['user.nomad.provisioned'] == 'true'
+        assert container._container.files.get('/dummytest').strip() == b'dummytest'
+
+    @unittest.mock.patch('subprocess.call')
+    def test_can_open_a_shell_for_the_root_user(self, mocked_call, persistent_container):
+        persistent_container.shell()
+        assert mocked_call.call_count == 1
+        assert mocked_call.call_args[0][0] == \
+            'lxc exec {} -- bash'.format(persistent_container.lxd_name)
+
+    @unittest.mock.patch('subprocess.call')
+    def test_can_open_a_shell_for_a_specific_shelluser(self, mocked_call):
+        container_options = {
+            'name': self.containername('dummy'), 'image': 'ubuntu/xenial', 'mode': 'pull',
+            'shell': {'user': 'test', 'home': '/opt', },
+        }
+        container = Container('myproject', THIS_DIR, self.client, **container_options)
+        container.up()
+        container.shell()
+        assert mocked_call.call_count == 1
+        assert mocked_call.call_args[0][0] == \
+            'lxc exec {} --env HOME=/opt -- su -m test'.format(container.lxd_name)
 
     def test_can_tell_if_a_container_exists_or_not(self, persistent_container):
         unkonwn_container = Container('myproject', THIS_DIR, self.client, **{

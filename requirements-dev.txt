@@ -1,5 +1,8 @@
 ipython>=5.1.0
 
+# Provisioners
+ansible>=2.1
+
 # Testing
 codecov>=1.6
 pytest>=3.0
