@@ -1,11 +1,21 @@
-sudo: false
+sudo: required
+dist: trusty
+before_install:
+  - sudo add-apt-repository -y ppa:ubuntu-lxc/lxd-stable
+  - sudo apt-get -qq update
+  - sudo apt-get install -y lxd
+  - sudo lxd init --auto
+  - sudo lxc network create lxdbr0 ipv6.address=none ipv4.address=10.0.3.1/24 ipv4.nat=true
+  - sudo lxc network attach-profile lxdbr0 default eth0
+  - sudo chmod 777 /var/lib/lxd/unix.socket
+  - ssh-keygen -t rsa -b 2048 -f ~/.ssh/id_rsa -P ""
 
 language: python
 
 python:
   - "3.4"
   - "3.5"
-  - "3.6-dev"
+  - "3.6"
 
 script:
   - make travis
