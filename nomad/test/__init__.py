@@ -5,4 +5,5 @@
     or run tests.
 """
 
+from .fixtures import *  # noqa
 from .testcases import *  # noqa

@@ -30,14 +30,20 @@ class LXDTestCase:
     def teardown_class(cls):
         _remove_test_containers()
 
-    @property
-    def client(self):
-        if not hasattr(self, '_client'):
-            self._client = get_client()
-        return self._client
-
     def teardown_method(self, method):
         _remove_test_containers(client=self.client)
 
+    ##################################
+    # UTILITY METHODS AND PROPERTIES #
+    ##################################
+
     def containername(self, name):
+        """ Helper to construct a container name that should be deleted after each test. """
         return TEST_CONTAINER_INJECTED_ID + name
+
+    @property
+    def client(self):
+        """ Returns a client instance to use when running tests requiring a LXD client. """
+        if not hasattr(self, '_client'):
+            self._client = get_client()
+        return self._client
