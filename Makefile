@@ -21,3 +21,6 @@ spec:
 	py.test --spec -p no:sugar
 
 travis: install lint isort coverage
+
+docs:
+	cd docs && rm -rf _build && make html

@@ -1,0 +1,33 @@
+{%- extends "layout.html" %}
+
+{% set title = _("Welcome to LXD-Nomad's documentation!") %}
+
+{% block body %}
+<div class="figure align-center" id="id1">
+  <h1>LXD-Nomad</h1>
+  <p>Build and orchestrate your development environments with <a href="https://www.ubuntu.com/cloud/lxd" target="_blank">LXD</a> - a.k.a. Vagrant is Too Heavy&trade;</p>
+  <a href="{{ pathto("getting_started") }}" class="btn btn-primary" title="Getting started"><span class="fa fa-bolt">&nbsp;Getting started</span></a>
+</div>
+<div class="figure align-center" id="id2">
+  <p>LXD-Nomad is a wrapper around <a href="https://www.ubuntu.com/cloud/lxd" target="_blank">LXD</a> that allows developers to orchestrate their development environment using a worklow similar to Vagrant.</p>
+</div>
+<div class="figure align-center" id="id3">
+  <h2>Why use LXD-Nomad?</h2>
+</div>
+<div class="figure align-center" id="id4">
+  <p><strong>It's fast.</strong> LXD-Nomad is much <em>much</em> faster than a typical Vagrant + Virtualbox setup.</p>
+  <p><strong>Multi-arch.</strong> Vagrant has been designed with Virtualbox and x86 in mind. Even if you use alternative providers, you’re going to have to jump through inelegant hoops to have your Vagrantfile work on x86 and arm (for example) at the same time because the very concept of a Vagrant box is arch-specific.</p>
+  <p><strong>Simpler.</strong> When working with containers, much of the complexity of Vagrant becomes useless. Why the need for special "vagrant-prepared" boxes when <code class="docutils literal"><span class="pre">lxc exec</span></code> is available? It's much simpler to use whatever images are provided directly by LXD. By removing the need to manage boxes, nomad suddenly becomes much simpler (a simple wrapper around lxd, really).</p>
+</div>
+<div class="figure align-center" id="id5">
+  <h2>Features</h2>
+</div>
+<div id="features_wrapper">
+  <div class="feature"><span class="fa fa-cubes">&nbsp;Multi-container</span></div>
+  <div class="feature"><span class="fa fa-gears">&nbsp;Multi-arch</span></div>
+  <div class="feature"><span class="fa fa-bolt">&nbsp;Fast &amp; Intuitive</span></div>
+  <div class="feature"><span class="fa fa-folder">&nbsp;Shared folders</span></div>
+  <div class="feature"><span class="fa fa-linux">&nbsp;Various distributions</span></div>
+  <div class="feature"><span class="fa fa-rocket">&nbsp;Automated provisioning</span></div>
+</div>
+{% endblock body %}
