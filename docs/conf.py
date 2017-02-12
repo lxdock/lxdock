@@ -92,6 +92,7 @@ todo_include_todos = False
 # a list of builtin themes.
 #
 html_theme = 'default'
+html_logo = '_images/nomad_small.png'
 
 if not ON_RTD:  # only import and set the theme if we're building docs locally
     import sphinx_rtd_theme
