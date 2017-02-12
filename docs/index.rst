@@ -3,6 +3,8 @@ Welcome to LXD-Nomad's documentation!
 #####################################
 
 
+.. image:: ./_images/nomad.png
+
 .. toctree::
    :maxdepth: 2
 
