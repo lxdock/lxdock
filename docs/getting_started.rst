@@ -56,8 +56,8 @@ You should now be able to configure your LXD installation using:
 
     $ newgrp lxd
     $ sudo lxd init --auto
-    $ sudo lxc network create lxdbr0 ipv6.address=none ipv4.address=10.0.3.1/24 ipv4.nat=true
-    $ sudo lxc network attach-profile lxdbr0 default eth0
+    $ lxc network create lxdbr0 ipv6.address=none ipv4.address=10.0.3.1/24 ipv4.nat=true
+    $ lxc network attach-profile lxdbr0 default eth0
 
 You can now check if your LXD installation is working using:
 
@@ -72,8 +72,56 @@ You can now check if your LXD installation is working using:
 Install LXD-Nomad
 ~~~~~~~~~~~~~~~~~
 
-Yoi should now be able to install LXD-Nomad using:
+You should now be able to install LXD-Nomad using:
 
 .. code-block:: console
 
   $ pip3 install git+git://github.com/lxd-nomad/lxd-nomad.git
+
+Your first Nomad file
+---------------------
+
+Create a file called ``.nomad.yml`` (or ``nomad.yml``) in your project directory and paste the
+following:
+
+.. code-block:: yaml
+
+  name: myproject
+  mode: pull
+
+  containers:
+    - name: test01
+      image: ubuntu/xenial
+
+    - name: test02
+      image: archlinux
+
+This Nomad file defines a project (``myproject``) and two containers, ``test01`` and ``test02``.
+These containers will be constructed using respectively the ``ubuntu/xenial`` and the ``archlinux``
+images (which will be pulled from an image server - https://images.linuxcontainers.org by default).
+
+Now from your project directory, start up your containers using the following command:
+
+.. code-block:: console
+
+  $ nomad up
+  Bringing container "test01" up
+  Bringing container "test02" up
+  ==> test01: Unable to find container "test01" for directory "[PATH_TO_YOUR_PROJECT]"
+  ==> test01: Creating new container "myproject-test01-11943450" from image ubuntu/xenial
+  ==> test01: Starting container "test01"...
+  ==> test01: No IP yet, waiting 10 seconds...
+  ==> test01: Container "test01" is up! IP: [CONTAINER_IP]
+  ==> test01: Doing bare bone setup on the machine...
+  ==> test01: Adding ssh-rsa [SSH_KEY] to machine's authorized keys
+  ==> test01: Provisioning container "test01"...
+  ==> test02: Unable to find container "test02" for directory "[PATH_TO_YOUR_PROJECT]"
+  ==> test02: Creating new container "myproject-test02-11943450" from image archlinux
+  ==> test02: Starting container "test02"...
+  ==> test02: No IP yet, waiting 10 seconds...
+  ==> test02: Container "test02" is up! IP: [CONTAINER_IP]
+  ==> test02: Doing bare bone setup on the machine...
+  ==> test02: Adding ssh-rsa [SSH_KEY] to machine's authorized keys
+  ==> test02: Provisioning container "test02"...
+
+*Congrats! You're in!*
