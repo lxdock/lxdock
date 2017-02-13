@@ -9,7 +9,9 @@ Welcome to LXD-Nomad's documentation!
    :maxdepth: 2
 
    getting_started
-   user/usage
+   usage/index
+   cli/index
+   conf/index
 
 
 Indices and tables
