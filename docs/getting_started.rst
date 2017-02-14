@@ -67,7 +67,7 @@ You can now check if your LXD installation is working using:
 
 .. note::
 
-  You can use ``lxd stop first-machine`` to stop the previously created container.
+  You can use ``lxc stop first-machine`` to stop the previously created container.
 
 Install LXD-Nomad
 ~~~~~~~~~~~~~~~~~
