@@ -4,7 +4,7 @@ import unittest.mock
 
 import pytest
 
-from nomad.cli.main import main, Nomad
+from nomad.cli.main import Nomad, main
 from nomad.cli.project import get_project
 from nomad.conf.exceptions import ConfigError
 from nomad.container import Container
