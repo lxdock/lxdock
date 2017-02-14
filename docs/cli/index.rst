@@ -23,7 +23,7 @@ for a specifc subcommand. For example:
     -h, --help  show this help message and exit
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 1
 
   destroy
   halt
