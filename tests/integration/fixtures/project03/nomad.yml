@@ -1,0 +1,6 @@
+name: project03
+image: ubuntu/xenial
+mode: pull
+
+containers:
+  - name: nomad-pytest-worker

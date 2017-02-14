@@ -5,10 +5,8 @@ from ..conf import Config
 from ..project import Project
 
 
-def get_project():
+def get_project(base_dir='.'):
     """ Returns a fully functional `Project` instance that will be used by the CLI tools. """
-    base_dir = '.'
-
     # Fetches the config options from the current directory.
     # Note/TODO: this could be improved by adding a parameter allowing to manually set the base dir.
     config = Config.from_base_dir(base_dir)

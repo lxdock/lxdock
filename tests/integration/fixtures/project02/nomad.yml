@@ -1,0 +1,7 @@
+name: project02
+image: ubuntu/xenial
+mode: pull
+
+containers:
+  - name: nomad-pytest-web
+  - name: nomad-pytest-ci
