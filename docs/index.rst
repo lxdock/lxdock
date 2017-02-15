@@ -11,7 +11,7 @@ Welcome to LXD-Nomad's documentation!
    getting_started
    usage/index
    cli/index
-   conf/index
+   conf
 
 
 Indices and tables
