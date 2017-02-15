@@ -16,13 +16,6 @@ def get_ipv4_ip(container):
     return ''
 
 
-def get_default_gateway(client):
-    """ Given a PyLXD client, returns the default gateway of the associaited bridge. """
-    lxdbr0 = client.networks.get('lxdbr0')
-    cidr = lxdbr0.config['ipv4.address']
-    return cidr.split('/')[0]
-
-
 def get_used_ips(client):
     """ Returns the IP addresses that are already used by other containers. """
     result = []
