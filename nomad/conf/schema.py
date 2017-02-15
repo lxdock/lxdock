@@ -1,4 +1,4 @@
-from voluptuous import In, IsDir, Required, Schema, Url
+from voluptuous import All, In, IsDir, Length, Required, Schema, Url
 
 from .validators import Hostname, LXDIdentifier
 
@@ -26,6 +26,11 @@ _top_level_and_containers_common_options = {
         'user': str,
         'home': str,
     },
+    'users': [{
+        # Usernames max length is set 32 characters according to useradd's man page.
+        Required('name'): All(str, Length(max=32)),
+        'home': str,
+    }],
 }
 
 _container_options = {

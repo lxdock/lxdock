@@ -33,18 +33,6 @@ def get_used_ips(client):
     return result
 
 
-def find_free_ip(client):
-    """ Given a PyLXD client, returns a free IP address (and the related gateway). """
-    gateway = get_default_gateway(client)
-    prefix = '.'.join(gateway.split('.')[:-1])
-    used_ips = set(get_used_ips(client))
-    for i in range(1, 256):
-        ip = '%s.%s' % (prefix, i)
-        if ip != gateway and ip not in used_ips:
-            return ip, gateway
-    return None, None
-
-
 RE_ETCHOST_LINE = re.compile(r'^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+([\w\-_.]+)$')
 
 
