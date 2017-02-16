@@ -241,7 +241,7 @@ class Container:
             'Creating new container "{name}" '
             'from image {image}'.format(name=self.lxd_name, image=self.options['image']))
         privileged = self.options.get('privileged', False)
-        mode = self.options.get('mode', 'local')
+        mode = self.options.get('mode', 'pull')
         container_config = {
             'name': self.lxd_name,
             'source': {

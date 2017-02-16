@@ -22,7 +22,6 @@ use the ``debian/jessie`` image for a specific container:
 .. code-block:: yaml
 
   name: myproject
-  mode: pull
   image: ubuntu/xenial
 
   containers:
@@ -43,7 +42,6 @@ access your applications or services.
 .. code-block:: yaml
 
   name: myproject
-  mode: pull
   image: ubuntu/xenial
 
   containers:
@@ -52,3 +50,45 @@ access your applications or services.
         - myapp.local
         - myapp.test
     - name: test02
+
+image
+-----
+
+The ``image`` option should contain the alias of the image you want to use to build your containers.
+LXD-Nomad will try to pull images from the default LXD's image server. So you can get a list of
+supported aliases by visiting https://images.linuxcontainers.org/ or by listing the aliases of the
+"images:" default remote:
+
+.. code-block:: console
+
+  $ lxc image alias list images:
+
+There are many scenarios to consider when you have to choose the value of the ``image`` option. If
+you choose to set your ``image`` option to ``ubuntu/xenial`` this means that the container will use
+the Ubuntu's Xenial version with the same architecture as your host machine (amd64 in most cases).
+It should be noted that the ``image`` value can also contain a container alias that includes the
+targetted architecture (eg. ``debian/jessie/amd64`` or ``ubuntu/xenial/armhf``).
+
+Here is an example:
+
+.. code-block:: yaml
+
+  name: myproject
+  image: ubuntu/xenial
+
+You should note that you can also use "local" container aliases. This is not the most common
+scenario but you can manage your own image aliases and decide to use them with LXD-Nomad. You'll
+need to use the ``mode: local`` option if you decide to do this (the default ``mode`` is ``pull``).
+For example you could create an image associated with the ``old-ubuntu`` alias using:
+
+.. code-block:: console
+
+  $ lxc image copy ubuntu:12.04 local: --alias old-ubuntu
+
+And then use it in your Nomad file as follows:
+
+.. code-block:: yaml
+
+  name: myproject
+  image: old-ubuntu
+  mode: local

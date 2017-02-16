@@ -87,7 +87,6 @@ following:
 .. code-block:: yaml
 
   name: myproject
-  mode: pull
 
   containers:
     - name: test01
