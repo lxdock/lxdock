@@ -16,16 +16,6 @@ def get_ipv4_ip(container):
     return ''
 
 
-def get_used_ips(client):
-    """ Returns the IP addresses that are already used by other containers. """
-    result = []
-    for c in client.containers.all():
-        ip = get_ipv4_ip(c)
-        if ip:
-            result.append(ip)
-    return result
-
-
 RE_ETCHOST_LINE = re.compile(r'^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+([\w\-_.]+)$')
 
 
