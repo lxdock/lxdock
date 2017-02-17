@@ -12,6 +12,7 @@ Welcome to LXD-Nomad's documentation!
    usage/index
    cli/index
    conf
+   glossary
 
 
 Indices and tables

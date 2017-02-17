@@ -32,6 +32,21 @@ use the ``debian/jessie`` image for a specific container:
 
 This section contains a list of all configuration options supported by Nomad files.
 
+containers
+----------
+
+The ``containers`` block allows you to define the containers of your project. It should be a list of
+containers, as follows:
+
+.. code-block:: yaml
+
+  name: myproject
+  image: ubuntu/xenial
+
+  containers:
+    - name: test01
+    - name: test02
+
 hostnames
 ---------
 
@@ -92,3 +107,36 @@ And then use it in your Nomad file as follows:
   name: myproject
   image: old-ubuntu
   mode: local
+
+mode
+----
+
+The ``mode`` option allows you to specify which mode to use in order to retrieve the images that
+will be used to build your containers. Two values are allowed here: ``pull`` (which is the default
+mode for LXD-Nomad) and ``local``. In ``pull`` mode container images will be pulled from an image
+server (https://images.linuxcontainers.org/ by default). The ``local`` mode allows you to use local
+container images (it can be useful if you decide to manage your own image aliases and want to use
+them with LXD-Nomad).
+
+privileged
+----------
+
+You should use the ``privileged`` option if you want to created privileged containers. Containers
+created by LXD-Nomad are unprivileged by default. Such containers are safe by design because the
+root user in the containers doesn't map to the host's root user: it maps to an unprivileged user
+*outside* the container.
+
+Here is an example on how to set up a privileged container in your Nomad file:
+
+.. code-block:: yaml
+
+  name: myproject
+  image: ubuntu/xenial
+
+  containers:
+    - name: web
+      privileged: yes
+
+.. note::
+
+  Please refer to :doc:`glossary`  for more details on these notions.
