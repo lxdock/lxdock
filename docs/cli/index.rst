@@ -4,8 +4,8 @@ Command-line reference
 Most of your interaction with Nomad will be done using the ``nomad`` command. This command provides
 many subcommands: ``up``, ``halt``, ``destroy``, etc. These subcommands are described in the
 following pages but you can easily get help using the ``help`` subcommand. ``nomad help`` will
-display help information for the ``nomad`` command while ``nomad [subcommand]`` will show the help
-for a specifc subcommand. For example:
+display help information for the ``nomad`` command while ``nomad help [subcommand]`` will show the
+help for a specifc subcommand. For example:
 
 .. code-block:: console
 
