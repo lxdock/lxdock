@@ -78,6 +78,15 @@ You should now be able to install LXD-Nomad using:
 
   $ pip3 install git+git://github.com/lxd-nomad/lxd-nomad.git
 
+.. note::
+
+  Don't have ``pip3`` installed on your system? Try this:
+
+  .. code-block:: console
+
+    $ sudo apt-get install curl
+    $ curl https://bootstrap.pypa.io/get-pip.py | sudo python3
+
 Your first Nomad file
 ---------------------
 
