@@ -3,10 +3,8 @@ import logging
 from . import constants
 from .container import Container
 from .exceptions import ProjectError
-from .logging import (
-    console_stderr_handler, console_stdout_handler, get_default_formatter,
-    get_per_container_formatter,
-)
+from .logging import (console_stderr_handler, console_stdout_handler, get_default_formatter,
+                      get_per_container_formatter)
 from .network import ContainerEtcHosts, EtcHosts
 
 logger = logging.getLogger(__name__)
