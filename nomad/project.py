@@ -3,7 +3,10 @@ import logging
 from . import constants
 from .container import Container
 from .exceptions import ProjectError
-from .logging import console_handler, get_default_formatter, get_per_container_formatter
+from .logging import (
+    console_stderr_handler, console_stdout_handler, get_default_formatter,
+    get_per_container_formatter,
+)
 from .network import ContainerEtcHosts, EtcHosts
 
 logger = logging.getLogger(__name__)
@@ -105,10 +108,11 @@ class Project:
     def _containers_generator(self, containers=None):
         containers = containers or self.containers
         for container in containers:
-            console_handler.setFormatter(get_per_container_formatter(container.name))
+            console_stdout_handler.setFormatter(get_per_container_formatter(container.name))
+            console_stderr_handler.setFormatter(get_per_container_formatter(container.name))
             yield container
-        console_handler.setFormatter(get_default_formatter())
-        logger.addHandler(console_handler)
+        console_stdout_handler.setFormatter(get_default_formatter())
+        console_stderr_handler.setFormatter(get_default_formatter())
 
     def _update_guest_etchosts(self):
         """ Updates /etc/hosts on **all** running nomad-managed containers.

@@ -5,11 +5,9 @@ import sys
 from .. import __version__
 from ..conf.exceptions import ConfigError
 from ..exceptions import NomadException
-from ..logging import console_handler
+from ..logging import console_stderr_handler, console_stdout_handler
 
 from .exceptions import CLIError
-from .project import get_project
-from .utils import yesno
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +20,7 @@ class Nomad(object):
 
         # Creates the argument parsers
         parser = argparse.ArgumentParser(
-            description='Orchestrate and run multiple containers using LXD.', prog='LXD-Nomad')
+            description='Orchestrate and run multiple containers using LXD.', prog='nomad')
         parser.add_argument(
             '--version', action='version', version='%(prog)s {v}'.format(v=__version__))
         parser.add_argument('-v', '--verbose', action='store_true')
@@ -30,13 +28,20 @@ class Nomad(object):
 
         subparsers = parser.add_subparsers(dest='action')
 
+        # Creates the 'config' action.
+        self._parsers['config'] = subparsers.add_parser(
+            'config', help='Validate and show the Nomad file.',
+            description='Validate and show the Nomad file of the current project.')
+        self._parsers['config'].add_argument(
+            '--containers', action='store_true', help='Display only container names, one per line.')
+
         # Creates the 'destroy' action.
         self._parsers['destroy'] = subparsers.add_parser(
             'destroy', help='Stop and remove containers.',
             description='Destroy all the containers of a project or destroy specific containers '
                         'if container names are specified.')
         self._parsers['destroy'].add_argument(
-            '-f', '--force', action='store_true', help='Destroy without confirmation')
+            '-f', '--force', action='store_true', help='Destroy without confirmation.')
 
         # Creates the 'halt' action.
         self._parsers['halt'] = subparsers.add_parser(
@@ -92,9 +97,9 @@ class Nomad(object):
 
         # Handles verbosity
         if args.verbose:
-            console_handler.setLevel(logging.DEBUG)
+            console_stdout_handler.setLevel(logging.DEBUG)
         else:
-            console_handler.setLevel(logging.INFO)
+            console_stdout_handler.setLevel(logging.INFO)
 
         try:
             # use dispatch pattern to invoke method with same name
@@ -102,9 +107,20 @@ class Nomad(object):
         except (CLIError, ConfigError, NomadException) as e:
             if e.msg is not None:
                 logger.error(e.msg)
-            sys.exit(1)
+                sys.exit(1)
+
+    def config(self, args):
+        # We have to display the Nomad file here, which can be useful for completion or other
+        # automated operations. In order to speed up things, we'll just manually create our config
+        # object and use it.
+        if args.containers:
+            logger.info('\n'.join([c['name'] for c in self.project_config.containers]))
+            return
+
+        logger.info(self.project_config.serialize())
 
     def destroy(self, args):
+        from .utils import yesno
         # Builds a list of containers by ensuring that these containers are actually associated with
         # the considered project.
         container_names = args.name or [c.name for c in self.project.containers]
@@ -161,15 +177,24 @@ class Nomad(object):
     @property
     def project(self):
         """ Initializes a LXD-Nomad project instance and returns it. """
+        from .project import get_project
         if not hasattr(self, '_project'):
             self._project = get_project()
         return self._project
+
+    @property
+    def project_config(self):
+        from ..conf import Config
+        if not hasattr(self, '_project_config'):
+            self._project_config = Config.from_base_dir()
+        return self._project_config
 
 
 def main():
     # Setup logging
     root_logger = logging.getLogger()
-    root_logger.addHandler(console_handler)
+    root_logger.addHandler(console_stdout_handler)
+    root_logger.addHandler(console_stderr_handler)
     root_logger.setLevel(logging.DEBUG)
     # Disables requests logging
     logging.getLogger('requests').propagate = False

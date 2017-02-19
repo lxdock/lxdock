@@ -1,0 +1,32 @@
+# ZSH completion suppot for LXD-Nomad
+#
+# Provides completion for commands and container names.
+#
+# Installation instructions:
+#   - place this script at /usr/local/share/zsh/site-functions/_nomad
+#   - ensure that .zshrc enables compinit
+#   - restart your shell
+#
+
+_nomad() {
+  typeset -A opt_args
+  local context state line curcontext="$curcontext"
+
+  _arguments : \
+    '--version[Show the version and exit.]' \
+    '--help[Show help and exit.]' \
+    '*::arg:->args' \
+  && return 0
+
+  case "$state" in
+    (args)
+      case $words[1] in
+        (cancel|help|projects|restart|status|stop|sync|tags)
+          _arguments : '--help'
+          ;;
+      esac
+      ;;
+  esac;
+}
+
+_nomad "$@"

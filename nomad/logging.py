@@ -12,6 +12,16 @@ LOG_COLORS = {
 }
 
 
+class _AtMostWarningFilter(logging.Filter):
+    def filter(self, record):
+        return record.levelno < logging.ERROR
+
+
+class _AtleastErrorFilter(logging.Filter):
+    def filter(self, record):
+        return record.levelno >= logging.ERROR
+
+
 def get_default_formatter():
     """ Returns the default formatter used to log messages for nomad. """
     return ColoredFormatter('%(log_color)s%(message)s', log_colors=LOG_COLORS)
@@ -24,5 +34,11 @@ def get_per_container_formatter(container_name):
 
 
 logger = logging.getLogger(__name__)
-console_handler = logging.StreamHandler(sys.stderr)
-console_handler.setFormatter(get_default_formatter())
+
+console_stdout_handler = logging.StreamHandler(sys.stdout)
+console_stdout_handler.addFilter(_AtMostWarningFilter())
+console_stderr_handler = logging.StreamHandler(sys.stderr)
+console_stderr_handler.addFilter(_AtleastErrorFilter())
+
+console_stdout_handler.setFormatter(get_default_formatter())
+console_stderr_handler.setFormatter(get_default_formatter())

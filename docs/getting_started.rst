@@ -87,6 +87,30 @@ You should now be able to install LXD-Nomad using:
     $ sudo apt-get install curl
     $ curl https://bootstrap.pypa.io/get-pip.py | sudo python3
 
+Command line completion
+-----------------------
+
+LXD-Nomad can provide completion for commands and container names.
+
+Bash
+~~~~
+
+If you use Bash, you have to make sure that bash completion is installed (which should be the case
+for most Linux installations). In order to get completion for LXD-Nomad, you should place the
+``contrib/completion/bash/nomad`` file at ``/etc/bash.completion.d/nomad`` (or at any other place
+where your distribution keeps completion files):
+
+.. code-block:: console
+
+  $ sudo cp contrib/completion/bash/nomad /etc/bash.completion.d/nomad
+
+Make sure to restart your shell before trying to use LXD-Nomad's bash completion.
+
+ZSH
+~~~
+
+*Coming soon!*
+
 Your first Nomad file
 ---------------------
 

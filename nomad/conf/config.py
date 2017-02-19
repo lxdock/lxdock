@@ -27,7 +27,7 @@ class Config(object):
         return self._dict[key]
 
     @classmethod
-    def from_base_dir(cls, base_dir):
+    def from_base_dir(cls, base_dir='.'):
         """ Returns a Config instance using a base directory. """
         existing_config_filenames = [
             filename for filename in constants.ALLOWED_FILENAMES
@@ -84,6 +84,10 @@ class Config(object):
             containers = [unique_container_config, ]
 
         self.containers.extend(containers)
+
+    def serialize(self):
+        """ Returns the configuration as a string. """
+        return yaml.dump(self._dict, default_flow_style=False)
 
     def _get_container_config_dict(self, container_dict):
         """ Returns a dictionary containing the container's configuration.

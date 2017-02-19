@@ -1,0 +1,82 @@
+# Bash completion suppot for LXD-Nomad
+#
+# Provides completion for commands and container names.
+#
+# Installation instructions:
+#   - place this script at /etc/bash_completion.d/nomad
+#   - restart your shell
+#
+
+
+__nomad_quiet() {
+  nomad 2>/dev/null "$@"
+}
+
+# Returns all containers names of the project.
+___nomad_container_names() {
+  __nomad_quiet config --containers
+}
+
+_nomad_complete () {
+  local cur cmd commands
+
+  commands='config destroy halt help provision shell status up'
+
+  cur=${COMP_WORDS[COMP_CWORD]}
+  cmd=${COMP_WORDS[1]}
+
+  case ${COMP_CWORD} in
+    1)
+      COMPREPLY=($(compgen -W "$commands" -- "$cur" )) ;;
+    *)
+      case "${cmd}" in
+        config)
+          case "${cur}" in
+            -*)
+              COMPREPLY=($(compgen -W "--containers" -- ${cur})) ;;
+          esac
+          ;;
+        destroy)
+          case "${cur}" in
+            -*)
+              COMPREPLY=($(compgen -W "-f --force" -- ${cur})) ;;
+            *)
+              containers="$(___nomad_container_names)"
+              COMPREPLY=($(compgen -W "$containers" -- ${cur}))
+              ;;
+          esac
+          ;;
+        halt)
+          containers="$(___nomad_container_names)"
+          COMPREPLY=($(compgen -W "$containers" -- ${cur}))
+          ;;
+        help)
+          COMPREPLY=($(compgen -W "$commands" -- "$cur" )) ;;
+        halt)
+          containers="$(___nomad_container_names)"
+          COMPREPLY=($(compgen -W "$containers" -- ${cur}))
+          ;;
+        provision)
+          containers="$(___nomad_container_names)"
+          COMPREPLY=($(compgen -W "$containers" -- ${cur}))
+          ;;
+        shell)
+          containers="$(___nomad_container_names)"
+          COMPREPLY=($(compgen -W "$containers" -- ${cur}))
+          ;;
+        status)
+          containers="$(___nomad_container_names)"
+          COMPREPLY=($(compgen -W "$containers" -- ${cur}))
+          ;;
+        up)
+          containers="$(___nomad_container_names)"
+          COMPREPLY=($(compgen -W "$containers" -- ${cur}))
+          ;;
+      esac
+      ;;
+  esac
+
+  return 0
+}
+
+complete -F _nomad_complete nomad

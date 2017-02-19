@@ -58,3 +58,8 @@ class TestConfig:
                 'privileged': True,
             },
         ]
+
+    def test_can_serialize_the_parsed_config(self):
+        project_dir = os.path.join(FIXTURE_ROOT, 'project01')
+        config = Config.from_base_dir(project_dir)
+        assert config.serialize() == 'image: ubuntu/xenial\nmode: pull\nname: project01\n'

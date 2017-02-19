@@ -25,6 +25,7 @@ help for a specifc subcommand. For example:
 .. toctree::
   :maxdepth: 1
 
+  config
   destroy
   halt
   help

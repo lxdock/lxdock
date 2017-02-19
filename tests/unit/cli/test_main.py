@@ -6,6 +6,7 @@ import pytest
 
 from nomad.cli.main import Nomad, main
 from nomad.cli.project import get_project
+from nomad.conf.config import Config
 from nomad.conf.exceptions import ConfigError
 from nomad.container import Container
 from nomad.exceptions import NomadException
@@ -36,6 +37,31 @@ def test_main_function_can_run_a_nomad_command(mock_help_action, mock_parse_args
 
 
 class TestNomad:
+    @unittest.mock.patch(
+        'argparse.ArgumentParser.parse_args',
+        return_value=_gen_argparse_namespace(action='config', containers=False))
+    @unittest.mock.patch.object(Nomad, 'project_config')
+    @unittest.mock.patch.object(Config, 'serialize')
+    def test_can_display_the_config_file_of_the_project(
+            self, serialize_mock, mock_config, mock_parse_args):
+        mock_config.__get__ = unittest.mock.Mock(
+            return_value=Config.from_base_dir(os.path.join(FIXTURE_ROOT, 'project01')))
+        Nomad()
+        assert serialize_mock.call_count == 1
+
+    @unittest.mock.patch(
+        'argparse.ArgumentParser.parse_args',
+        return_value=_gen_argparse_namespace(action='config', containers=True))
+    @unittest.mock.patch.object(Nomad, 'project_config')
+    @unittest.mock.patch.object(Config, 'serialize')
+    def test_can_display_the_containers_of_the_config_file_of_the_project(
+            self, serialize_mock, mock_config, mock_parse_args):
+        mock_config.__get__ = unittest.mock.Mock(
+            return_value=Config.from_base_dir(os.path.join(FIXTURE_ROOT, 'project01')))
+        n = Nomad()
+        assert serialize_mock.call_count == 0
+        assert n._parsers['main'].parse_args().containers
+
     @unittest.mock.patch(
         'argparse.ArgumentParser.parse_args',
         return_value=_gen_argparse_namespace(action='destroy'))
