@@ -17,6 +17,10 @@ __all__ = ['Guest', ]
 logger = logging.getLogger(__name__)
 
 
+class InvalidGuest(Exception):
+    """ The `Guest` subclass is not valid. """
+
+
 class _GuestBase(type):
     """ Metaclass for all LXD guests.
 
@@ -38,8 +42,8 @@ class _GuestBase(type):
         new_guest = super_new(cls, name, bases, attrs)
 
         # Performs some validation checks.
-        # TODO: some validation rules should be implemented here. Not required now while there is no
-        # plugin system built in nomad.
+        if not new_guest.name:
+            raise InvalidGuest("The 'name' attribute of Guest subclasses cannot be None")
 
         return new_guest
 
@@ -116,7 +120,7 @@ class Guest(with_metaclass(_GuestBase)):
     # METHODS THAT SHOULD BE OVERRIDEN IN GUEST SUBCLASSES #
     ########################################################
 
-    def install_barebones_packages(self):
+    def install_barebones_packages(self):  # pragma: no cover
         """ Installs packages when the guest is first provisionned. """
         # This method should be overriden in `Guest` subclasses.
         self._warn_guest_not_supported('for installing bare bones packages')
@@ -137,6 +141,6 @@ class Guest(with_metaclass(_GuestBase)):
     # PRIVATE METHODS AND PROPERTIES #
     ##################################
 
-    def _warn_guest_not_supported(self, for_msg):
+    def _warn_guest_not_supported(self, for_msg):  # pragma: no cover
         """ Warns the user that a specific operation cannot be performed. """
         logger.warn('Guest not supported {}, doing nothing...'.format(for_msg))
