@@ -1,6 +1,7 @@
 # LXD-Nomad
 
-[![Build Status](https://img.shields.io/travis/lxd-nomad/lxd-nomad.svg?style=flat-square&branch=master)](https://secure.travis-ci.org/lxd-nomad/lxd-nomad?branch=master)
+[![Documentation](https://readthedocs.org/projects/lxd-nomad/badge/?style=flat-square&version=latest)](http://lxd-nomad.readthedocs.io/en/latest/)
+[![Coverage Status](https://img.shields.io/travis/lxd-nomad/lxd-nomad.svg?style=flat-square&branch=master)](https://secure.travis-ci.org/lxd-nomad/lxd-nomad?branch=master)
 [![Build Status](https://img.shields.io/codecov/c/github/lxd-nomad/lxd-nomad.svg?style=flat-square&branch=master)](https://codecov.io/github/lxd-nomad/lxd-nomad)
 
 *LXD-Nomad* is a wrapper around [LXD][lxd] that allows a workflow similar to [Vagrant][vagrant].
