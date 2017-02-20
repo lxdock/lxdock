@@ -118,6 +118,21 @@ server (https://images.linuxcontainers.org/ by default). The ``local`` mode allo
 container images (it can be useful if you decide to manage your own image aliases and want to use
 them with LXD-Nomad).
 
+name
+----
+
+This option can define the name of your project or the name of a container. In either cases, the
+``name`` option is mandatory.
+
+.. code-block:: yaml
+
+  name: myproject
+  image: ubuntu/xenial
+
+  containers:
+    - name: container01
+    - name: container01
+
 privileged
 ----------
 
@@ -140,3 +155,86 @@ Here is an example on how to set up a privileged container in your Nomad file:
 .. note::
 
   Please refer to :doc:`glossary`  for more details on these notions.
+
+protocol
+--------
+
+The ``protocol`` option defines which protocol to use when creating containers. By default LXD-Nomad
+uses the ``simplestreams`` protocol (as the ``lxc`` command do) but you can change this to use the
+``lxd`` protocol if you want. The ``simplestreams`` protocol is an image server description format,
+using JSON to describe a list of images and allowing to get image information and import images.
+The ``lxd`` protocol refers to the REST API that is used between LXD clients and LXD daemons.
+
+provisioning
+------------
+
+The ``provisioning`` option allows you to define how to provision your containers as part of the
+``nomad up`` workflow. This provisioning can also be executed when running ``nomad provision``.
+
+The ``provisioning`` option should define a list of provisioning tools to execute. For example, it
+can be an Ansible playbook to run:
+
+.. code-block:: yaml
+
+  name: myproject
+  image: ubuntu/xenial
+
+  provisioning:
+    - type: ansible
+      playbook: deploy/site.yml
+
+server
+------
+
+You can use this option to define which image server should be used to retrieve container images. By
+default we are using https://images.linuxcontainers.org/.
+
+shares
+------
+
+The ``shares`` option lets you define which folders on your host should be made available to your
+containers (internally this feature uses lxc mounts). The ``shares`` option should define a list
+of shared items. Each shared item should define a ``source`` (a path on your host system) and a
+``dest`` (a destination path on your container filesystem). For example:
+
+.. code-block:: yaml
+
+  name: myproject
+  image: ubuntu/xenial
+
+  shares:
+    - source: /path/to/my/workspace/project/
+      dest: /myshare
+
+shell
+-----
+
+The ``shell`` option allows you to define the user to use when doing a ``nomad shell``. This allows
+you to have a shell for a specific user/home directory when doing ``nomad shell``:
+
+.. code-block:: yaml
+
+  name: myproject
+  image: ubuntu/xenial
+
+  shell:
+    user: myuser
+    home: /opt/myproject
+
+users
+-----
+
+The ``users`` option allows you to define users that should be created by LXD-Nomad after creating a
+container. This can be useful because the users created this way will automatically have read/write
+permissions on shared folders. The ``users`` option should contain a list of users; each with a
+``name`` and optionally a custom ``home`` directory:
+
+.. code-block:: yaml
+
+  name: myproject
+  image: ubuntu/xenial
+
+  users:
+    - name: test01
+    - name: test02
+      home: /opt/test02
