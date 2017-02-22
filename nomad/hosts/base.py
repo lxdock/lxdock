@@ -16,6 +16,10 @@ from ..utils.metaclass import with_metaclass
 __all__ = ['Host', ]
 
 
+class InvalidHost(Exception):
+    """ The `Host` subclass is not valid. """
+
+
 class _HostBase(type):
     """ Metaclass for all LXD hosts.
 
@@ -37,8 +41,8 @@ class _HostBase(type):
         new_host = super_new(cls, name, bases, attrs)
 
         # Performs some validation checks.
-        # TODO: some validation rules should be implemented here. Not required now while there is no
-        # plugin system built in nomad.
+        if not new_host.name:
+            raise InvalidHost("The 'name' attribute of Host subclasses cannot be None")
 
         return new_host
 
@@ -71,16 +75,16 @@ class Host(with_metaclass(_HostBase)):
         self.lxd_container = lxd_container
 
     @classmethod
-    def detect(cls, lxd_container):
+    def detect(cls):
         """ Detects if the host is an "instance" of the considered OS/distribution. """
-        return cls.name.lower() in platform.platform()
+        return cls.name.lower() in platform.platform().lower()
 
     def get_ssh_pubkey(self):
         """ Returns the SSH public key of the current user or None if it cannot be found. """
         pubkey_path = Path(os.path.expanduser('~/.ssh/id_rsa.pub'))
         try:
             return pubkey_path.open().read()
-        except FileNotFoundError:
+        except FileNotFoundError:  # pragma: no cover
             pass
 
     def give_current_user_access_to_share(self, source):
