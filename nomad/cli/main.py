@@ -184,6 +184,7 @@ class Nomad(object):
 
     @property
     def project_config(self):
+        """ Initializes a `Config` instance and returns it. """
         from ..conf import Config
         if not hasattr(self, '_project_config'):
             self._project_config = Config.from_base_dir()

@@ -299,3 +299,26 @@ class TestNomad:
         mock_project.__get__ = unittest.mock.Mock(side_effect=NomadException(msg='TEST'))
         with pytest.raises(SystemExit):
             Nomad()
+
+    @unittest.mock.patch(
+        'argparse.ArgumentParser.parse_args',
+        return_value=_gen_argparse_namespace(action='config', containers=False))
+    @unittest.mock.patch.object(Config, 'from_base_dir')
+    def test_project_config_property_works(
+            self, from_base_dir_mock, mock_parse_args):
+        n = Nomad()
+        config1, config2 = n.project_config, n.project_config
+        assert config1 == config2
+        assert from_base_dir_mock.call_count == 1
+
+    @unittest.mock.patch(
+        'argparse.ArgumentParser.parse_args',
+        return_value=_gen_argparse_namespace(action='config', containers=False))
+    @unittest.mock.patch.object(Config, 'from_base_dir')
+    @unittest.mock.patch.object(Project, 'from_config')
+    def test_project_property_works(
+            self, from_config_mock, from_base_dir_mock, mock_parse_args):
+        n = Nomad()
+        project1, project2 = n.project, n.project
+        assert project1 == project2
+        assert from_config_mock.call_count == 1
