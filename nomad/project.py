@@ -54,7 +54,7 @@ class Project:
         for container in self._containers_generator(containers=containers):
             container.provision()
 
-    def shell(self, container_name=None):
+    def shell(self, container_name=None, **kwargs):
         """ Opens a new shell in our first container. """
         containers = [self.get_container_by_name(container_name)] if container_name \
             else self.containers
@@ -63,7 +63,7 @@ class Project:
                 'This action requires a container name to be specified because {count} '
                 'containers are defined in this project.'.format(count=len(self.containers)))
         for container in self._containers_generator(containers=containers):
-            container.shell()
+            container.shell(**kwargs)
 
     def status(self, container_names=None):
         """ Shows the statuses of the containers of the project. """

@@ -97,15 +97,15 @@ class Container:
         self._container.save(wait=True)
 
     @must_be_running
-    def shell(self):
+    def shell(self, username=None):
         """ Opens a new interactive shell in the container. """
         # For now, it's much easier to call `lxc`, but eventually, we might want to contribute
         # to pylxd so it supports `interactive = True` in `exec()`.
         shellcfg = self.options.get('shell', {})
-        shelluser = shellcfg.get('user')
+        shelluser = username or shellcfg.get('user')
         if shelluser:
             # This part is the result of quite a bit of `su` args trial-and-error.
-            shellhome = shellcfg.get('home')
+            shellhome = shellcfg.get('home') if not username else None
             homearg = '--env HOME={}'.format(shellhome) if shellhome else ''
             cmd = 'lxc exec {} {} -- su -m {}'.format(self.lxd_name, homearg, shelluser)
             subprocess.call(cmd, shell=True)

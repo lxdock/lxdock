@@ -23,6 +23,7 @@ def _gen_argparse_namespace(**kwargs):
         'name': None,
         'subcommand': None,
         'verbose': False,
+        'username': None,
     }
     default_options.update(kwargs)
     return argparse.Namespace(**default_options)
@@ -203,7 +204,7 @@ class TestNomad:
             return_value=get_project(os.path.join(FIXTURE_ROOT, 'project01')))
         Nomad()
         assert mock_project_shell.call_count == 1
-        assert mock_project_shell.call_args == [{'container_name': None, }, ]
+        assert mock_project_shell.call_args == [{'container_name': None, 'username': None}, ]
 
     @unittest.mock.patch(
         'argparse.ArgumentParser.parse_args',
@@ -216,7 +217,20 @@ class TestNomad:
             return_value=get_project(os.path.join(FIXTURE_ROOT, 'project01')))
         Nomad()
         assert mock_project_shell.call_count == 1
-        assert mock_project_shell.call_args == [{'container_name': ['c1', ], }, ]
+        assert mock_project_shell.call_args == [{'container_name': ['c1', ], 'username': None}, ]
+
+    @unittest.mock.patch(
+        'argparse.ArgumentParser.parse_args',
+        return_value=_gen_argparse_namespace(action='shell', username='foobar'))
+    @unittest.mock.patch.object(Nomad, 'project')
+    @unittest.mock.patch.object(Project, 'shell')
+    def test_can_run_the_shell_action_for_a_specific_user(
+            self, mock_project_shell, mock_project, mock_parse_args):
+        mock_project.__get__ = unittest.mock.Mock(
+            return_value=get_project(os.path.join(FIXTURE_ROOT, 'project01')))
+        Nomad()
+        assert mock_project_shell.call_count == 1
+        assert mock_project_shell.call_args == [{'container_name': None, 'username': 'foobar'}, ]
 
     @unittest.mock.patch(
         'argparse.ArgumentParser.parse_args',

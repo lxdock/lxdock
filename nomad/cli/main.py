@@ -67,6 +67,8 @@ class Nomad(object):
             'shell', help='Open a shell in a container.',
             description='Open an interactive shell inside a specific container.')
         self._parsers['shell'].add_argument('name', nargs='?', help='Container name.')
+        self._parsers['shell'].add_argument(
+            '-u', '--username', help='Username to login as.')
 
         # Creates the 'status' action.
         self._parsers['status'] = subparsers.add_parser(
@@ -162,7 +164,7 @@ class Nomad(object):
         self.project.provision(container_names=args.name)
 
     def shell(self, args):
-        self.project.shell(container_name=args.name)
+        self.project.shell(container_name=args.name, username=args.username)
 
     def status(self, args):
         self.project.status(container_names=args.name)
