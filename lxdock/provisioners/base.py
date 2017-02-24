@@ -10,6 +10,10 @@ from ..utils.metaclass import with_metaclass
 __all__ = ['Provisioner', ]
 
 
+class InvalidProvisioner(Exception):
+    """ The `Provisioner` subclass is not valid. """
+
+
 class _ProvisionerBase(type):
     """ Metaclass for all LXDock provisioners.
 
@@ -32,8 +36,9 @@ class _ProvisionerBase(type):
         new_provisioner = super_new(cls, name, bases, attrs)
 
         # Performs some validation checks.
-        # TODO: some validation rules should be implemented here. Not required now while there is no
-        # plugin system built in lxdock.
+        if not new_provisioner.name:
+            raise InvalidProvisioner(
+                "The 'name' attribute of Provisioner subclasses cannot be None")
 
         return new_provisioner
 
