@@ -404,11 +404,6 @@ class Container:
         return self._container_guest
 
     @property
-    def _has_static_ip(self):
-        """ Returns a boolean indicating if the container has a static IP. """
-        return self._container.config.get('user.lxdock.static_ip') == 'true'
-
-    @property
     def _host(self):
         """ Returns the `Host` instance associated with the considered host.
 
