@@ -1,23 +1,23 @@
-# Bash completion suppot for LXD-Nomad
+# Bash completion suppot for LXDock
 #
 # Provides completion for commands and container names.
 #
 # Installation instructions:
-#   - place this script at /etc/bash_completion.d/nomad
+#   - place this script at /etc/bash_completion.d/lxdock
 #   - restart your shell
 #
 
 
-__nomad_quiet() {
-  nomad 2>/dev/null "$@"
+__lxdock_quiet() {
+  lxdock 2>/dev/null "$@"
 }
 
 # Returns all containers names of the project.
-___nomad_container_names() {
-  __nomad_quiet config --containers
+___lxdock_container_names() {
+  __lxdock_quiet config --containers
 }
 
-_nomad_complete () {
+_lxdock_complete () {
   local cur cmd commands
 
   commands='config destroy halt help provision shell status up'
@@ -41,35 +41,35 @@ _nomad_complete () {
             -*)
               COMPREPLY=($(compgen -W "-f --force" -- ${cur})) ;;
             *)
-              containers="$(___nomad_container_names)"
+              containers="$(___lxdock_container_names)"
               COMPREPLY=($(compgen -W "$containers" -- ${cur}))
               ;;
           esac
           ;;
         halt)
-          containers="$(___nomad_container_names)"
+          containers="$(___lxdock_container_names)"
           COMPREPLY=($(compgen -W "$containers" -- ${cur}))
           ;;
         help)
           COMPREPLY=($(compgen -W "$commands" -- "$cur" )) ;;
         halt)
-          containers="$(___nomad_container_names)"
+          containers="$(___lxdock_container_names)"
           COMPREPLY=($(compgen -W "$containers" -- ${cur}))
           ;;
         provision)
-          containers="$(___nomad_container_names)"
+          containers="$(___lxdock_container_names)"
           COMPREPLY=($(compgen -W "$containers" -- ${cur}))
           ;;
         shell)
-          containers="$(___nomad_container_names)"
+          containers="$(___lxdock_container_names)"
           COMPREPLY=($(compgen -W "$containers" -- ${cur}))
           ;;
         status)
-          containers="$(___nomad_container_names)"
+          containers="$(___lxdock_container_names)"
           COMPREPLY=($(compgen -W "$containers" -- ${cur}))
           ;;
         up)
-          containers="$(___nomad_container_names)"
+          containers="$(___lxdock_container_names)"
           COMPREPLY=($(compgen -W "$containers" -- ${cur}))
           ;;
       esac
@@ -79,4 +79,4 @@ _nomad_complete () {
   return 0
 }
 
-complete -F _nomad_complete nomad
+complete -F _lxdock_complete lxdock

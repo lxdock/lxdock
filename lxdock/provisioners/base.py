@@ -2,7 +2,7 @@
     Base provisioner
     ================
     This module provides the `Provisioner` base class that is used to define the provisioners
-    supported by LXD-Nomad (eg. Ansible, ...).
+    supported by LXDock (eg. Ansible, ...).
 """
 
 from ..utils.metaclass import with_metaclass
@@ -11,7 +11,7 @@ __all__ = ['Provisioner', ]
 
 
 class _ProvisionerBase(type):
-    """ Metaclass for all LXD-Nomad provisioners.
+    """ Metaclass for all LXDock provisioners.
 
     This metaclass ensures that all defined `Provisioner` subclasses have the required attributes
     and proceeds to some validation checks. Additionally it implements the "plugin mount" paradigm
@@ -33,7 +33,7 @@ class _ProvisionerBase(type):
 
         # Performs some validation checks.
         # TODO: some validation rules should be implemented here. Not required now while there is no
-        # plugin system built in nomad.
+        # plugin system built in lxdock.
 
         return new_provisioner
 

@@ -1,7 +1,7 @@
 import pytest
 from voluptuous.error import ValueInvalid
 
-from nomad.conf.validators import Hostname, LXDIdentifier
+from lxdock.conf.validators import Hostname, LXDIdentifier
 
 
 class TestHostnameValidator:

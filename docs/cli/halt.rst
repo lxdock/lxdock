@@ -1,7 +1,7 @@
-nomad halt
-==========
+lxdock halt
+===========
 
-**Command:** ``nomad halt [name [name ...]]``
+**Command:** ``lxdock halt [name [name ...]]``
 
 This command can be used to halt running containers.
 
@@ -18,6 +18,6 @@ Examples
 
 .. code-block:: console
 
-  $ nomad halt               # halts all the containers of the project
-  $ nomad halt mycontainer   # halts the "mycontainer" container
-  $ nomad halt web ci        # halts the "web" and "ci" containers
+  $ lxdock halt               # halts all the containers of the project
+  $ lxdock halt mycontainer   # halts the "mycontainer" container
+  $ lxdock halt web ci        # halts the "web" and "ci" containers

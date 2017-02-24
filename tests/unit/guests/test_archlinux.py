@@ -1,6 +1,6 @@
 import unittest.mock
 
-from nomad.guests import ArchLinuxGuest
+from lxdock.guests import ArchLinuxGuest
 
 
 class TestArchLinuxGuest:

@@ -1,6 +1,6 @@
 import unittest.mock
 
-from nomad.guests import DebianGuest
+from lxdock.guests import DebianGuest
 
 
 class TestDebianGuest:

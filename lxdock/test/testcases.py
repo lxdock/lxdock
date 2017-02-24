@@ -1,17 +1,17 @@
 """
-    LXD-Nomad specific testcases & test wrappers
-    ============================================
+    LXDock specific testcases & test wrappers
+    =========================================
     This module provides testcase classes that can be used to perform common operations before or
     after test execution.
 """
 
-from nomad import constants
-from nomad.client import get_client
+from .. import constants
+from ..client import get_client
 
 __all__ = ['LXDTestCase', ]
 
 
-TEST_CONTAINER_INJECTED_ID = 'nomad-pytest-'
+TEST_CONTAINER_INJECTED_ID = 'lxdock-pytest-'
 
 
 def _remove_test_containers(client=None):

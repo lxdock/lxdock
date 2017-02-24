@@ -2,7 +2,7 @@
     Base guest
     ==========
     This module provides the `Guest` base class that is used to define the guest OS or distributions
-    supported by LXD-Nomad (eg. debian, ...).
+    supported by LXDock (eg. debian, ...).
 """
 
 import logging

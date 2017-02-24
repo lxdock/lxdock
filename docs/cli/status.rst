@@ -1,7 +1,7 @@
-nomad status
-============
+lxdock status
+=============
 
-**Command:** ``nomad status [name [name ...]]``
+**Command:** ``lxdock status [name [name ...]]``
 
 This command can be used to show the statuses of the containers of your project.
 
@@ -19,6 +19,6 @@ Examples
 
 .. code-block:: console
 
-  $ nomad status               # shows the statuses of all the containers of the project
-  $ nomad status mycontainer   # shows the status of the "mycontainer" container
-  $ nomad status web ci        # shows the statuses of the "web" and "ci" containers
+  $ lxdock status               # shows the statuses of all the containers of the project
+  $ lxdock status mycontainer   # shows the status of the "mycontainer" container
+  $ lxdock status web ci        # shows the statuses of the "web" and "ci" containers

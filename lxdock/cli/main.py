@@ -4,7 +4,7 @@ import sys
 
 from .. import __version__
 from ..conf.exceptions import ConfigError
-from ..exceptions import NomadException
+from ..exceptions import LXDockException
 from ..logging import console_stderr_handler, console_stdout_handler
 
 from .exceptions import CLIError
@@ -12,15 +12,15 @@ from .exceptions import CLIError
 logger = logging.getLogger(__name__)
 
 
-class Nomad(object):
-    """ Wrapper around the LXD-Nomad argument parser and the related actions. """
+class LXDock(object):
+    """ Wrapper around the LXDock argument parser and the related actions. """
 
     def __init__(self):
         self._parsers = {}
 
         # Creates the argument parsers
         parser = argparse.ArgumentParser(
-            description='Orchestrate and run multiple containers using LXD.', prog='nomad')
+            description='Orchestrate and run multiple containers using LXD.', prog='lxdock')
         parser.add_argument(
             '--version', action='version', version='%(prog)s {v}'.format(v=__version__))
         parser.add_argument('-v', '--verbose', action='store_true')
@@ -30,8 +30,8 @@ class Nomad(object):
 
         # Creates the 'config' action.
         self._parsers['config'] = subparsers.add_parser(
-            'config', help='Validate and show the Nomad file.',
-            description='Validate and show the Nomad file of the current project.')
+            'config', help='Validate and show the LXDock file.',
+            description='Validate and show the LXDock file of the current project.')
         self._parsers['config'].add_argument(
             '--containers', action='store_true', help='Display only container names, one per line.')
 
@@ -80,7 +80,7 @@ class Nomad(object):
         self._parsers['up'] = subparsers.add_parser(
             'up', help='Create, start and provision containers.',
             description='Create, start and provision all the containers of the project according '
-                        'to your nomad file. If container names are specified, only the related '
+                        'to your LXDock file. If container names are specified, only the related '
                         'containers are created, started and provisioned.')
 
         # Add common arguments to the action parsers that can be used with one or more specific
@@ -106,13 +106,13 @@ class Nomad(object):
         try:
             # use dispatch pattern to invoke method with same name
             getattr(self, args.action)(args)
-        except (CLIError, ConfigError, NomadException) as e:
+        except (CLIError, ConfigError, LXDockException) as e:
             if e.msg is not None:
                 logger.error(e.msg)
                 sys.exit(1)
 
     def config(self, args):
-        # We have to display the Nomad file here, which can be useful for completion or other
+        # We have to display the LXDock file here, which can be useful for completion or other
         # automated operations. In order to speed up things, we'll just manually create our config
         # object and use it.
         if args.containers:
@@ -178,7 +178,7 @@ class Nomad(object):
 
     @property
     def project(self):
-        """ Initializes a LXD-Nomad project instance and returns it. """
+        """ Initializes a LXDock project instance and returns it. """
         from .project import get_project
         if not hasattr(self, '_project'):
             self._project = get_project()
@@ -203,5 +203,5 @@ def main():
     logging.getLogger('requests').propagate = False
     logging.getLogger('ws4py').propagate = False
 
-    # Run the Nomad orchestration tool!
-    Nomad()
+    # Run the LXDock orchestration tool!
+    LXDock()

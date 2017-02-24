@@ -1,19 +1,19 @@
 Command-line reference
 ======================
 
-Most of your interaction with Nomad will be done using the ``nomad`` command. This command provides
+Most of your interaction with LXDock will be done using the ``lxdock`` command. This command provides
 many subcommands: ``up``, ``halt``, ``destroy``, etc. These subcommands are described in the
-following pages but you can easily get help using the ``help`` subcommand. ``nomad help`` will
-display help information for the ``nomad`` command while ``nomad help [subcommand]`` will show the
+following pages but you can easily get help using the ``help`` subcommand. ``lxdock help`` will
+display help information for the ``lxdock`` command while ``lxdock help [subcommand]`` will show the
 help for a specifc subcommand. For example:
 
 .. code-block:: console
 
-  $ nomad help up
-  usage: LXD-Nomad up [-h] [name [name ...]]
+  $ lxdock help up
+  usage: lxdock up [-h] [name [name ...]]
 
   Create, start and provision all the containers of the project according to
-  your nomad file. If container names are specified, only the related containers
+  your LXDock file. If container names are specified, only the related containers
   are created, started and provisioned.
 
   positional arguments:

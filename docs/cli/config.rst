@@ -1,9 +1,9 @@
-nomad config
-============
+lxdock config
+=============
 
-**Command:** ``nomad config``
+**Command:** ``lxdock config``
 
-This command can be used to validate and print the Nomad config file of the project.
+This command can be used to validate and print the LXDock config file of the project.
 
 Options
 -------
@@ -15,5 +15,5 @@ Examples
 
 .. code-block:: console
 
-  $ nomad config                 # prints project's Nomad file
-  $ nomad config --containers    # prints project's container names
+  $ lxdock config                 # prints project's LXDock file
+  $ lxdock config --containers    # prints project's container names

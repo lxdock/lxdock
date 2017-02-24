@@ -1,6 +1,6 @@
 """
-    LXD-Nomad test tools
-    ====================
+    LXDock test tools
+    =================
     This package provide test tools such as testcases, fixtures or helpers that can be used to setup
     or run tests.
 """

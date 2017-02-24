@@ -2,7 +2,7 @@ Glossary
 ========
 
 This is a comprehensive list of the terms used when discussing the functionalities and the
-configuration options of LXD-Nomad.
+configuration options of LXDock.
 
 .. glossary::
     :sorted:

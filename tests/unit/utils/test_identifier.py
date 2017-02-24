@@ -1,6 +1,6 @@
 import os
 
-from nomad.utils.identifier import folderid
+from lxdock.utils.identifier import folderid
 
 
 def test_folderid_helper_returns_an_identifier_based_on_inode_numbers():

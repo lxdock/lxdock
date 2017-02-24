@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from nomad.hosts import Host
-from nomad.hosts.base import InvalidHost
+from lxdock.hosts import Host
+from lxdock.hosts.base import InvalidHost
 
 
 class TestGuest:

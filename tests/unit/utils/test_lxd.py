@@ -1,6 +1,6 @@
 from test.support import EnvironmentVarGuard
 
-from nomad.utils.lxd import get_lxd_dir
+from lxdock.utils.lxd import get_lxd_dir
 
 
 def test_get_lxd_helper_can_return_the_lxd_base_directory():

@@ -29,7 +29,7 @@ def must_be_running(method):
 
 
 class Container:
-    """ Represents a specific container that is managed by LXD-Nomad. """
+    """ Represents a specific container that is managed by LXDock. """
 
     # The default image server that will be used to pull images in "pull" mode.
     _default_image_server = 'https://images.linuxcontainers.org'
@@ -93,7 +93,7 @@ class Container:
                 logger.info('Provisioning with {0}'.format(provisioning_item['type']))
                 provisioner.provision()
 
-        self._container.config['user.nomad.provisioned'] = 'true'
+        self._container.config['user.lxdock.provisioned'] = 'true'
         self._container.save(wait=True)
 
     @must_be_running
@@ -169,7 +169,7 @@ class Container:
     @property
     def is_provisioned(self):
         """ Returns a boolean indicating if the container is provisioned. """
-        return self._container.config.get('user.nomad.provisioned') == 'true'
+        return self._container.config.get('user.lxdock.provisioned') == 'true'
 
     @property
     def is_running(self):
@@ -265,8 +265,8 @@ class Container:
             },
             'config': {
                 'security.privileged': 'true' if privileged else 'false',
-                'user.nomad.made': '1',
-                'user.nomad.homedir': self.homedir,
+                'user.lxdock.made': '1',
+                'user.lxdock.homedir': self.homedir,
             },
         }
         try:
@@ -325,10 +325,11 @@ class Container:
         container = self._container
 
         # First, let's make an inventory of shared sources that were already there.
-        existing_shares = {k: d for k, d in container.devices.items() if k.startswith('nomadshare')}
+        existing_shares = {
+            k: d for k, d in container.devices.items() if k.startswith('lxdockshare')}
         existing_sources = {d['source'] for d in existing_shares.values()}
 
-        # Let's get rid of previously set up nomad shares.
+        # Let's get rid of previously set up lxdock shares.
         for k in existing_shares:
             del container.devices[k]
 
@@ -341,14 +342,14 @@ class Container:
                     # We are considering a safe container. So give the mapped root user permissions
                     # to read/write contents in the shared folders too.
                     self._host.give_mapped_user_access_to_share(source)
-                    # We also give these permissions to any user that was created with LXD-Nomad.
+                    # We also give these permissions to any user that was created with LXDock.
                     for uconfig in self.options.get('users', []):
                         username = uconfig.get('name')
                         self._host.give_mapped_user_access_to_share(
                             source, userpath=uconfig.get('home', '/home/' + username))
 
             shareconf = {'type': 'disk', 'source': source, 'path': share['dest'], }
-            container.devices['nomadshare%s' % i] = shareconf
+            container.devices['lxdockshare%s' % i] = shareconf
         container.save(wait=True)
 
     def _setup_users(self):
@@ -405,7 +406,7 @@ class Container:
     @property
     def _has_static_ip(self):
         """ Returns a boolean indicating if the container has a static IP. """
-        return self._container.config.get('user.nomad.static_ip') == 'true'
+        return self._container.config.get('user.lxdock.static_ip') == 'true'
 
     @property
     def _host(self):

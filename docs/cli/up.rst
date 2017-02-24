@@ -1,7 +1,7 @@
-nomad up
-========
+lxdock up
+=========
 
-**Command:** ``nomad up [name [name ...]]``
+**Command:** ``lxdock up [name [name ...]]``
 
 This command can be used to start the containers of your project.
 
@@ -19,6 +19,6 @@ Examples
 
 .. code-block:: console
 
-  $ nomad up               # starts the containers of the project
-  $ nomad up mycontainer   # starts the "mycontainer" container
-  $ nomad up web ci        # starts the "web" and "ci" containers
+  $ lxdock up               # starts the containers of the project
+  $ lxdock up mycontainer   # starts the "mycontainer" container
+  $ lxdock up web ci        # starts the "web" and "ci" containers

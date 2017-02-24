@@ -1,9 +1,9 @@
-#####################################
-Welcome to LXD-Nomad's documentation!
-#####################################
+##################################
+Welcome to LXDock's documentation!
+##################################
 
 
-.. image:: ./_images/nomad.png
+.. image:: ./_images/lxdock.png
 
 .. toctree::
    :maxdepth: 2

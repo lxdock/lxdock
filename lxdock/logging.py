@@ -23,7 +23,7 @@ class _AtleastErrorFilter(logging.Filter):
 
 
 def get_default_formatter():
-    """ Returns the default formatter used to log messages for nomad. """
+    """ Returns the default formatter used to log messages for LXDock. """
     return ColoredFormatter('%(log_color)s%(message)s', log_colors=LOG_COLORS)
 
 

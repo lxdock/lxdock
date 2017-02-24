@@ -23,48 +23,48 @@ class EtcHostsBase:
     def __init__(self, etchosts_fp):
         self.lines = etchosts_fp.readlines()
         self.changed = False
-        self.nomad_bindings = {}
-        self.nomad_section_begin = None
-        self.nomad_section_end = None
+        self.lxdock_bindings = {}
+        self.lxdock_section_begin = None
+        self.lxdock_section_end = None
         for i, line in enumerate(self.lines):
-            if self.nomad_section_begin is None:
-                if line.startswith('# BEGIN LXD-Nomad section'):
-                    self.nomad_section_begin = i
-            elif self.nomad_section_end is None:
-                if line.startswith('# END LXD-Nomad section'):
-                    self.nomad_section_end = i
+            if self.lxdock_section_begin is None:
+                if line.startswith('# BEGIN LXDock section'):
+                    self.lxdock_section_begin = i
+            elif self.lxdock_section_end is None:
+                if line.startswith('# END LXDock section'):
+                    self.lxdock_section_end = i
                 else:
                     m = RE_ETCHOST_LINE.match(line.strip())
                     if m:
-                        self.nomad_bindings[m.group(2)] = m.group(1)
+                        self.lxdock_bindings[m.group(2)] = m.group(1)
             else:
                 break
 
     def ensure_binding_present(self, hostname, target_ip):
-        if self.nomad_bindings.get(hostname) != target_ip:
-            self.nomad_bindings[hostname] = target_ip
+        if self.lxdock_bindings.get(hostname) != target_ip:
+            self.lxdock_bindings[hostname] = target_ip
             self.changed = True
 
     def ensure_binding_absent(self, hostname):
-        if hostname in self.nomad_bindings:
-            del self.nomad_bindings[hostname]
+        if hostname in self.lxdock_bindings:
+            del self.lxdock_bindings[hostname]
             self.changed = True
 
     def get_mangled_contents(self):
         tosave = self.lines[:]
-        if self.nomad_bindings:
-            toinsert = ['# BEGIN LXD-Nomad section\n']
-            toinsert += ['{} {}\n'.format(ip, host) for host, ip in self.nomad_bindings.items()]
-            toinsert.append('# END LXD-Nomad section\n')
+        if self.lxdock_bindings:
+            toinsert = ['# BEGIN LXDock section\n']
+            toinsert += ['{} {}\n'.format(ip, host) for host, ip in self.lxdock_bindings.items()]
+            toinsert.append('# END LXDock section\n')
         else:
             toinsert = []
-        if self.nomad_section_begin is not None:
-            # Replace the current nomad section with our new hosts
-            begin = self.nomad_section_begin
-            end = self.nomad_section_end + 1 if self.nomad_section_end is not None else None
+        if self.lxdock_section_begin is not None:
+            # Replace the current lxdock section with our new hosts
+            begin = self.lxdock_section_begin
+            end = self.lxdock_section_end + 1 if self.lxdock_section_end is not None else None
             tosave[begin:end] = toinsert
         else:
-            # Append a new nomad section at the end of the file
+            # Append a new lxdock section at the end of the file
             tosave += toinsert
         return tosave
 

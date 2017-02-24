@@ -1,16 +1,16 @@
 {%- extends "layout.html" %}
 
-{% set title = _("Welcome to LXD-Nomad's documentation!") %}
+{% set title = _("Welcome to LXDock's documentation!") %}
 
 {% block body %}
 <div class="figure align-center" id="id1">
-  <h1>LXD-Nomad</h1>
+  <h1>LXDock</h1>
   <p>Build and orchestrate your development environments with <a href="https://www.ubuntu.com/cloud/lxd" target="_blank">LXD</a> - a.k.a. Vagrant is Too Heavy&trade;</p>
-  <p class="align-center"><img src="_images/nomad.png" alt="" /><br /><br /></p>
+  <p class="align-center"><img src="_images/lxdock.png" alt="" /><br /><br /></p>
   <p class="align-center"><a href="{{ pathto("getting_started") }}" class="btn btn-primary" title="Getting started"><span class="fa fa-bolt">&nbsp;Getting started</span></a></p>
 </div>
 <div class="figure align-center" id="id2">
-  <p>LXD-Nomad is a wrapper around <a href="https://www.ubuntu.com/cloud/lxd" target="_blank">LXD</a> that allows developers to orchestrate their development environments using a worklow similar to Vagrant.</p>
+  <p>LXDock is a wrapper around <a href="https://www.ubuntu.com/cloud/lxd" target="_blank">LXD</a> that allows developers to orchestrate their development environments using a worklow similar to Vagrant.</p>
 </div>
 <div class="figure align-center" id="id3">
   <h2>Features</h2>
@@ -24,11 +24,11 @@
   <div class="feature"><span class="fa fa-rocket">&nbsp;Automated provisioning</span></div>
 </div>
 <div class="figure align-center" id="id5">
-  <h2>Why use LXD-Nomad?</h2>
+  <h2>Why use LXDock?</h2>
 </div>
 <div class="figure align-center" id="id6">
-  <p><strong>It's fast.</strong> LXD-Nomad is much <em>much</em> faster than a typical Vagrant + Virtualbox setup.</p>
+  <p><strong>It's fast.</strong> LXDock is much <em>much</em> faster than a typical Vagrant + Virtualbox setup.</p>
   <p><strong>Multi-arch.</strong> Vagrant has been designed with Virtualbox and x86 in mind. Even if you use alternative providers, you’re going to have to jump through inelegant hoops to have your Vagrantfile work on x86 and arm (for example) at the same time because the very concept of a Vagrant box is arch-specific.</p>
-  <p><strong>Simpler.</strong> When working with containers, much of the complexity of Vagrant becomes useless. Why the need for special "vagrant-prepared" boxes when <code class="docutils literal"><span class="pre">lxc exec</span></code> is available? It's much simpler to use whatever images are provided directly by LXD. By removing the need to manage boxes, nomad suddenly becomes much simpler (a simple wrapper around lxd, really).</p>
+  <p><strong>Simpler.</strong> When working with containers, much of the complexity of Vagrant becomes useless. Why the need for special "vagrant-prepared" boxes when <code class="docutils literal"><span class="pre">lxc exec</span></code> is available? It's much simpler to use whatever images are provided directly by LXD. By removing the need to manage boxes, LXDock suddenly becomes much simpler (a simple wrapper around lxd, really).</p>
 </div>
 {% endblock body %}

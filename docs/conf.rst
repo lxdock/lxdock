@@ -1,22 +1,22 @@
-Nomad file reference
-====================
+LXDock file reference
+=====================
 
-Nomad files allow you to defines which containers should be created for your projects. Nomad files
-are YML_ files and should define basic information allowing LXD-Nomad to properly create your
-containers (eg. container names, images, ...). By default LXD-Nomad will try to use a file located
-at ``./.nomad.yml``.
+LXDock files allow you to defines which containers should be created for your projects. LXDock files
+are YML_ files and should define basic information allowing LXDock to properly create your
+containers (eg. container names, images, ...). By default LXDock will try to use a file located
+at ``./.lxdock.yml``.
 
 .. _YML: http://yaml.org/
 
 .. note::
 
-  LXD-Nomad supports the following names for Nomad files: ``.nomad.yml``, ``nomad.yml``,
-  ``.nomad.yaml`` and ``nomad.yaml``.
+  LXDock supports the following names for LXDock files: ``.lxdock.yml``, ``lxdock.yml``,
+  ``.lxdock.yaml`` and ``lxdock.yaml``.
 
 A container definition contains parameters that will be used when creating each container of a
-specific project. It should be noted that most of the options that you can define in your Nomad file
-can be applied "globally" or in the context of a specific container. For example you can define a
-global ``image`` option telling to use the ``ubuntu/xenial`` for all your containers and decide to
+specific project. It should be noted that most of the options that you can define in your LXDock
+file can be applied "globally" or in the context of a specific container. For example you can define
+a global ``image`` option telling to use the ``ubuntu/xenial`` for all your containers and decide to
 use the ``debian/jessie`` image for a specific container:
 
 .. code-block:: yaml
@@ -30,7 +30,7 @@ use the ``debian/jessie`` image for a specific container:
     - name: test03
       image: debian/jessie
 
-This section contains a list of all configuration options supported by Nomad files.
+This section contains a list of all configuration options supported by LXDock files.
 
 containers
 ----------
@@ -70,7 +70,7 @@ image
 -----
 
 The ``image`` option should contain the alias of the image you want to use to build your containers.
-LXD-Nomad will try to pull images from the default LXD's image server. So you can get a list of
+LXDock will try to pull images from the default LXD's image server. So you can get a list of
 supported aliases by visiting https://images.linuxcontainers.org/ or by listing the aliases of the
 "images:" default remote:
 
@@ -92,7 +92,7 @@ Here is an example:
   image: ubuntu/xenial
 
 You should note that you can also use "local" container aliases. This is not the most common
-scenario but you can manage your own image aliases and decide to use them with LXD-Nomad. You'll
+scenario but you can manage your own image aliases and decide to use them with LXDock. You'll
 need to use the ``mode: local`` option if you decide to do this (the default ``mode`` is ``pull``).
 For example you could create an image associated with the ``old-ubuntu`` alias using:
 
@@ -100,7 +100,7 @@ For example you could create an image associated with the ``old-ubuntu`` alias u
 
   $ lxc image copy ubuntu:12.04 local: --alias old-ubuntu
 
-And then use it in your Nomad file as follows:
+And then use it in your LXDock file as follows:
 
 .. code-block:: yaml
 
@@ -113,10 +113,10 @@ mode
 
 The ``mode`` option allows you to specify which mode to use in order to retrieve the images that
 will be used to build your containers. Two values are allowed here: ``pull`` (which is the default
-mode for LXD-Nomad) and ``local``. In ``pull`` mode container images will be pulled from an image
+mode for LXDock) and ``local``. In ``pull`` mode container images will be pulled from an image
 server (https://images.linuxcontainers.org/ by default). The ``local`` mode allows you to use local
 container images (it can be useful if you decide to manage your own image aliases and want to use
-them with LXD-Nomad).
+them with LXDock).
 
 name
 ----
@@ -137,11 +137,11 @@ privileged
 ----------
 
 You should use the ``privileged`` option if you want to created privileged containers. Containers
-created by LXD-Nomad are unprivileged by default. Such containers are safe by design because the
-root user in the containers doesn't map to the host's root user: it maps to an unprivileged user
+created by LXDock are unprivileged by default. Such containers are safe by design because the root
+user in the containers doesn't map to the host's root user: it maps to an unprivileged user
 *outside* the container.
 
-Here is an example on how to set up a privileged container in your Nomad file:
+Here is an example on how to set up a privileged container in your LXDock file:
 
 .. code-block:: yaml
 
@@ -159,7 +159,7 @@ Here is an example on how to set up a privileged container in your Nomad file:
 protocol
 --------
 
-The ``protocol`` option defines which protocol to use when creating containers. By default LXD-Nomad
+The ``protocol`` option defines which protocol to use when creating containers. By default LXDock
 uses the ``simplestreams`` protocol (as the ``lxc`` command do) but you can change this to use the
 ``lxd`` protocol if you want. The ``simplestreams`` protocol is an image server description format,
 using JSON to describe a list of images and allowing to get image information and import images.
@@ -169,7 +169,7 @@ provisioning
 ------------
 
 The ``provisioning`` option allows you to define how to provision your containers as part of the
-``nomad up`` workflow. This provisioning can also be executed when running ``nomad provision``.
+``lxdock up`` workflow. This provisioning can also be executed when running ``lxdock provision``.
 
 The ``provisioning`` option should define a list of provisioning tools to execute. For example, it
 can be an Ansible playbook to run:
@@ -209,8 +209,8 @@ of shared items. Each shared item should define a ``source`` (a path on your hos
 shell
 -----
 
-The ``shell`` option allows you to define the user to use when doing a ``nomad shell``. This allows
-you to have a shell for a specific user/home directory when doing ``nomad shell``:
+The ``shell`` option allows you to define the user to use when doing a ``lxdock shell``. This allows
+you to have a shell for a specific user/home directory when doing ``lxdock shell``:
 
 .. code-block:: yaml
 
@@ -224,7 +224,7 @@ you to have a shell for a specific user/home directory when doing ``nomad shell`
 users
 -----
 
-The ``users`` option allows you to define users that should be created by LXD-Nomad after creating a
+The ``users`` option allows you to define users that should be created by LXDock after creating a
 container. This can be useful because the users created this way will automatically have read/write
 permissions on shared folders. The ``users`` option should contain a list of users; each with a
 ``name`` and optionally a custom ``home`` directory:

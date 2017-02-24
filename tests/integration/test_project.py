@@ -3,11 +3,11 @@ import unittest.mock
 
 import pytest
 
-from nomad.conf.config import Config
-from nomad.container import Container
-from nomad.exceptions import ProjectError
-from nomad.project import Project
-from nomad.test import LXDTestCase
+from lxdock.conf.config import Config
+from lxdock.container import Container
+from lxdock.exceptions import ProjectError
+from lxdock.project import Project
+from lxdock.test import LXDTestCase
 
 
 THIS_DIR = os.path.join(os.path.dirname(__file__))
@@ -31,8 +31,8 @@ class TestProject(LXDTestCase):
         homedir = os.path.join(FIXTURE_ROOT, 'project02')
         config = Config.from_base_dir(homedir)
         project = Project.from_config('project02', homedir, self.client, config)
-        container = project.get_container_by_name('nomad-pytest-web')
-        assert container and container.name == 'nomad-pytest-web'
+        container = project.get_container_by_name('lxdock-pytest-web')
+        assert container and container.name == 'lxdock-pytest-web'
 
     def test_raises_an_error_if_it_cannot_find_a_container(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project02')
@@ -53,9 +53,9 @@ class TestProject(LXDTestCase):
         homedir = os.path.join(FIXTURE_ROOT, 'project02')
         config = Config.from_base_dir(homedir)
         project = Project.from_config('project02', homedir, self.client, config)
-        project.up(container_names=['nomad-pytest-web'])
-        container_web = project.get_container_by_name('nomad-pytest-web')
-        container_ci = project.get_container_by_name('nomad-pytest-ci')
+        project.up(container_names=['lxdock-pytest-web'])
+        container_web = project.get_container_by_name('lxdock-pytest-web')
+        container_ci = project.get_container_by_name('lxdock-pytest-ci')
         assert container_web.is_running
         assert container_ci.is_stopped
 
@@ -73,9 +73,9 @@ class TestProject(LXDTestCase):
         config = Config.from_base_dir(homedir)
         project = Project.from_config('project02', homedir, self.client, config)
         project.up()
-        project.halt(container_names=['nomad-pytest-web'])
-        container_web = project.get_container_by_name('nomad-pytest-web')
-        container_ci = project.get_container_by_name('nomad-pytest-ci')
+        project.halt(container_names=['lxdock-pytest-web'])
+        container_web = project.get_container_by_name('lxdock-pytest-web')
+        container_ci = project.get_container_by_name('lxdock-pytest-ci')
         assert container_web.is_stopped
         assert container_ci.is_running
 
@@ -109,8 +109,8 @@ class TestProject(LXDTestCase):
             'project02', homedir, self.client,
             [Container('myproject', THIS_DIR, self.client, **container_options)])
         project.up()
-        project.provision(container_names=['nomad-pytest-thisisatest'])
-        container_web = project.get_container_by_name('nomad-pytest-thisisatest')
+        project.provision(container_names=['lxdock-pytest-thisisatest'])
+        container_web = project.get_container_by_name('lxdock-pytest-thisisatest')
         assert container_web.is_provisioned
 
     def test_can_destroy_all_the_containers_of_a_project(self):
@@ -135,9 +135,9 @@ class TestProject(LXDTestCase):
         config = Config.from_base_dir(homedir)
         project = Project.from_config('project02', homedir, self.client, config)
         project.up()
-        project.destroy(container_names=['nomad-pytest-web'])
-        container_web = project.get_container_by_name('nomad-pytest-web')
-        container_ci = project.get_container_by_name('nomad-pytest-ci')
+        project.destroy(container_names=['lxdock-pytest-web'])
+        container_web = project.get_container_by_name('lxdock-pytest-web')
+        container_ci = project.get_container_by_name('lxdock-pytest-ci')
         assert not container_web.exists
         assert container_ci.exists
 

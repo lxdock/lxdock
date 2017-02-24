@@ -1,6 +1,6 @@
 import os
 
-from nomad.cli.project import get_project
+from lxdock.cli.project import get_project
 
 
 FIXTURE_ROOT = os.path.join(os.path.dirname(__file__), 'fixtures')

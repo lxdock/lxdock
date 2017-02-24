@@ -3,4 +3,4 @@ image: ubuntu/xenial
 mode: pull
 
 containers:
-  - name: nomad-pytest-worker
+  - name: lxdock-pytest-worker

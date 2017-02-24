@@ -1,8 +1,8 @@
 """
     Base utilities related to metaclasses
     =====================================
-    This module provides utilities allowing to manage metaclasses in the context of LXD-Nomad.
-    LXD-Nomad uses metaclasses to implement plugin-like components like guests, hosts, ...
+    This module provides utilities allowing to manage metaclasses in the context of LXDock.
+    LXDock uses metaclasses to implement plugin-like components like guests, hosts, ...
 """
 
 

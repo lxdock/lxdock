@@ -3,5 +3,5 @@ image: ubuntu/xenial
 mode: pull
 
 containers:
-  - name: nomad-pytest-web
-  - name: nomad-pytest-ci
+  - name: lxdock-pytest-web
+  - name: lxdock-pytest-ci

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class Config(object):
-    """ Holds the configuration of a LXD-Nomad project. """
+    """ Holds the configuration of a LXDock project. """
 
     def __init__(self, base_dir, filename):
         self.base_dir = base_dir
@@ -58,7 +58,7 @@ class Config(object):
         except Invalid as e:
             # Formats the voluptuous error
             path = ' @ %s' % '.'.join(map(str, e.path)) if e.path else ''
-            msg = 'The Nomad file is invalid because: {0}'.format(e.msg + path)
+            msg = 'The LXDock file is invalid because: {0}'.format(e.msg + path)
             raise ConfigFileValidationError(msg)
 
         # Loads the containers.
@@ -79,7 +79,7 @@ class Config(object):
         if not len(containers):
             unique_container_config = ContainerConfig(self._dict)
             # We associate a specific name to the unique container if it wasn't explicitly defined
-            # under the 'containers' section of the nomad file.
+            # under the 'containers' section of the LXDock file.
             unique_container_config['name'] = 'default'
             containers = [unique_container_config, ]
 

@@ -1,6 +1,6 @@
 import unittest.mock
 
-from nomad.cli.utils import yesno
+from lxdock.cli.utils import yesno
 
 
 class TestYesNoFunction(object):

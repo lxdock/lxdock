@@ -1,2 +1,2 @@
 # Ensure all fixtures are discovered by py.test.
-from nomad.test import *  # noqa
+from lxdock.test import *  # noqa

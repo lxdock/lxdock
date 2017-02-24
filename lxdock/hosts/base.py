@@ -2,7 +2,7 @@
     Base host
     =========
     This module provides the `Host` base class that is used to define the host OS or distributions
-    supported by LXD-Nomad.
+    supported by LXDock.
 """
 
 import os
@@ -65,7 +65,7 @@ class Host(with_metaclass(_HostBase)):
     `Host` subclasses will be used by `Container` instances to perform common operations on the
     host side. For example they can be used to retrieve some date (SSH pukeys, ...) or to set up
     contaianers' hosts in the /etc/hosts file. `Host` subclasses should correspond to specific OSes
-    or distributions that can be used to run LXD and LXD-Nomad.
+    or distributions that can be used to run LXD and LXDock.
     """
 
     # The `name` of a host is a required attribute and should always be set on `Host` subclasses.

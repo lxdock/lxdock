@@ -1,8 +1,8 @@
 import os
 import pytest
 
-from nomad.conf.config import Config
-from nomad.conf.exceptions import ConfigFileNotFoundError, ConfigFileValidationError
+from lxdock.conf.config import Config
+from lxdock.conf.exceptions import ConfigFileNotFoundError, ConfigFileValidationError
 
 
 FIXTURE_ROOT = os.path.join(os.path.dirname(__file__), 'fixtures')
@@ -19,7 +19,7 @@ class TestConfig:
     def test_works_if_multiple_config_files_are_found(self):
         project_dir = os.path.join(FIXTURE_ROOT, 'project_with_multiple_config_files')
         config = Config.from_base_dir(project_dir)
-        assert config.filename == os.path.join(project_dir, 'nomad.yml')
+        assert config.filename == os.path.join(project_dir, 'lxdock.yml')
 
     def test_raises_an_error_if_the_config_file_cannot_be_found(self):
         project_dir = os.path.dirname(__file__)

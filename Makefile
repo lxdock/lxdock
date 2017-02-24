@@ -12,10 +12,10 @@ lint:
 	flake8
 
 isort:
-	isort --check-only --recursive --diff nomad tests
+	isort --check-only --recursive --diff lxdock tests
 
 coverage:
-	py.test --cov-report term-missing --cov nomad
+	py.test --cov-report term-missing --cov lxdock
 
 spec:
 	py.test --spec -p no:sugar

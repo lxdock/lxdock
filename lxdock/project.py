@@ -113,18 +113,18 @@ class Project:
         console_stderr_handler.setFormatter(get_default_formatter())
 
     def _update_guest_etchosts(self):
-        """ Updates /etc/hosts on **all** running nomad-managed containers.
+        """ Updates /etc/hosts on **all** running lxdock-managed containers.
 
         ... even those outside the current project. This way, containers can contact themselves
         using the same domain names the host uses.
         """
         def should_update(c):
-            return c.config.get('user.nomad.made') and c.status_code == constants.CONTAINER_RUNNING
+            return c.config.get('user.lxdock.made') and c.status_code == constants.CONTAINER_RUNNING
         # At this point, our host's /etc/hosts is fully updated. No need to go fetch IP's and stuff
         # we can just re-use what we've already computed in every container up/halt ops before.
         etchosts = EtcHosts()
         containers = (c for c in self.client.containers.all() if should_update(c))
         for container in containers:
             container_etchosts = ContainerEtcHosts(container)
-            container_etchosts.nomad_bindings = etchosts.nomad_bindings
+            container_etchosts.lxdock_bindings = etchosts.lxdock_bindings
             container_etchosts.save()

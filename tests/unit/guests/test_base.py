@@ -3,8 +3,8 @@ import unittest.mock
 import pytest
 from pylxd.exceptions import NotFound
 
-from nomad.guests import Guest
-from nomad.guests.base import InvalidGuest
+from lxdock.guests import Guest
+from lxdock.guests.base import InvalidGuest
 
 
 class TestGuest:

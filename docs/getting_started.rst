@@ -7,15 +7,15 @@ Requirements
 * `Python`_ 3.4+
 * `LXD`_ 2.0+
 * ``getfacl/setfacl`` if you plan to use shared folders
-* any provisioning tool you wish to use with LXD-Nomad
+* any provisioning tool you wish to use with LXDock
 
 .. _Python: https://www.python.org
 .. _LXD: https://www.ubuntu.com/cloud/lxd
 
-Building nomad on Linux
------------------------
+Building LXDock on Linux
+------------------------
 
-LXD-Nomad should build very easily on Linux provided you have LXD available on your system.
+LXDock should build very easily on Linux provided you have LXD available on your system.
 
 Prerequisite: install LXD
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -69,14 +69,14 @@ You can now check if your LXD installation is working using:
 
   You can use ``lxc stop first-machine`` to stop the previously created container.
 
-Install LXD-Nomad
-~~~~~~~~~~~~~~~~~
+Install LXDock
+~~~~~~~~~~~~~~
 
-You should now be able to install LXD-Nomad using:
+You should now be able to install LXDock using:
 
 .. code-block:: console
 
-  $ pip3 install git+git://github.com/lxd-nomad/lxd-nomad.git
+  $ pip3 install git+git://github.com/lxdock/lxdock.git
 
 .. note::
 
@@ -90,31 +90,31 @@ You should now be able to install LXD-Nomad using:
 Command line completion
 -----------------------
 
-LXD-Nomad can provide completion for commands and container names.
+LXDock can provide completion for commands and container names.
 
 Bash
 ~~~~
 
 If you use Bash, you have to make sure that bash completion is installed (which should be the case
-for most Linux installations). In order to get completion for LXD-Nomad, you should place the
-``contrib/completion/bash/nomad`` file at ``/etc/bash.completion.d/nomad`` (or at any other place
+for most Linux installations). In order to get completion for LXDock, you should place the
+``contrib/completion/bash/lxdock`` file at ``/etc/bash.completion.d/lxdock`` (or at any other place
 where your distribution keeps completion files):
 
 .. code-block:: console
 
-  $ sudo cp contrib/completion/bash/nomad /etc/bash.completion.d/nomad
+  $ sudo cp contrib/completion/bash/lxdock /etc/bash.completion.d/lxdock
 
-Make sure to restart your shell before trying to use LXD-Nomad's bash completion.
+Make sure to restart your shell before trying to use LXDock's bash completion.
 
 ZSH
 ~~~
 
 *Coming soon!*
 
-Your first Nomad file
----------------------
+Your first LXDock file
+----------------------
 
-Create a file called ``.nomad.yml`` (or ``nomad.yml``) in your project directory and paste the
+Create a file called ``.lxdock.yml`` (or ``lxdock.yml``) in your project directory and paste the
 following:
 
 .. code-block:: yaml
@@ -128,7 +128,7 @@ following:
     - name: test02
       image: archlinux
 
-This Nomad file defines a project (``myproject``) and two containers, ``test01`` and ``test02``.
+This LXDock file defines a project (``myproject``) and two containers, ``test01`` and ``test02``.
 These containers will be constructed using respectively the ``ubuntu/xenial`` and the ``archlinux``
 images (which will be pulled from an image server - https://images.linuxcontainers.org by default).
 
@@ -136,7 +136,7 @@ Now from your project directory, start up your containers using the following co
 
 .. code-block:: console
 
-  $ nomad up
+  $ lxdock up
   Bringing container "test01" up
   Bringing container "test02" up
   ==> test01: Unable to find container "test01" for directory "[PATH_TO_YOUR_PROJECT]"

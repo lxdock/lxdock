@@ -1,7 +1,7 @@
-nomad destroy
-=============
+lxdock destroy
+==============
 
-**Command:** ``nomad destroy [name [name ...]]``
+**Command:** ``lxdock destroy [name [name ...]]``
 
 This command can be used to destroy containers. If the containers to be destroyed are still running
 they will first be stopped.
@@ -21,7 +21,7 @@ Examples
 
 .. code-block:: console
 
-  $ nomad destroy               # destroys all the containers of the project
-  $ nomad destroy mycontainer   # destroys the "mycontainer" container
-  $ nomad destroy web ci        # destroys the "web" and "ci" containers
-  $ nomad destroy --force web   # destroys the "web" container without confirmation
+  $ lxdock destroy               # destroys all the containers of the project
+  $ lxdock destroy mycontainer   # destroys the "mycontainer" container
+  $ lxdock destroy web ci        # destroys the "web" and "ci" containers
+  $ lxdock destroy --force web   # destroys the "web" container without confirmation

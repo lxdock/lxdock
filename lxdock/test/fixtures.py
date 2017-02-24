@@ -1,6 +1,6 @@
 """
-    LXD-Nomad specific pytest fixtures
-    ==================================
+    LXDock specific pytest fixtures
+    ===============================
     This module provides fixtures that can be used to perform common operations before or after test
     execution.
 """
@@ -9,8 +9,8 @@ import os
 
 import pytest
 
-from nomad.client import get_client
-from nomad.container import Container
+from ..client import get_client
+from ..container import Container
 
 __all__ = [
     'persistent_container', 'remove_persistent_container',
@@ -24,7 +24,7 @@ _persistent_container = None
 
 @pytest.fixture
 def persistent_container():
-    """ Returns a persistent `nomad.container.Container` instance.
+    """ Returns a persistent `lxdock.container.Container` instance.
 
     This container will be removed when tearing down the test class. Of course this container should
     not be removed by test methods (in that case it will be recreated) in order to speed up test

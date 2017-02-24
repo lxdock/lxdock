@@ -1,7 +1,7 @@
 Usage
 =====
 
-We don't have proper documentation yet, but if you put a ``.nomad.yml`` somewhere that looks like:
+We don't have proper documentation yet, but if you put a ``.lxdock.yml`` somewhere that looks like:
 
 .. code-block:: yaml
 
@@ -19,12 +19,12 @@ We don't have proper documentation yet, but if you put a ``.nomad.yml`` somewher
       - source: .
         dest: /myshare
 
-    # When doing "nomad shell", you'll be having a shell for the specified user/home
+    # When doing "lxdock shell", you'll be having a shell for the specified user/home
     shell:
       user: deployuser
       home: /opt/myproject
 
-    # Upon our first "nomad up", this ansible playbook will be ran from the host with the container's
+    # Upon our first "lxdock up", this ansible playbook will be ran from the host with the container's
     # IP in the inventory.
     provisioning:
       - type: ansible
@@ -34,13 +34,13 @@ We don't have proper documentation yet, but if you put a ``.nomad.yml`` somewher
 
 .. code-block:: console
 
-    $ nomad up
+    $ lxdock up
     [ lot's of output because the container is provisioned]
     $ curl http://myproject.local
-    $ nomad shell
+    $ lxdock shell
     # echo "in my container!"
     # exit
-    $ nomad halt
+    $ lxdock halt
 
 It should be noted that the ``image`` value can also contain a name of a container alias that
 includes the targetted architecture (eg. ``debian/jessie/amd64`` or ``ubuntu/xenial/armhf``). The
@@ -51,7 +51,7 @@ also choose to use another server by manually setting the ``server`` value.
 Multiple containers
 -------------------
 
-You can define multiple containers in your ``.nomad.yml`` file.
+You can define multiple containers in your ``.lxdock.yml`` file.
 
 .. code-block:: yaml
 
@@ -85,7 +85,7 @@ run the container as privileged.
 Shared folders and ACL
 ----------------------
 
-Shared folders in LXD-Nomad use lxc mounts. This is simple and fast, but there are problems with
+Shared folders in LXDock use lxc mounts. This is simple and fast, but there are problems with
 permissions: shared folders means shared permissions. Changing permissions in the container means
 changing them in the host as well, and vice versa. That leaves us with a problem that is tricky
 to solve gracefully. Things become more complicated when our workflow has our container create
@@ -95,7 +95,7 @@ For now, the best solution we could come up with is to use ACLs. To ensure that 
 by the container are accessible to you back on the host, every new share has a default ACL giving
 the current user full access to the source folder (``setfacl -Rdm u:<your uid>:rwX <shared source>``).
 
-On the guest side, it's more tricky. LXD-nomad has no knowledge of the users who should have
+On the guest side, it's more tricky. LXDock has no knowledge of the users who should have
 access to your shares. Moreover, your users/groups, when the container is initially created, don't
 exist yet! That is why it does nothing. What is suggested is that you take care of it in your own
 provisioning. Here's what it could look like:
@@ -107,8 +107,8 @@ provisioning. Here's what it could look like:
 Tired of sudoing for hostname bindings?
 ---------------------------------------
 
-Every time a ``nomad up`` or ``nomad halt`` is made, we mangle ``/etc/hosts`` to make our configured
+Every time a ``lxdock up`` or ``lxdock halt`` is made, we mangle ``/etc/hosts`` to make our configured
 hostname bindings work. In a typical setup, your user doesn't have write access to that file. This
-means that lxd-nomad requires you to type your sudo password all the time. If you're tired of that,
+means that LXDock requires you to type your sudo password all the time. If you're tired of that,
 give your user write access to ``/etc/hosts``. Sure, there are some security implications in doing
 that, but on a typical developer box and in this HTTPS Everywhere world, the risk ain't that great.

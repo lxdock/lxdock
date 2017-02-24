@@ -1,13 +1,13 @@
-nomad provision
-===============
+lxdock provision
+================
 
-**Command:** ``nomad provision [name [name ...]]``
+**Command:** ``lxdock provision [name [name ...]]``
 
 This command can be used to provision your containers.
 
 By default it will install bare bones packages (openssh, python) into your container if the
-underlying distribution is supported by LXD-Nomad. That said, the ``provision`` command can also
-trigger the execution of provisioning tools that you could've configured in your Nomad file (using
+underlying distribution is supported by LXDock. That said, the ``provision`` command can also
+trigger the execution of provisioning tools that you could've configured in your LXDock file (using
 the ``provisioning`` block).
 
 Options
@@ -20,6 +20,6 @@ Examples
 
 .. code-block:: console
 
-  $ nomad provision               # provisions all the containers of the project
-  $ nomad provision mycontainer   # provisions the "mycontainer" container
-  $ nomad provision web ci        # provisions the "web" and "ci" containers
+  $ lxdock provision               # provisions all the containers of the project
+  $ lxdock provision mycontainer   # provisions the "mycontainer" container
+  $ lxdock provision web ci        # provisions the "web" and "ci" containers

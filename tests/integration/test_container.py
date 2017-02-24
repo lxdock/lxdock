@@ -2,9 +2,9 @@ import os
 import types
 import unittest.mock
 
-from nomad import constants
-from nomad.container import Container, must_be_running
-from nomad.test.testcases import LXDTestCase
+from lxdock import constants
+from lxdock.container import Container, must_be_running
+from lxdock.test.testcases import LXDTestCase
 
 
 THIS_DIR = os.path.join(os.path.dirname(__file__))
@@ -29,8 +29,8 @@ class TestContainer(LXDTestCase):
         container = Container('myproject', THIS_DIR, self.client, **container_options)
         container.up()
         assert container._container.status_code == constants.CONTAINER_RUNNING
-        assert container._container.config['user.nomad.made'] == '1'
-        assert container._container.config['user.nomad.homedir'] == THIS_DIR
+        assert container._container.config['user.lxdock.made'] == '1'
+        assert container._container.config['user.lxdock.homedir'] == THIS_DIR
 
     def test_can_set_up_a_container_that_is_already_up_and_running(self, persistent_container):
         persistent_container.up()
@@ -72,7 +72,7 @@ class TestContainer(LXDTestCase):
         }
         container = Container('myproject', THIS_DIR, self.client, **container_options)
         container.up()
-        assert container._container.config['user.nomad.provisioned'] == 'true'
+        assert container._container.config['user.lxdock.provisioned'] == 'true'
         assert container._container.files.get('/dummytest').strip() == b'dummytest'
 
     @unittest.mock.patch('subprocess.call')
@@ -110,7 +110,7 @@ class TestContainer(LXDTestCase):
         assert not persistent_container.is_privileged
 
     def test_can_tell_if_a_container_is_provisioned_or_not(self, persistent_container):
-        persistent_container._container.config['user.nomad.provisioned'] = 'false'
+        persistent_container._container.config['user.lxdock.provisioned'] = 'false'
         persistent_container._container.save(wait=True)
         assert not persistent_container.is_provisioned
         persistent_container.provision()

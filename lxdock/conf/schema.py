@@ -38,11 +38,11 @@ _container_options = {
 }
 _container_options.update(_top_level_and_containers_common_options)
 
-_nomad_options = {
+_lxdock_options = {
     Required('name'): LXDIdentifier(),
     'containers': [_container_options, ],
 }
-_nomad_options.update(_top_level_and_containers_common_options)
+_lxdock_options.update(_top_level_and_containers_common_options)
 
-# The schema will be used to validate nomad files!
-schema = Schema(_nomad_options)
+# The schema will be used to validate LXDock files!
+schema = Schema(_lxdock_options)
