@@ -1,6 +1,5 @@
 import unittest.mock
 
-from lxdock.network import get_ipv4_ip
 from lxdock.provisioners import AnsibleProvisioner
 
 
