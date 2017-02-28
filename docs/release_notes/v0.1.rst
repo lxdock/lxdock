@@ -1,0 +1,13 @@
+########################
+LXDock 0.1 release notes
+########################
+
+Requirements and compatibility
+------------------------------
+
+Python 3.4, 3.5 and 3.6. LXD 2.0+.
+
+New features
+------------
+
+*This is the initial release of LXDock!*

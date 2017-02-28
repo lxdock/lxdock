@@ -13,6 +13,7 @@ Welcome to LXDock's documentation!
    cli/index
    conf
    glossary
+   release_notes/index
 
 
 Indices and tables
