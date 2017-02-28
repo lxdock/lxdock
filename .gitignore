@@ -8,3 +8,5 @@ __pycache__
 .tox
 .cache/
 .coverage.*
+.env/
+env/

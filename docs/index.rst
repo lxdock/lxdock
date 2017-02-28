@@ -13,6 +13,7 @@ Welcome to LXDock's documentation!
    cli/index
    conf
    glossary
+   contributing
    release_notes/index
 
 

@@ -109,7 +109,7 @@ Make sure to restart your shell before trying to use LXDock's bash completion.
 ZSH
 ~~~
 
-*Coming soon!*
+*Not yet!* But feel free to contribute (please refer to :doc:`contributing`)!
 
 Your first LXDock file
 ----------------------
