@@ -15,6 +15,7 @@ Welcome to LXDock's documentation!
    glossary
    contributing
    release_notes/index
+   credits
 
 
 Indices and tables
