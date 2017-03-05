@@ -80,12 +80,9 @@ You should now be able to install LXDock using:
 
 .. note::
 
-  Don't have ``pip3`` installed on your system? Try this:
-
-  .. code-block:: console
-
-    $ sudo apt-get install curl
-    $ curl https://bootstrap.pypa.io/get-pip.py | sudo python3
+  Don't have ``pip3`` installed on your system? Most distros have a specific package for it, it's
+  only a matter of installing it. For example, on Debian and Ubuntu, it's ``python3-pip``.
+  Otherwise, `Stackoverflow can help you <http://stackoverflow.com/a/6587528>`__.
 
 Command line completion
 -----------------------
