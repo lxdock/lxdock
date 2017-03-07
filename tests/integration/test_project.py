@@ -155,4 +155,4 @@ class TestProject(LXDTestCase):
         project.shell(container_name='testcase-persistent')
         assert mocked_call.call_count == 1
         assert mocked_call.call_args[0][0] == \
-            'lxc exec {} -- bash'.format(persistent_container.lxd_name)
+            'lxc exec {} -- su -m root'.format(persistent_container.lxd_name)

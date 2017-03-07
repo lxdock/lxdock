@@ -110,7 +110,7 @@ class Container:
             cmd = 'lxc exec {} {} -- su -m {}'.format(self.lxd_name, homearg, shelluser)
             subprocess.call(cmd, shell=True)
         else:
-            cmd = 'lxc exec {} -- bash'.format(self.lxd_name)
+            cmd = 'lxc exec {} -- su -m root'.format(self.lxd_name)
             subprocess.call(cmd, shell=True)
 
     def up(self):

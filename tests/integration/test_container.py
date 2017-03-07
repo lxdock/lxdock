@@ -80,7 +80,7 @@ class TestContainer(LXDTestCase):
         persistent_container.shell()
         assert mocked_call.call_count == 1
         assert mocked_call.call_args[0][0] == \
-            'lxc exec {} -- bash'.format(persistent_container.lxd_name)
+            'lxc exec {} -- su -m root'.format(persistent_container.lxd_name)
 
     @unittest.mock.patch('subprocess.call')
     def test_can_open_a_shell_for_a_specific_shelluser(self, mocked_call):

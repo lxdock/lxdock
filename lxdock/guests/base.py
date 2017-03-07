@@ -88,8 +88,8 @@ class Guest(with_metaclass(_GuestBase)):
         the considered OS/distribution.
         """
         candidates = [
-            ('/etc/os-release', 'id="?{}"?'.format(cls.name.lower())),
-            ('/etc/lsb_release', 'id="?{}"?'.format(cls.name.lower())),
+            ('/etc/os-release', '(id|ID)="?{}"?'.format(cls.name.lower())),
+            ('/etc/lsb_release', '(id|ID)="?{}"?'.format(cls.name.lower())),
             ('/etc/issue', cls.name.lower()),
         ]
         found = False
