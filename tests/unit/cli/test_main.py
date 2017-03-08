@@ -219,6 +219,12 @@ class TestLXDock:
             LXDock(['help', 'unknown'])
 
     @unittest.mock.patch.object(LXDock, 'project')
+    def test_exit_if_a_keyboard_interrupt_occurs(self, mock_project):
+        mock_project.__get__ = unittest.mock.Mock(side_effect=KeyboardInterrupt)
+        with pytest.raises(SystemExit):
+            LXDock(['destroy'])
+
+    @unittest.mock.patch.object(LXDock, 'project')
     def test_exit_if_a_config_error_is_encountered(self, mock_project):
         mock_project.__get__ = unittest.mock.Mock(side_effect=ConfigError(msg='TEST'))
         with pytest.raises(SystemExit):
