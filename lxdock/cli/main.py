@@ -12,10 +12,10 @@ from .exceptions import CLIError
 logger = logging.getLogger(__name__)
 
 
-class LXDock(object):
+class LXDock:
     """ Wrapper around the LXDock argument parser and the related actions. """
 
-    def __init__(self):
+    def __init__(self, argv=None):
         self._parsers = {}
 
         # Creates the argument parsers
@@ -90,7 +90,7 @@ class LXDock(object):
             self._parsers[pkey].add_argument('name', nargs='*', help='Container name.')
 
         # Parses the arguments
-        args = parser.parse_args()
+        args = parser.parse_args(args=argv)
 
         # Displays the help if no action is specified
         if args.action is None:
@@ -193,7 +193,7 @@ class LXDock(object):
         return self._project_config
 
 
-def main():
+def main(argv=None):
     # Setup logging
     root_logger = logging.getLogger()
     root_logger.addHandler(console_stdout_handler)
@@ -204,4 +204,4 @@ def main():
     logging.getLogger('ws4py').propagate = False
 
     # Run the LXDock orchestration tool!
-    LXDock()
+    LXDock(argv=argv)
