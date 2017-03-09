@@ -1,9 +1,17 @@
 LXDock
 ######
 
-.. image:: https://readthedocs.org/projects/lxdock/badge/?style=flat-square&version=latest
-   :target: https://lxdock.readthedocs.io/en/latest/
+.. image:: https://readthedocs.org/projects/lxdock/badge/?style=flat-square&version=stable
+   :target: https://lxdock.readthedocs.io/en/stable/
    :alt: Documentation
+
+.. image:: https://img.shields.io/pypi/l/lxdock.svg?style=flat-square
+   :target: https://pypi.python.org/pypi/lxdock/
+   :alt: License
+
+.. image:: http://img.shields.io/pypi/v/lxdock.svg?style=flat-square
+   :target: https://pypi.python.org/pypi/lxdock/
+   :alt: Latest Version
 
 .. image:: https://img.shields.io/travis/lxdock/lxdock.svg?style=flat-square
     :target: https://travis-ci.org/lxdock/lxdock
@@ -51,7 +59,7 @@ LXD_, Python 3.4+. Please refer to the requirements_ section of the documentatio
 dependencies.
 
 .. _LXD: https://www.ubuntu.com/cloud/lxd
-.. _requirements: https://lxdock.readthedocs.io/en/latest/getting_started.html#requirements
+.. _requirements: https://lxdock.readthedocs.io/en/stable/getting_started.html#requirements
 
 Authors
 =======
