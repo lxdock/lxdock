@@ -1,0 +1,15 @@
+########################################
+LXDock 0.1.1 release notes (coming soon)
+########################################
+
+Requirements and compatibility
+------------------------------
+
+Python 3.4, 3.5 and 3.6. LXD 2.0+.
+
+Fixes
+-----
+
+* Fixed wrong container names in Bash completion (`#38`_)
+
+.. _`#38`: https://github.com/lxdock/lxdock/issues/38
