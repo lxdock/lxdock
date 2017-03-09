@@ -76,7 +76,7 @@ You should now be able to install LXDock using:
 
 .. code-block:: console
 
-  $ pip3 install git+git://github.com/lxdock/lxdock.git
+  $ pip3 install lxdock
 
 .. note::
 
