@@ -29,6 +29,7 @@ help for a specifc subcommand. For example:
   destroy
   halt
   help
+  init
   provision
   shell
   status

@@ -3,6 +3,7 @@ import unittest.mock
 
 import pytest
 
+from lxdock.cli.constants import INIT_LXDOCK_FILE_CONTENT
 from lxdock.cli.main import LXDock, main
 from lxdock.cli.project import get_project
 from lxdock.conf.config import Config
@@ -252,3 +253,60 @@ class TestLXDock:
         project1, project2 = n.project, n.project
         assert project1 == project2
         assert from_config_mock.call_count == 1
+
+    @unittest.mock.patch('builtins.open')
+    def test_can_generate_a_basic_lxdock_file(self, mock_open):
+        fd_mock = unittest.mock.Mock()
+        mock_open.return_value.__enter__.return_value = fd_mock
+        LXDock(['init', ])
+        assert mock_open.call_count == 1
+        assert mock_open.call_args[0] == ('lxdock.yml', )
+        assert fd_mock.write.call_count == 1
+        assert fd_mock.write.call_args[0][0] == INIT_LXDOCK_FILE_CONTENT.format(
+            project_name=os.path.split(os.getcwd())[1], image='ubuntu/xenial')
+
+    @unittest.mock.patch('builtins.open')
+    @unittest.mock.patch('os.getcwd')
+    def test_cannot_generate_a_lxdock_file_if_there_is_already_an_existing_lxdock_file(
+            self, mock_getcwd, mock_open):
+        mock_getcwd.return_value = os.path.join(FIXTURE_ROOT, 'project01')
+        fd_mock = unittest.mock.Mock()
+        mock_open.return_value.__enter__.return_value = fd_mock
+        with pytest.raises(SystemExit):
+            LXDock(['init', ])
+
+    @unittest.mock.patch('builtins.open')
+    @unittest.mock.patch('os.getcwd')
+    def test_can_generate_a_lxdock_file_by_overwritting_an_existing_file_with_the_force_option(
+            self, mock_getcwd, mock_open):
+        mock_getcwd.return_value = os.path.join(FIXTURE_ROOT, 'project01')
+        fd_mock = unittest.mock.Mock()
+        mock_open.return_value.__enter__.return_value = fd_mock
+        LXDock(['init', '--force'])
+        assert mock_open.call_count == 1
+        assert mock_open.call_args[0] == ('lxdock.yml', )
+        assert fd_mock.write.call_count == 1
+        assert fd_mock.write.call_args[0][0] == INIT_LXDOCK_FILE_CONTENT.format(
+            project_name=os.path.split(os.getcwd())[1], image='ubuntu/xenial')
+
+    @unittest.mock.patch('builtins.open')
+    def test_can_generate_a_lxdock_file_with_a_custom_image(self, mock_open):
+        fd_mock = unittest.mock.Mock()
+        mock_open.return_value.__enter__.return_value = fd_mock
+        LXDock(['init', '--image', 'debian/jessie', ])
+        assert mock_open.call_count == 1
+        assert mock_open.call_args[0] == ('lxdock.yml', )
+        assert fd_mock.write.call_count == 1
+        assert fd_mock.write.call_args[0][0] == INIT_LXDOCK_FILE_CONTENT.format(
+            project_name=os.path.split(os.getcwd())[1], image='debian/jessie')
+
+    @unittest.mock.patch('builtins.open')
+    def test_can_generate_a_lxdock_file_with_a_custom_project_name(self, mock_open):
+        fd_mock = unittest.mock.Mock()
+        mock_open.return_value.__enter__.return_value = fd_mock
+        LXDock(['init', '--project', 'customproject', ])
+        assert mock_open.call_count == 1
+        assert mock_open.call_args[0] == ('lxdock.yml', )
+        assert fd_mock.write.call_count == 1
+        assert fd_mock.write.call_args[0][0] == INIT_LXDOCK_FILE_CONTENT.format(
+            project_name='customproject', image='ubuntu/xenial')

@@ -56,6 +56,16 @@ class LXDock:
                         'subcommand.')
         self._parsers['help'].add_argument('subcommand', nargs='?', help='Subcommand name.')
 
+        # Creates the 'init' action.
+        self._parsers['init'] = subparsers.add_parser(
+            'init', help='Generate a LXDock file.',
+            description='Generate a LXDock file defining a single container and highlighting '
+                        'useful options.')
+        self._parsers['init'].add_argument(
+            '-f', '--force', action='store_true', help='Overwrite existing LXDock file')
+        self._parsers['init'].add_argument('--image', help='Container image to use')
+        self._parsers['init'].add_argument('--project', help='Project name to use')
+
         # Creates the 'provision' action.
         self._parsers['provision'] = subparsers.add_parser(
             'provision', help='Provision containers.',
@@ -162,6 +172,28 @@ class LXDock:
         except KeyError:
             # args.subcommand is not a valid subcommand!
             raise CLIError('No such command: {}'.format(args.subcommand))
+
+    def init(self, args):
+        import os
+        from ..conf.constants import ALLOWED_FILENAMES
+        from .constants import INIT_LXDOCK_FILE_CONTENT
+        cwd = os.getcwd()
+        project_name = args.project or os.path.split(cwd)[1]
+
+        # Check if an existing config file is already present in the current working directory.
+        existing_config = [
+            filename for filename in ALLOWED_FILENAMES
+            if os.path.exists(os.path.join(cwd, filename))]
+        if existing_config and not args.force:
+            raise CLIError(
+                'An existing LXDock file is already present in this directory! Using "lxdock init" '
+                'could overwrite this file. Use the -f/--force to overwrite existing LXDock files.')
+
+        # Compute the content of the LXDock file to write and write it to a lxdock.yml file.
+        init_filecontent = INIT_LXDOCK_FILE_CONTENT.format(
+            project_name=project_name, image=args.image or 'ubuntu/xenial')
+        with open('lxdock.yml', mode='w', encoding='utf-8') as fd:
+            fd.write(init_filecontent)
 
     def provision(self, args):
         self.project.provision(container_names=args.name)

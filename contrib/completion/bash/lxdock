@@ -20,7 +20,7 @@ ___lxdock_container_names() {
 _lxdock_complete () {
   local cur cmd commands
 
-  commands='config destroy halt help provision shell status up'
+  commands='config destroy halt help init provision shell status up'
 
   cur=${COMP_WORDS[COMP_CWORD]}
   cmd=${COMP_WORDS[1]}
@@ -55,6 +55,12 @@ _lxdock_complete () {
         halt)
           containers="$(___lxdock_container_names)"
           COMPREPLY=($(compgen -W "$containers" -- ${cur}))
+          ;;
+        init)
+          case "${cur}" in
+            -*)
+              COMPREPLY=($(compgen -W "-f --force --image --project" -- ${cur})) ;;
+          esac
           ;;
         provision)
           containers="$(___lxdock_container_names)"
