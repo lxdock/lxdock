@@ -129,7 +129,9 @@ class LXDock:
         # automated operations. In order to speed up things, we'll just manually create our config
         # object and use it.
         if args.containers:
-            logger.info('\n'.join([c['name'] for c in self.project_config.containers]))
+            # This option is mostly used for completion features. Thus we use print directly in
+            # order to not embed control characters in the final output.
+            print('\n'.join([c['name'] for c in self.project_config.containers]))
             return
 
         logger.info(self.project_config.serialize())
