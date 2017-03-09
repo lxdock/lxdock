@@ -1,12 +1,24 @@
+import codecs
 import sys
+from os.path import abspath
+from os.path import dirname
+from os.path import join
 
 from setuptools import find_packages
 from setuptools import setup
 
 import lxdock
 
+
 if sys.version_info < (3, 4):
     sys.exit('lxdock requires Python 3.4+ to run')
+
+
+def read_relative_file(filename):
+    """ Returns contents of the given file, whose path is supposed relative to this module. """
+    with codecs.open(join(dirname(abspath(__file__)), filename), encoding='utf-8') as f:
+        return f.read()
+
 
 setup(
     name='lxdock',
@@ -18,6 +30,7 @@ setup(
     url='https://github.com/lxdock/lxdock',
     license='GPLv3',
     description='LXDock is a tool for orchestrating LXD containers.',
+    long_description=read_relative_file('README.rst'),
     keywords='lxd lxc containers environments orchestration devops',
     zip_safe=False,
     install_requires=[
