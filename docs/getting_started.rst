@@ -154,3 +154,11 @@ Now from your project directory, start up your containers using the following co
   ==> test02: Provisioning container "test02"...
 
 *Congrats! You're in!*
+
+Problems?
+---------
+
+If you're having problems trying to run your container, try running them in :ref:`conf-privileged`
+mode. Many older distributions have an init system that doesn't work well with unprivileged
+containers (`debian/jessie` notably). Some host-side problems can also be worked around by running
+privileged containers.

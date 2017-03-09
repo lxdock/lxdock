@@ -133,6 +133,8 @@ This option can define the name of your project or the name of a container. In e
     - name: container01
     - name: container01
 
+.. _conf-privileged:
+
 privileged
 ----------
 
