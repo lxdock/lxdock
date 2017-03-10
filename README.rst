@@ -24,7 +24,7 @@ LXDock
 |
 
 LXDock is a wrapper around LXD_ that allows developers to orchestrate their development environments
-using a worklow similar to Vagrant.
+using a workflow similar to Vagrant.
 
 .. contents:: Table of Contents
     :local:
