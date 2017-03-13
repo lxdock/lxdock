@@ -14,7 +14,7 @@ image: {image}
 # containers:
 #   - name: {project_name}01
 #   - name: {project_name}02
-#   - name: {project_name}02
+#   - name: {project_name}03
 #     Most of the options can be redefined for each container definition, eg. the "image" option:
 #     image: archlinux
 
