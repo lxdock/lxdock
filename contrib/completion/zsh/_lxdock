@@ -1,0 +1,126 @@
+#compdef lxdock
+# Zsh completion suppot for LXDock
+#
+# Provides completion for commands, options and container names.
+#
+# Installation instructions:
+#   - place this script at /usr/share/zsh/vendor-completions
+#   - restart your shell
+#
+
+local -a _1st_arguments
+_1st_arguments=(
+  'config:Validate and show the LXDock file'
+  'destroy:Stop and remove containers'
+  'halt:Stop containers'
+  'help:Show help information'
+  'init:Generate a LXDock file'
+  'provision:Provision containers'
+  'shell:Open a shell in a container'
+  "status:Show containers' statuses"
+  'up:Create, start and provision containers'
+)
+
+__subcommand_list ()
+{
+  local expl
+  declare -a subcommands
+
+  subcommands=(config destroy halt init provision shell status up)
+
+  _wanted tasks expl 'help' compadd $subcommands
+}
+
+__container_list ()
+{
+  _lxdock_containers=(
+    $(_call_program path-all "lxdock 2>/dev/null config --containers") )
+
+  if [[ -z "${_lxdock_containers// }" ]]; then
+    _message 'no more arguments: no container defined.'
+  fi
+
+  _wanted application expl 'container' compadd $_lxdock_containers
+}
+
+
+local expl
+local curcontext="$curcontext" state line
+local -A opt_args
+
+_arguments -C \
+           ':command:->command' \
+           '*::arguments:->arguments' \
+
+case $state in
+  (command)
+    _describe -t commands "subcommand" _1st_arguments
+    return
+    ;;
+
+  (arguments)
+    case $line[1] in
+      (config)
+        # lxdock config [-h] [--containers]
+        _arguments '--containers[Display only container names, one per line.]'
+        ;;
+
+      (destroy)
+        # lxdock destroy [-h] [-f] [name [name ...]]
+        _arguments '(-f --force)'{-f,--force}'[Destroy without confirmation]' \
+                   '*::container:__container_list' \
+        ;;
+
+      (halt)
+        # lxdock halt [-h] [name [name ...]]
+        _arguments '*::container:__container_list' \
+        ;;
+
+      (help)
+        # lxdock help [-h] [subcommand]
+        _arguments ':subcommand:__subcommand_list'
+        ;;
+
+      (init)
+        # lxdock init [-h] [-f] [--image IMAGE] [--project PROJECT]
+        _arguments '(-f --force)'{-f,--force}'[Overwrite existing LXDock file]' \
+                   '--image[Container image to use]:image:' \
+                   '--project[Project name to use]:project:'
+        ;;
+
+      (provision)
+        # lxdock provision [-h] [name [name ...]]
+        _arguments '*::container:__container_list' \
+        ;;
+
+      (shell)
+        # lxdock shell [-h] [-u USERNAME] [name]
+        _arguments '(-u --username)'{-u,--username}'[Username to login as]:username:' \
+                   '::container:__container_list' \
+
+        ;;
+
+      (status)
+        # lxdock status [-h] [name [name ...]]
+        _arguments '*::container:__container_list' \
+        ;;
+
+      (up)
+        # lxdock up [-h] [name [name ...]]
+        _arguments '*::container:__container_list' \
+        ;;
+
+      *)
+        (( ret )) && _message 'no arguments'
+        ;;
+    esac
+    ;;
+esac
+
+# Local Variables:
+# mode: Shell-Script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# sh-basic-offset: 2
+# End:
+# vim: ft=zsh sw=2 ts=2 et

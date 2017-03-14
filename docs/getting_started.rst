@@ -87,7 +87,7 @@ You should now be able to install LXDock using:
 Command line completion
 -----------------------
 
-LXDock can provide completion for commands and container names.
+LXDock can provide completion for commands, options and container names.
 
 Bash
 ~~~~
@@ -106,7 +106,14 @@ Make sure to restart your shell before trying to use LXDock's bash completion.
 ZSH
 ~~~
 
-*Not yet!* But feel free to contribute (please refer to :doc:`contributing`)!
+To add zsh completion for LXDock, place the ``contrib/completion/zsh/_lxdock`` file at
+``/usr/share/zsh/vendor-completions/_lxdock`` (or another folder in ``$fpath``):
+
+.. code-block:: console
+
+  $ sudo cp contrib/completion/zsh/_lxdock /usr/share/zsh/vendor-completions/_lxdock
+
+Make sure to restart your shell before trying to use LXDock's zsh completion.
 
 Your first LXDock file
 ----------------------
