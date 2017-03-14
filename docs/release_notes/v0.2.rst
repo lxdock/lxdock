@@ -1,0 +1,13 @@
+############################################
+LXDock 0.2 release notes (under development)
+############################################
+
+Requirements and compatibility
+------------------------------
+
+Python 3.4, 3.5 and 3.6. LXD 2.0+.
+
+New features
+------------
+
+* Add support for ZSH completion
