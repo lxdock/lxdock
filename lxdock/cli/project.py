@@ -1,5 +1,3 @@
-import os
-
 from ..client import get_client
 from ..conf import Config
 from ..project import Project
