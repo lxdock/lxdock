@@ -11,3 +11,4 @@ New features
 ------------
 
 * Add support for ZSH completion
+* Add the possibility to use the `lxdock` command from subfolders
