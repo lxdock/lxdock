@@ -68,7 +68,8 @@ class Provisioner(with_metaclass(_ProvisionerBase)):
     # subclasses.
     name = None
 
-    def __init__(self, lxd_container, options):
+    def __init__(self, homedir, lxd_container, options):
+        self.homedir = homedir
         self.lxd_container = lxd_container
         self.options = options.copy()
 

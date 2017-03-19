@@ -20,12 +20,12 @@ class Project:
         self.containers = containers
 
     @classmethod
-    def from_config(cls, project_name, homedir, client, config):
+    def from_config(cls, project_name, client, config):
         """ Creates a `Project` instance from a config object. """
         containers = []
         for container_config in config.containers:
-            containers.append(Container(project_name, homedir, client, **container_config))
-        return cls(project_name, homedir, client, containers)
+            containers.append(Container(project_name, config.homedir, client, **container_config))
+        return cls(project_name, config.homedir, client, containers)
 
     #####################
     # CONTAINER ACTIONS #

@@ -22,7 +22,7 @@ class TestAnsibleProvisioner:
         lxd_state.network.__getitem__ = unittest.mock.MagicMock(
             return_value={'addresses': [{'family': 'init', 'address': '0.0.0.0', }, ]})
         lxd_container.state.return_value = lxd_state
-        provisioner = AnsibleProvisioner(lxd_container, {'playbook': 'deploy.yml'})
+        provisioner = AnsibleProvisioner('./', lxd_container, {'playbook': 'deploy.yml'})
         provisioner.provision()
         assert mock_popen.call_args[0] == (
-            'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i tmpfile deploy.yml', )
+            'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i tmpfile ./deploy.yml', )

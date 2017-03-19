@@ -17,4 +17,4 @@ def get_project(base_dir='.'):
     # Initializes the client instance that will be used to orchestrate containers.
     client = get_client()
 
-    return Project.from_config(project_name, os.path.abspath(base_dir), client, config)
+    return Project.from_config(project_name, client, config)

@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 
 import yaml
 from voluptuous.error import Invalid
@@ -14,8 +15,8 @@ logger = logging.getLogger(__name__)
 class Config(object):
     """ Holds the configuration of a LXDock project. """
 
-    def __init__(self, base_dir, filename):
-        self.base_dir = base_dir
+    def __init__(self, homedir, filename):
+        self.homedir = homedir
         self.filename = filename
         self.containers = []
         self._dict = {}
@@ -29,25 +30,32 @@ class Config(object):
     @classmethod
     def from_base_dir(cls, base_dir='.'):
         """ Returns a Config instance using a base directory. """
-        existing_config_filenames = [
-            filename for filename in constants.ALLOWED_FILENAMES
-            if os.path.exists(os.path.join(base_dir, filename))]
+        base_dir_path = Path(os.path.abspath(base_dir))
+        candidate_paths = [base_dir_path, ] + list(base_dir_path.parents)
+        existing_config_paths = []
+        for candidate_path in candidate_paths:
+            existing_config_paths = [
+                os.path.join(str(candidate_path), filename)
+                for filename in constants.ALLOWED_FILENAMES
+                if os.path.exists(os.path.join(str(candidate_path), filename))]
+            if existing_config_paths:
+                break
 
-        if not existing_config_filenames:
+        if not existing_config_paths:
             raise ConfigFileNotFoundError(
                 'Unable to find a suitable configuration file in this directory. '
                 'Are you in the right directory?\n'
                 'The supported filenames are: {}'.format(', '.join(constants.ALLOWED_FILENAMES))
             )
 
-        config_filename = os.path.join(base_dir, existing_config_filenames[0])
-        if len(existing_config_filenames) > 1:
+        config_dirname, config_filename = os.path.split(existing_config_paths[0])
+        if len(existing_config_paths) > 1:
             logger.warn('Multiple config files were found: {0}'.format(
-                ', '.join(existing_config_filenames)))
+                ', '.join([os.path.split(p)[1] for p in existing_config_paths])))
             logger.warn('Using: {0}'.format(config_filename))
 
         # Initializes the config instance.
-        config = cls(base_dir, config_filename)
+        config = cls(config_dirname, config_filename)
 
         # Loads the YML.
         config.load()
@@ -103,7 +111,7 @@ class Config(object):
 
     def _load_yml(self):
         """ Loads the YML configuration file. """
-        with open(self.filename, 'r') as fp:
+        with open(os.path.join(self.homedir, self.filename), 'r') as fp:
             return yaml.safe_load(fp)
         # TODO: handle potential errors here
 

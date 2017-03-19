@@ -19,7 +19,17 @@ class TestConfig:
     def test_works_if_multiple_config_files_are_found(self):
         project_dir = os.path.join(FIXTURE_ROOT, 'project_with_multiple_config_files')
         config = Config.from_base_dir(project_dir)
-        assert config.filename == os.path.join(project_dir, 'lxdock.yml')
+        assert config.homedir == project_dir
+        assert config.filename == 'lxdock.yml'
+
+    def test_can_find_a_config_file_from_a_project_subdirectory(self):
+        project_dir = os.path.join(FIXTURE_ROOT, 'project01', 'subdir')
+        config = Config.from_base_dir(project_dir)
+        assert config.homedir == os.path.join(FIXTURE_ROOT, 'project01')
+        assert config.filename == 'lxdock.yml'
+        assert config['name'] == 'project01'
+        assert config['image'] == 'ubuntu/xenial'
+        assert config['mode'] == 'pull'
 
     def test_raises_an_error_if_the_config_file_cannot_be_found(self):
         project_dir = os.path.dirname(__file__)

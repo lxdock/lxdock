@@ -1,4 +1,5 @@
 import logging
+import os
 import subprocess
 import tempfile
 
@@ -21,7 +22,7 @@ class AnsibleProvisioner(Provisioner):
             tmpinv.write('{} ansible_user=root'.format(ip).encode('ascii'))
             tmpinv.flush()
             cmd = 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i {} {}'.format(
-                tmpinv.name, self.options['playbook'])
+                tmpinv.name, os.path.join(self.homedir, self.options['playbook']))
             logger.debug(cmd)
             p = subprocess.Popen(cmd, shell=True)
             p.wait()

@@ -89,7 +89,7 @@ class Container:
             provisioning_type = provisioning_item['type'].lower()
             provisioner_class = Provisioner.provisioners.get(provisioning_type)
             if provisioner_class is not None:
-                provisioner = provisioner_class(self._container, provisioning_item)
+                provisioner = provisioner_class(self.homedir, self._container, provisioning_item)
                 logger.info('Provisioning with {0}'.format(provisioning_item['type']))
                 provisioner.provision()
 
