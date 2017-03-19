@@ -18,7 +18,7 @@ class TestProject(LXDTestCase):
     def test_can_be_initialized_from_a_config_file(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project01')
         config = Config.from_base_dir(homedir)
-        project = Project.from_config('project01', homedir, self.client, config)
+        project = Project.from_config('project01', self.client, config)
         assert project.name == 'project01'
         assert project.homedir == homedir
         assert len(project.containers) == 1
@@ -30,21 +30,21 @@ class TestProject(LXDTestCase):
     def test_can_return_a_container_by_name(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project02')
         config = Config.from_base_dir(homedir)
-        project = Project.from_config('project02', homedir, self.client, config)
+        project = Project.from_config('project02', self.client, config)
         container = project.get_container_by_name('lxdock-pytest-web')
         assert container and container.name == 'lxdock-pytest-web'
 
     def test_raises_an_error_if_it_cannot_find_a_container(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project02')
         config = Config.from_base_dir(homedir)
-        project = Project.from_config('project02', homedir, self.client, config)
+        project = Project.from_config('project02', self.client, config)
         with pytest.raises(ProjectError):
             project.get_container_by_name('dummy')
 
     def test_can_start_all_the_containers_of_a_project(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project03')
         config = Config.from_base_dir(homedir)
-        project = Project.from_config('project02', homedir, self.client, config)
+        project = Project.from_config('project02', self.client, config)
         project.up()
         for container in project.containers:
             assert container.is_running
@@ -52,7 +52,7 @@ class TestProject(LXDTestCase):
     def test_can_start_some_specific_containers_of_a_project(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project02')
         config = Config.from_base_dir(homedir)
-        project = Project.from_config('project02', homedir, self.client, config)
+        project = Project.from_config('project02', self.client, config)
         project.up(container_names=['lxdock-pytest-web'])
         container_web = project.get_container_by_name('lxdock-pytest-web')
         container_ci = project.get_container_by_name('lxdock-pytest-ci')
@@ -62,7 +62,7 @@ class TestProject(LXDTestCase):
     def test_can_halt_all_the_containers_of_a_project(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project03')
         config = Config.from_base_dir(homedir)
-        project = Project.from_config('project02', homedir, self.client, config)
+        project = Project.from_config('project02', self.client, config)
         project.up()
         project.halt()
         for container in project.containers:
@@ -71,7 +71,7 @@ class TestProject(LXDTestCase):
     def test_can_halt_some_specific_containers_of_a_project(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project02')
         config = Config.from_base_dir(homedir)
-        project = Project.from_config('project02', homedir, self.client, config)
+        project = Project.from_config('project02', self.client, config)
         project.up()
         project.halt(container_names=['lxdock-pytest-web'])
         container_web = project.get_container_by_name('lxdock-pytest-web')
@@ -133,7 +133,7 @@ class TestProject(LXDTestCase):
     def test_can_destroy_some_specific_containers_of_a_project(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project02')
         config = Config.from_base_dir(homedir)
-        project = Project.from_config('project02', homedir, self.client, config)
+        project = Project.from_config('project02', self.client, config)
         project.up()
         project.destroy(container_names=['lxdock-pytest-web'])
         container_web = project.get_container_by_name('lxdock-pytest-web')
@@ -144,7 +144,7 @@ class TestProject(LXDTestCase):
     def test_cannot_open_shell_into_many_containers(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project02')
         config = Config.from_base_dir(homedir)
-        project = Project.from_config('project02', homedir, self.client, config)
+        project = Project.from_config('project02', self.client, config)
         with pytest.raises(ProjectError):
             project.shell()
 
