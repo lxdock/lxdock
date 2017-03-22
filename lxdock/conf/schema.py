@@ -1,4 +1,6 @@
-from voluptuous import All, In, IsDir, Length, Required, Schema, Url
+from voluptuous import All, Any, In, IsDir, Length, Required, Schema, Url
+
+from ..provisioners import Provisioner
 
 from .validators import Hostname, LXDIdentifier
 
@@ -9,13 +11,7 @@ _top_level_and_containers_common_options = {
     'mode': In(['local', 'pull', ]),
     'privileged': bool,
     'protocol': In(['lxd', 'simplestreams', ]),
-    'provisioning': [{
-        # Common options
-        'type': str,
-
-        # Ansible specific options
-        'playbook': str,
-    }],
+    'provisioning': [],  # will be set dynamically using provisioner classes...
     'server': Url(),
     'shares': [{
         # The existence of the source directory will be checked!
@@ -32,6 +28,12 @@ _top_level_and_containers_common_options = {
         'home': str,
     }],
 }
+
+# Inserts provisioner specific schema rules in the global schema dict.
+_top_level_and_containers_common_options['provisioning'] = [
+    Any(*[dict([('type', provisioner.name), ] + list(provisioner.schema.items()))
+          for provisioner in Provisioner.provisioners.values()]),
+]
 
 _container_options = {
     Required('name'): LXDIdentifier(),

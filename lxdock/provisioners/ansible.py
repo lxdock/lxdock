@@ -3,6 +3,8 @@ import os
 import subprocess
 import tempfile
 
+from voluptuous import Required
+
 from ..network import get_ipv4_ip
 
 from .base import Provisioner
@@ -14,6 +16,9 @@ class AnsibleProvisioner(Provisioner):
     """ Allows to perform provisioning operations using Ansible. """
 
     name = 'ansible'
+    schema = {
+        Required('playbook'): str,
+    }
 
     def provision(self):
         """ Performs the provisioning operations using the considered provisioner. """

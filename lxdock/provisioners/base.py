@@ -39,6 +39,9 @@ class _ProvisionerBase(type):
         if not new_provisioner.name:
             raise InvalidProvisioner(
                 "The 'name' attribute of Provisioner subclasses cannot be None")
+        if not new_provisioner.schema:
+            raise InvalidProvisioner(
+                "The 'schema' attribute of Provisioner subclasses cannot be None")
 
         return new_provisioner
 
@@ -67,6 +70,11 @@ class Provisioner(with_metaclass(_ProvisionerBase)):
     # The `name` of a provisioner is a required attribute and should always be set on `Provisioner`
     # subclasses.
     name = None
+
+    # The `schema` of a provisioner should be a dictionary using voluptuous helpers. This dictionary
+    # must define the "local" schema that should be provided in the LXDock file in order to use the
+    # considered provisioner.
+    schema = None
 
     def __init__(self, homedir, lxd_container, options):
         self.homedir = homedir
