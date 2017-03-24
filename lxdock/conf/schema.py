@@ -31,7 +31,7 @@ _top_level_and_containers_common_options = {
 
 # Inserts provisioner specific schema rules in the global schema dict.
 _top_level_and_containers_common_options['provisioning'] = [
-    Any(*[dict([('type', provisioner.name), ] + list(provisioner.schema.items()))
+    Any(*[dict([(Required('type'), provisioner.name), ] + list(provisioner.schema.items()))
           for provisioner in Provisioner.provisioners.values()]),
 ]
 
