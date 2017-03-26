@@ -169,3 +169,19 @@ If you're having problems trying to run your container, try running them in :ref
 mode. Many older distributions have an init system that doesn't work well with unprivileged
 containers (`debian/jessie` notably). Some host-side problems can also be worked around by running
 privileged containers.
+
+
+If you received a permission denied error running the lxc network commands below: 
+ 
+.. code-block:: console
+
+    $ lxc network create lxdbr0 ipv6.address=none ipv4.address=10.0.3.1/24 ipv4.nat=true
+    $ lxc network attach-profile lxdbr0 default eth0
+    
+Run these commands below and then run the lxc network commands again. You should now be able
+to proceed with the remaining instructions. 
+ 
+.. code-block:: console
+ 
+    $ sudo systemctl stop lxd.socket
+    $ sudo systemctl start lxd.socket
