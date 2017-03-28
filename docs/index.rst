@@ -12,6 +12,7 @@ Welcome to LXDock's documentation!
    usage/index
    cli/index
    conf
+   provisioners/index
    glossary
    contributing
    release_notes/index
