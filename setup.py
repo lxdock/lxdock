@@ -34,9 +34,6 @@ setup(
     keywords='lxd lxc containers environments orchestration devops',
     zip_safe=False,
     install_requires=[
-        # This requirement below is actually a pylxd dependency, but a recent ws4py release broke
-        # lxdock. Until we figure out how to fix the problem upstream, we pin ws4py to v0.3.4 here.
-        'ws4py==0.3.4',
         'colorlog>=2.0,<3.0',
         'pylxd>=2.2,<3.0',
         'PyYAML>=3.0,<4.0',
