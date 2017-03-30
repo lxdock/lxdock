@@ -60,7 +60,11 @@ class Config(object):
         # Loads the YML.
         config.load()
 
-        # Validates the content of the configuration.
+        # Validates the content of the configuration. We chdir into the home directory of the
+        # project in order to ensure that IsFile/IsDir validators keep working properly if the
+        # config is initialized from a subfolder of the project.
+        cwd = os.getcwd()
+        os.chdir(config.homedir)
         try:
             schema(config._dict)
         except Invalid as e:
@@ -68,6 +72,8 @@ class Config(object):
             path = ' @ %s' % '.'.join(map(str, e.path)) if e.path else ''
             msg = 'The LXDock file is invalid because: {0}'.format(e.msg + path)
             raise ConfigFileValidationError(msg)
+        finally:
+            os.chdir(cwd)
 
         # Loads the containers.
         config.load_containers()
