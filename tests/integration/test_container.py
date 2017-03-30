@@ -25,7 +25,7 @@ def test_must_be_running_decorator_works(persistent_container):
 class TestContainer(LXDTestCase):
     def test_can_set_up_a_container_that_does_not_exist(self):
         container_options = {
-            'name': self.containername('dummy'), 'image': 'ubuntu/xenial', 'mode': 'pull', }
+            'name': self.containername('newcontainer'), 'image': 'ubuntu/xenial', 'mode': 'pull', }
         container = Container('myproject', THIS_DIR, self.client, **container_options)
         container.up()
         assert container._container.status_code == constants.CONTAINER_RUNNING
@@ -44,7 +44,7 @@ class TestContainer(LXDTestCase):
 
     def test_can_destroy_a_container_and_run_this_action_for_a_container_that_does_not_exist(self):
         container_options = {
-            'name': self.containername('dummy'), 'image': 'ubuntu/xenial', 'mode': 'pull', }
+            'name': self.containername('doesnotexist'), 'image': 'ubuntu/xenial', 'mode': 'pull', }
         container = Container('myproject', THIS_DIR, self.client, **container_options)
         container.destroy()
         assert not container.exists
@@ -64,7 +64,7 @@ class TestContainer(LXDTestCase):
 
     def test_can_provision_a_container(self):
         container_options = {
-            'name': self.containername('dummy'), 'image': 'ubuntu/xenial', 'mode': 'pull',
+            'name': self.containername('willprovision'), 'image': 'ubuntu/xenial', 'mode': 'pull',
             'provisioning': [
                 {'type': 'ansible',
                  'playbook': os.path.join(THIS_DIR, 'fixtures/provision_with_ansible.yml'), }
@@ -85,7 +85,7 @@ class TestContainer(LXDTestCase):
     @unittest.mock.patch('subprocess.call')
     def test_can_open_a_shell_for_a_specific_shelluser(self, mocked_call):
         container_options = {
-            'name': self.containername('dummy'), 'image': 'ubuntu/xenial', 'mode': 'pull',
+            'name': self.containername('shellspecificuser'), 'image': 'ubuntu/xenial',
             'shell': {'user': 'test', 'home': '/opt', },
         }
         container = Container('myproject', THIS_DIR, self.client, **container_options)
