@@ -8,8 +8,8 @@ class TestOpenSUSEGuest:
         lxd_container = unittest.mock.Mock()
         lxd_container.execute.return_value = ('ok', 'ok', '')
         guest = OpenSUSEGuest(lxd_container)
-        guest.install_barebones_packages()
+        guest.install_ansible_packages()
         assert lxd_container.execute.call_count == 1
         assert lxd_container.execute.call_args[0] == \
             (['zypper', '--non-interactive', 'install'] +
-             OpenSUSEGuest.barebones_packages, )
+             OpenSUSEGuest.ansible_packages, )

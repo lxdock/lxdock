@@ -5,14 +5,13 @@ class AlpineGuest(Guest):
     """ This guest can provision Alpine containers. """
 
     name = 'alpine'
-    barebones_packages = [
+    ansible_packages = [
         'openssh',
         'python',
     ]
 
-    def install_barebones_packages(self):
-        """ Installs packages when the guest is first provisionned. """
+    def install_ansible_packages(self):
         self.run(['apk', 'update'])
-        self.run(['apk', 'add'] + self.barebones_packages)
+        self.run(['apk', 'add'] + self.ansible_packages)
         self.run(['rc-update', 'add', 'sshd'])
         self.run(['/etc/init.d/sshd', 'start'])

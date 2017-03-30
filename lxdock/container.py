@@ -80,12 +80,16 @@ class Container:
         if barebone is None:  # None == only if the container isn't provisioned.
             barebone = not self.is_provisioned
 
+        provisioning_steps = self.options.get('provisioning', [])
+
         if barebone:
             self._perform_barebones_setup()
+            if any(ps['type'].lower() == 'ansible' for ps in provisioning_steps):
+                self._guest.install_ansible_packages()
 
         logger.info('Provisioning container "{name}"...'.format(name=self.name))
 
-        for provisioning_item in self.options.get('provisioning', []):
+        for provisioning_item in provisioning_steps:
             provisioning_type = provisioning_item['type'].lower()
             provisioner_class = Provisioner.provisioners.get(provisioning_type)
             if provisioner_class is not None:
@@ -279,10 +283,7 @@ class Container:
         """ Performs bare bones setup on the machine. """
         logger.info('Doing bare bones setup on the machine...')
 
-        # First install bare bones packages on the container.
-        self._guest.install_barebones_packages()
-
-        # Then add the current user's SSH pubkey to the container's root SSH config.
+        # Add the current user's SSH pubkey to the container's root SSH config.
         ssh_pubkey = self._host.get_ssh_pubkey()
         if ssh_pubkey is not None:
             self._guest.add_ssh_pubkey_to_root_authorized_keys(ssh_pubkey)

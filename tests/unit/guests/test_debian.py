@@ -8,7 +8,7 @@ class TestDebianGuest:
         lxd_container = unittest.mock.Mock()
         lxd_container.execute.return_value = ('ok', 'ok', '')
         guest = DebianGuest(lxd_container)
-        guest.install_barebones_packages()
+        guest.install_ansible_packages()
         assert lxd_container.execute.call_count == 1
         assert lxd_container.execute.call_args[0] == \
-            (['apt-get', 'install', '-y'] + DebianGuest.barebones_packages, )
+            (['apt-get', 'install', '-y'] + DebianGuest.ansible_packages, )

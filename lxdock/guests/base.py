@@ -120,8 +120,8 @@ class Guest(with_metaclass(_GuestBase)):
     # METHODS THAT SHOULD BE OVERRIDEN IN GUEST SUBCLASSES #
     ########################################################
 
-    def install_barebones_packages(self):  # pragma: no cover
-        """ Installs packages when the guest is first provisionned. """
+    def install_ansible_packages(self):  # pragma: no cover
+        """ Installs packages needed to run ansible on the guest. """
         # This method should be overriden in `Guest` subclasses.
         self._warn_guest_not_supported('for installing bare bones packages')
 
