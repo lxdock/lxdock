@@ -61,6 +61,12 @@ dependencies.
 .. _LXD: https://www.ubuntu.com/cloud/lxd
 .. _requirements: https://lxdock.readthedocs.io/en/stable/getting_started.html#requirements
 
+Communication
+=============
+
+You can join the ``#lxdock`` channel on irc.freenode.net to get help and ask questions related to
+the development of LXDock.
+
 Authors
 =======
 
