@@ -20,7 +20,7 @@ def _remove_test_containers(client=None):
     test_containers = list(filter(
         lambda c: TEST_CONTAINER_INJECTED_ID in c.name, client.containers.all()))
     [c.stop(wait=True) for c in test_containers if c.status_code == constants.CONTAINER_RUNNING]
-    [c.delete() for c in test_containers]
+    [c.delete(wait=True) for c in test_containers]
 
 
 class LXDTestCase:
