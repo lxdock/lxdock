@@ -50,7 +50,7 @@ You should now be able to configure your LXD installation using:
 
   The ``lxd init`` command will ask you to choose the settings to apply to your LXD installation in
   an interactive way (storage backend, network configuration, etc). But if you just want to go fast
-  you can try the following commands:
+  you can try the following commands (note that this will only work for **LXD 2.3+**):
 
   .. code-block:: console
 
@@ -171,17 +171,17 @@ containers (`debian/jessie` notably). Some host-side problems can also be worked
 privileged containers.
 
 
-If you received a permission denied error running the lxc network commands below: 
- 
+If you received a permission denied error running the lxc network commands below:
+
 .. code-block:: console
 
     $ lxc network create lxdbr0 ipv6.address=none ipv4.address=10.0.3.1/24 ipv4.nat=true
     $ lxc network attach-profile lxdbr0 default eth0
-    
+
 Run these commands below and then run the lxc network commands again. You should now be able
-to proceed with the remaining instructions. 
- 
+to proceed with the remaining instructions.
+
 .. code-block:: console
- 
+
     $ sudo systemctl stop lxd.socket
     $ sudo systemctl start lxd.socket
