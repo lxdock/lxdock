@@ -5,6 +5,8 @@
     supported by LXDock (eg. Ansible, ...).
 """
 
+import os
+
 from ..utils.metaclass import with_metaclass
 
 __all__ = ['Provisioner', ]
@@ -84,3 +86,11 @@ class Provisioner(with_metaclass(_ProvisionerBase)):
     def provision(self):
         """ Performs the provisioning operations using the considered provisioner. """
         # This method should be overriden in `Provisioner` subclasses.
+
+    ##################
+    # HELPER METHODS #
+    ##################
+
+    def homedir_expanded_path(self, relative_path):
+        """ Expands the considered path with the absolute path of the home homedir. """
+        return os.path.join(self.homedir, relative_path)

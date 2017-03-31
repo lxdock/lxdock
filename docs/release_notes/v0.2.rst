@@ -11,4 +11,6 @@ New features
 ------------
 
 * Add support for ZSH completion
-* Add the possibility to use the `lxdock` command from subfolders
+* Add the possibility to use the ``lxdock`` command from subfolders
+* Add support for ansible options related to ansible-vault
+  (``ask_vault_pass``, ``vault_password_file``)
