@@ -10,9 +10,19 @@ Python 3.4, 3.5 and 3.6. LXD 2.0+.
 New features
 ------------
 
-* Add support for ZSH completion
+* Add support for ZSH completion (`#39 <https://github.com/lxdock/lxdock/pull/39>`_)
 * Add the possibility to use the ``lxdock`` command from subfolders
+  (`#45 <https://github.com/lxdock/lxdock/pull/45>`_)
 * Add support for ansible options related to ansible-vault
   (``ask_vault_pass``, ``vault_password_file``)
-* Add support for shell provisioning
+  (`#54 <https://github.com/lxdock/lxdock/pull/54>`_)
+* Add support for shell provisioning (`#56 <https://github.com/lxdock/lxdock/pull/56>`_)
 * Add a ``password`` option to set the password of users created using the ``users`` option
+  (`#60 <https://github.com/lxdock/lxdock/pull/60>`_)
+
+Improvements
+------------
+
+* Improve documentation (`#49 <https://github.com/lxdock/lxdock/pull/49>`_,
+  `#43 <https://github.com/lxdock/lxdock/pull/43>`_)
+* Fix integration tests flakiness
