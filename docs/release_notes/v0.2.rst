@@ -19,6 +19,8 @@ New features
 * Add support for shell provisioning (`#56 <https://github.com/lxdock/lxdock/pull/56>`_)
 * Add a ``password`` option to set the password of users created using the ``users`` option
   (`#60 <https://github.com/lxdock/lxdock/pull/60>`_)
+* Add support for environment variables mapping (``environment`` option)
+  (`#50 <https://github.com/lxdock/lxdock/pull/50>`_)
 
 Improvements
 ------------
