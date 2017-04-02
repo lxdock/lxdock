@@ -95,6 +95,19 @@ class TestContainer(LXDTestCase):
         assert mocked_call.call_args[0][0] == \
             'lxc exec {} --env HOME=/opt -- su -m test'.format(container.lxd_name)
 
+    @unittest.mock.patch('subprocess.call')
+    def test_can_set_shell_environment_variables(self, mocked_call):
+        # Environment variables in the shell can be set through configuration.
+        container_options = {
+            'name': self.containername('shell-env'), 'image': 'ubuntu/xenial',
+            'environment': {'FOO': 'bar', 'BAR': 42},
+        }
+        container = Container('myproject', THIS_DIR, self.client, **container_options)
+        container.up()
+        container.shell()
+        assert container._container.config['environment.FOO'] == 'bar'
+        assert container._container.config['environment.BAR'] == '42'
+
     def test_can_tell_if_a_container_exists_or_not(self, persistent_container):
         unknown_container = Container('myproject', THIS_DIR, self.client, **{
             'name': self.containername('unknown'), 'image': 'ubuntu/xenial', 'mode': 'pull', })

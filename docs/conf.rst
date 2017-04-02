@@ -47,6 +47,20 @@ containers, as follows:
     - name: test01
     - name: test02
 
+environment
+-----------
+
+A mapping of environment variables to override in the container when executing commands. This will
+affect ``lxdock shell`` and ``lxdock provision`` operations.
+
+.. code-block:: yaml
+
+  name: myproject
+  image: ubuntu/xenial
+
+  environment:
+    LC_ALL: en_US.utf8
+
 hostnames
 ---------
 
@@ -211,8 +225,11 @@ of shared items. Each shared item should define a ``source`` (a path on your hos
 shell
 -----
 
-The ``shell`` option allows you to define the user to use when doing a ``lxdock shell``. This allows
-you to have a shell for a specific user/home directory when doing ``lxdock shell``:
+The ``shell`` option alters the behavior of the ``lxdock shell`` command. It's a map of these
+sub-options:
+
+* ``user``: Default user to open the shell under.
+* ``home``: Path to open the shell under.
 
 .. code-block:: yaml
 

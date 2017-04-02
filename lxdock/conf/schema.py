@@ -1,4 +1,4 @@
-from voluptuous import All, Any, In, IsDir, Length, Required, Schema, Url
+from voluptuous import All, Any, Coerce, Extra, In, IsDir, Length, Required, Schema, Url
 
 from ..provisioners import Provisioner
 
@@ -6,6 +6,7 @@ from .validators import Hostname, LXDIdentifier
 
 
 _top_level_and_containers_common_options = {
+    'environment': {Extra: Coerce(str)},
     'hostnames': [Hostname(), ],
     'image': str,
     'mode': In(['local', 'pull', ]),
