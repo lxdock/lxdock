@@ -9,7 +9,7 @@ LXDock
    :target: https://pypi.python.org/pypi/lxdock/
    :alt: License
 
-.. image:: http://img.shields.io/pypi/v/lxdock.svg?style=flat-square
+.. image:: https://img.shields.io/pypi/v/lxdock.svg?style=flat-square
    :target: https://pypi.python.org/pypi/lxdock/
    :alt: Latest Version
 
@@ -47,7 +47,7 @@ suddenly becomes much simpler (a simple wrapper around lxd, really).
 Documentation
 =============
 
-Online browsable documentation is available at http://lxdock.readthedocs.io.
+Online browsable documentation is available at https://lxdock.readthedocs.io.
 
 Head over to the documentation for all the details on how to set up LXDock and how to start using
 containers in your project!
