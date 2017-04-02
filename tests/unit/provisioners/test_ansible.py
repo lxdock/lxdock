@@ -1,7 +1,7 @@
 import re
 import unittest.mock
 
-from lxdock.guests import DebianGuest
+from lxdock.guests import AlpineGuest, DebianGuest
 from lxdock.hosts import Host
 from lxdock.provisioners import AnsibleProvisioner
 
@@ -50,3 +50,17 @@ class TestAnsibleProvisioner:
         assert re.match(
             'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook --inventory-file /[/\w]+ '
             '--ask-vault-pass ./deploy.yml', mock_popen.call_args[0][0])
+
+    def test_can_properly_setup_ssh_for_alpine_guests(self):
+        lxd_container = unittest.mock.Mock()
+        lxd_container.execute.return_value = ('ok', 'ok', '')
+        host = Host(unittest.mock.Mock())
+        guest = AlpineGuest(lxd_container)
+        provisioner = AnsibleProvisioner('./', host, guest, {'playbook': 'deploy.yml'})
+        provisioner.setup()
+        assert lxd_container.execute.call_count == 4
+        assert lxd_container.execute.call_args_list[0][0] == (['apk', 'update'], )
+        assert lxd_container.execute.call_args_list[1][0] == \
+            (['apk', 'add'] + AnsibleProvisioner.guest_required_packages_alpine, )
+        assert lxd_container.execute.call_args_list[2][0] == (['rc-update', 'add', 'sshd'], )
+        assert lxd_container.execute.call_args_list[3][0] == (['/etc/init.d/sshd', 'start'], )

@@ -84,8 +84,6 @@ class Container:
 
         if barebone:
             self._perform_barebones_setup()
-            if any(ps['type'].lower() == 'ansible' for ps in provisioning_steps):
-                self._guest.install_ansible_packages()
 
         logger.info('Provisioning container "{name}"...'.format(name=self.name))
 
@@ -96,6 +94,8 @@ class Container:
                 provisioner = provisioner_class(
                     self.homedir, self._host, self._guest, provisioning_item)
                 logger.info('Provisioning with {0}'.format(provisioning_item['type']))
+                if barebone:
+                    provisioner.setup()
                 provisioner.provision()
 
         self._container.config['user.lxdock.provisioned'] = 'true'

@@ -5,10 +5,6 @@ class OracleLinuxGuest(Guest):
     """ This guest can provision Oracle Linux containers. """
 
     name = 'ol'
-    ansible_packages = [
-        'openssh-server',
-        'python',
-    ]
 
-    def install_ansible_packages(self):
-        self.run(['yum', '-y', 'install'] + self.ansible_packages)
+    def install_packages(self, packages):
+        self.run(['yum', '-y', 'install'] + packages)

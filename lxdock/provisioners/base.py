@@ -5,11 +5,14 @@
     supported by LXDock (eg. Ansible, ...).
 """
 
+import logging
 import os
 
 from ..utils.metaclass import with_metaclass
 
 __all__ = ['Provisioner', ]
+
+logger = logging.getLogger(__name__)
 
 
 class InvalidProvisioner(Exception):
@@ -78,6 +81,14 @@ class Provisioner(with_metaclass(_ProvisionerBase)):
     # considered provisioner.
     schema = None
 
+    # System packages needed for the provisioner to work correctly (on the guest side) should be
+    # listed in attributed named "guest_required_packages_{guestname}". For example:
+    #
+    #     guest_required_packages_opensuse = ['openSSH', 'python3-base', ]
+    #     guest_required_packages_oracle = ['openssh-server', 'python', ]
+    #
+    # These packages will be installed during the "provision" operation.
+
     def __init__(self, homedir, host, guest, options):
         self.homedir = homedir
         self.host = host
@@ -87,6 +98,25 @@ class Provisioner(with_metaclass(_ProvisionerBase)):
     def provision(self):
         """ Performs the provisioning operations using the considered provisioner. """
         # This method should be overriden in `Provisioner` subclasses.
+
+    def setup(self):
+        """ Setups the provisioner if applicable. """
+        # Ensure that the packages required to properly use the considered provisioner are installed
+        # on the guest.
+        required_packages = getattr(
+            self, 'guest_required_packages_{}'.format(self.guest.name), None)
+        if required_packages is not None:
+            logger.info(
+                'Installing packages required for the {} provisioner '
+                'on the guest'.format(self.name))
+            self.guest.install_packages(required_packages)
+
+        # We allow `Provisioner` subclasses to define their own "setup_guest_{guestname}" methods
+        # if setup operations have to be done on some specific guest prior to any provisioning
+        # actions.
+        guest_setup_method = getattr(self, 'setup_guest_{}'.format(self.guest.name), None)
+        if guest_setup_method is not None:
+            guest_setup_method()
 
     ##################
     # HELPER METHODS #

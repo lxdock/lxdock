@@ -5,10 +5,6 @@ class ArchLinuxGuest(Guest):
     """ This guest can provision ArchLinux containers. """
 
     name = 'arch'
-    ansible_packages = [
-        'openssh',
-        'python2',
-    ]
 
-    def install_ansible_packages(self):
-        self.run(['pacman', '-S', '--noconfirm'] + self.ansible_packages)
+    def install_packages(self, packages):
+        self.run(['pacman', '-S', '--noconfirm'] + packages)

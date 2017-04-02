@@ -72,9 +72,6 @@ class Guest(with_metaclass(_GuestBase)):
     # The `name` of a guest is a required attribute and should always be set on `Guest` subclasses.
     name = None
 
-    # A list of packages that should be installed when doing barebone setup.
-    barebones_packages = []
-
     def __init__(self, lxd_container):
         self.lxd_container = lxd_container
 
@@ -122,10 +119,14 @@ class Guest(with_metaclass(_GuestBase)):
     # METHODS THAT SHOULD BE OVERRIDEN IN GUEST SUBCLASSES #
     ########################################################
 
-    def install_ansible_packages(self):  # pragma: no cover
-        """ Installs packages needed to run ansible on the guest. """
+    def install_packages(self, packages):  # pragma: no cover
+        """ Installs the considered packages on the guest.
+
+        :param packages: The list of packages to install on the guest
+        :type packages: list
+        """
         # This method should be overriden in `Guest` subclasses.
-        self._warn_guest_not_supported('for installing bare bones packages')
+        self._warn_guest_not_supported('for installing packages')
 
     ##################
     # HELPER METHODS #
