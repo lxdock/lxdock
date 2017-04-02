@@ -109,12 +109,14 @@ class Guest(with_metaclass(_GuestBase)):
         self.run(['mkdir', '-p', '/root/.ssh'])
         self.lxd_container.files.put('/root/.ssh/authorized_keys', pubkey)
 
-    def create_user(self, username, home=None):
+    def create_user(self, username, home=None, password=None):
         """ Adds the passed user to the container system. """
-        home_options = ['--create-home', ]
+        options = ['--create-home', ]
         if home is not None:
-            home_options += ['--home-dir', home, ]
-        self.run(['useradd', ] + home_options + [username, ])
+            options += ['--home-dir', home, ]
+        if password is not None:
+            options += ['-p', password, ]
+        self.run(['useradd', ] + options + [username, ])
 
     ########################################################
     # METHODS THAT SHOULD BE OVERRIDEN IN GUEST SUBCLASSES #

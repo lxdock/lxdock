@@ -229,7 +229,10 @@ users
 The ``users`` option allows you to define users that should be created by LXDock after creating a
 container. This can be useful because the users created this way will automatically have read/write
 permissions on shared folders. The ``users`` option should contain a list of users; each with a
-``name`` and optionally a custom ``home`` directory:
+``name`` and optionally a custom ``home`` directory or custom ``password``.
+
+Passwords are encrypted using crypt(3) as explained in the useradd manpage, see ``man useradd``
+for more information:
 
 .. code-block:: yaml
 
@@ -240,3 +243,5 @@ permissions on shared folders. The ``users`` option should contain a list of use
     - name: test01
     - name: test02
       home: /opt/test02
+    - name: test03
+      password: $6$cGzZBkDjOhGW$6C9wwqQteFEY4lQ6ZJBggE568SLSS7bIMKexwOD39mJQrJcZ5vIKJVIfwsKOZajhbPw0.Zqd0jU2NDLAnp9J/1

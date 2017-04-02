@@ -96,10 +96,10 @@ class TestContainer(LXDTestCase):
             'lxc exec {} --env HOME=/opt -- su -m test'.format(container.lxd_name)
 
     def test_can_tell_if_a_container_exists_or_not(self, persistent_container):
-        unkonwn_container = Container('myproject', THIS_DIR, self.client, **{
-            'name': self.containername('unkonwn'), 'image': 'ubuntu/xenial', 'mode': 'pull', })
+        unknown_container = Container('myproject', THIS_DIR, self.client, **{
+            'name': self.containername('unknown'), 'image': 'ubuntu/xenial', 'mode': 'pull', })
         assert persistent_container.exists
-        assert not unkonwn_container.exists
+        assert not unknown_container.exists
 
     def test_can_tell_if_a_container_is_privileged_or_not(self, persistent_container):
         persistent_container._container.config['security.privileged'] = 'true'
@@ -129,10 +129,32 @@ class TestContainer(LXDTestCase):
         assert not persistent_container.is_stopped
 
     def test_can_return_its_status(self, persistent_container):
-        unkonwn_container = Container('myproject', THIS_DIR, self.client, **{
-            'name': self.containername('unkonwn'), 'image': 'ubuntu/xenial', 'mode': 'pull', })
-        assert unkonwn_container.status == 'not-created'
+        unknown_container = Container('myproject', THIS_DIR, self.client, **{
+            'name': self.containername('unknown'), 'image': 'ubuntu/xenial', 'mode': 'pull', })
+        assert unknown_container.status == 'not-created'
         persistent_container.halt()
         assert persistent_container.status == 'stopped'
         persistent_container.up()
         assert persistent_container.status == 'running'
+
+    def test_create_users(self):
+        password = '$6$cGzZBkDjOhGW$6C9wwqQteFEY4lQ6ZJBggE568SLSS7bIMKexwOD' \
+                   '39mJQrJcZ5vIKJVIfwsKOZajhbPw0.Zqd0jU2NDLAnp9J/1'
+        container_options = {
+            'name': self.containername('createusers'), 'image': 'ubuntu/xenial',
+            'users': [
+                {'name': 'user01'},
+                {'name': 'user02', 'home': '/opt/user02'},
+                {'name': 'user03', 'password': password},
+            ],
+        }
+        container = Container('myproject', THIS_DIR, self.client, **container_options)
+        guest_mock = unittest.mock.Mock()
+        container._container_guest = guest_mock
+        container.up()
+        assert guest_mock.create_user.call_count == 3
+        assert guest_mock.create_user.call_args_list[0][0][0] == 'user01'
+        assert guest_mock.create_user.call_args_list[1][0][0] == 'user02'
+        assert guest_mock.create_user.call_args_list[2][0][0] == 'user03'
+        assert guest_mock.create_user.call_args_list[1][1]['home'] == '/opt/user02'
+        assert guest_mock.create_user.call_args_list[2][1]['password'] == password

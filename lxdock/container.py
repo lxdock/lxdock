@@ -363,7 +363,8 @@ class Container:
         for user_config in users:
             name = user_config.get('name')
             home = user_config.get('home')
-            self._guest.create_user(name, home=home)
+            password = user_config.get('password')
+            self._guest.create_user(name, home=home, password=password)
 
     def _unsetup_hostnames(self):
         """ Removes the configuration associated with the hostnames of the container. """

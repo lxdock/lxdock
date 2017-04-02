@@ -54,7 +54,20 @@ class TestGuest:
         lxd_container = unittest.mock.Mock()
         lxd_container.execute.return_value = ('ok', 'ok', '')
         guest = DummyGuest(lxd_container)
-        guest.create_user('usertest', '/opt/usertest')
+        guest.create_user('usertest', home='/opt/usertest')
         assert lxd_container.execute.call_count == 1
         assert lxd_container.execute.call_args[0] == \
             (['useradd', '--create-home', '--home-dir', '/opt/usertest', 'usertest'], )
+
+    def test_can_create_a_user_with_a_custom_password(self):
+        class DummyGuest(Guest):
+            name = 'dummy'
+        lxd_container = unittest.mock.Mock()
+        lxd_container.execute.return_value = ('ok', 'ok', '')
+        password = '$6$cGzZBkDjOhGW$6C9wwqQteFEY4lQ6ZJBggE568SLSS7bIMKexwOD' \
+                   '39mJQrJcZ5vIKJVIfwsKOZajhbPw0.Zqd0jU2NDLAnp9J/1'
+        guest = DummyGuest(lxd_container)
+        guest.create_user('usertest', password=password)
+        assert lxd_container.execute.call_count == 1
+        assert lxd_container.execute.call_args[0] == \
+            (['useradd', '--create-home', '-p', password, 'usertest'], )

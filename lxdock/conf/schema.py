@@ -26,6 +26,7 @@ _top_level_and_containers_common_options = {
         # Usernames max length is set 32 characters according to useradd's man page.
         Required('name'): All(str, Length(max=32)),
         'home': str,
+        'password': str,
     }],
 }
 
