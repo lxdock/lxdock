@@ -15,3 +15,4 @@ New features
 * Add support for ansible options related to ansible-vault
   (``ask_vault_pass``, ``vault_password_file``)
 * Add support for shell provisioning
+* Add a ``password`` option to set the password of users created using the ``users`` option
