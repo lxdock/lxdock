@@ -5,6 +5,7 @@
     supported by LXDock.
 """
 
+import logging
 import os
 import platform
 import subprocess
@@ -14,6 +15,8 @@ from ..utils.lxd import get_lxd_dir
 from ..utils.metaclass import with_metaclass
 
 __all__ = ['Host', ]
+
+logger = logging.getLogger(__name__)
 
 
 class InvalidHost(Exception):
@@ -89,7 +92,7 @@ class Host(with_metaclass(_HostBase)):
 
     def give_current_user_access_to_share(self, source):
         """ Give read/write access to `source` for the current user. """
-        subprocess.Popen('setfacl -Rdm u:{}:rwX {}'.format(os.getuid(), source), shell=True).wait()
+        self.run(['setfacl', '-Rdm',  'u:{}:rwX'.format(os.getuid()), source])
 
     def give_mapped_user_access_to_share(self, source, userpath=None):
         """ Give read/write access to `source` for the mapped user owning `userpath`.
@@ -109,7 +112,18 @@ class Host(with_metaclass(_HostBase)):
         container_path = os.path.join(*container_path_parts)
         container_path_stats = os.stat(container_path)
         host_userpath_uid = container_path_stats.st_uid
-        subprocess.Popen(
-            'setfacl -Rm user:lxd:rwx,default:user:lxd:rwx,'
-            'user:{0}:rwx,default:user:{0}:rwx {1}'.format(host_userpath_uid, source),
-            shell=True).wait()
+        self.run([
+            'setfacl', '-Rm',
+            'user:lxd:rwx,default:user:lxd:rwx,'
+            'user:{0}:rwx,default:user:{0}:rwx'.format(host_userpath_uid), source,
+        ])
+
+    ##################
+    # HELPER METHODS #
+    ##################
+
+    def run(self, cmd_args):
+        """ Runs the specified command on the host. """
+        cmd = ' '.join(cmd_args)
+        logger.debug('Running {0} on the host'.format(cmd))
+        subprocess.Popen(cmd, shell=True).wait()

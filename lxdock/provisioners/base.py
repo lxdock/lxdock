@@ -65,7 +65,7 @@ class Provisioner(with_metaclass(_ProvisionerBase)):
     """ Represents a single provisioner.
 
     `Provisioner` subclasses will be used by `Container` instances to run provisioning operations
-    associated with the considered containers. For example they can be used to run Ansible playbook
+    associated with the considered containers. For example they can be used to run Ansible playbooks
     to provision a web application on the container.
     """
 
@@ -78,9 +78,10 @@ class Provisioner(with_metaclass(_ProvisionerBase)):
     # considered provisioner.
     schema = None
 
-    def __init__(self, homedir, lxd_container, options):
+    def __init__(self, homedir, host, guest, options):
         self.homedir = homedir
-        self.lxd_container = lxd_container
+        self.host = host
+        self.guest = guest
         self.options = options.copy()
 
     def provision(self):
@@ -91,6 +92,6 @@ class Provisioner(with_metaclass(_ProvisionerBase)):
     # HELPER METHODS #
     ##################
 
-    def homedir_expanded_path(self, relative_path):
-        """ Expands the considered path with the absolute path of the home homedir. """
-        return os.path.join(self.homedir, relative_path)
+    def homedir_expanded_path(self, path):
+        """ Expands the considered path with the path of the home homedir if applicable. """
+        return os.path.join(self.homedir, path)

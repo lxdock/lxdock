@@ -1,5 +1,4 @@
 import logging
-import subprocess
 import tempfile
 
 from voluptuous import IsFile, Required
@@ -22,17 +21,14 @@ class AnsibleProvisioner(Provisioner):
     }
 
     def provision(self):
-        """ Performs the provisioning operations using the considered provisioner. """
-        ip = get_ipv4_ip(self.lxd_container)
+        """ Performs the provisioning operations using ansible-playbook. """
+        ip = get_ipv4_ip(self.guest.lxd_container)
         with tempfile.NamedTemporaryFile() as tmpinv:
             tmpinv.write('{} ansible_user=root'.format(ip).encode('ascii'))
             tmpinv.flush()
-            cmd = self._build_ansible_playbook_command(tmpinv.name)
-            logger.debug(cmd)
-            p = subprocess.Popen(cmd, shell=True)
-            p.wait()
+            self.host.run(self._build_ansible_playbook_command_args(tmpinv.name))
 
-    def _build_ansible_playbook_command(self, inventory_filename):
+    def _build_ansible_playbook_command_args(self, inventory_filename):
         cmd_args = ['ANSIBLE_HOST_KEY_CHECKING=False', 'ansible-playbook', ]
         cmd_args.extend(['--inventory-file', inventory_filename, ])
 
@@ -48,4 +44,4 @@ class AnsibleProvisioner(Provisioner):
 
         # Append the playbook filepath and return the final command.
         cmd_args.append(self.homedir_expanded_path(self.options['playbook']))
-        return ' '.join(cmd_args)
+        return cmd_args

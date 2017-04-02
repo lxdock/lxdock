@@ -7,3 +7,4 @@
 
 from .ansible import *  # noqa
 from .base import *  # noqa
+from .shell import *  # noqa

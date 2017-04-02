@@ -131,10 +131,10 @@ class Guest(with_metaclass(_GuestBase)):
     # HELPER METHODS #
     ##################
 
-    def run(self, cmd):
+    def run(self, cmd_args):
         """ Runs the specified command inside the current container. """
-        logger.debug('Running {0}'.format(' '.join(cmd)))
-        exit_code, stdout, stderr = self.lxd_container.execute(cmd)
+        logger.debug('Running {0}'.format(' '.join(cmd_args)))
+        exit_code, stdout, stderr = self.lxd_container.execute(cmd_args)
         logger.debug(stdout)
         logger.debug(stderr)
         return exit_code
