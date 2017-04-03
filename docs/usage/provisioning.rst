@@ -32,3 +32,7 @@ playbook as follows:
 
 Note that you can use *many* provisioning tools. The order in which provisioning tools are defined
 in your LXdock file defines the order in which they are executed.
+
+.. note::
+
+  Please refer to :doc:`../provisioners/index` to see the full list of supported provisioners.

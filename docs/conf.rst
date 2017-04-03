@@ -199,6 +199,10 @@ can be an Ansible playbook to run:
     - type: ansible
       playbook: deploy/site.yml
 
+.. note::
+
+  Please refer to :doc:`provisioners/index` to see the full list of supported provisioners.
+
 server
 ------
 
