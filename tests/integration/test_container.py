@@ -3,15 +3,15 @@ import types
 import unittest.mock
 
 from lxdock import constants
-from lxdock.container import Container, must_be_running
+from lxdock.container import Container, must_be_created_and_running
 from lxdock.test.testcases import LXDTestCase
 
 
 THIS_DIR = os.path.join(os.path.dirname(__file__))
 
 
-def test_must_be_running_decorator_works(persistent_container):
-    @must_be_running
+def test_must_be_created_and_running_decorator_works(persistent_container):
+    @must_be_created_and_running
     def dummy_action(self):
         return 42
     persistent_container.dummy_action = types.MethodType(dummy_action, persistent_container)
@@ -20,6 +20,13 @@ def test_must_be_running_decorator_works(persistent_container):
     persistent_container.up()
     assert persistent_container.dummy_action() == 42
     del persistent_container.dummy_action
+
+    non_created_container_options = {
+        'name': 'lxdock-nonexistingcontainer', 'image': 'ubuntu/xenial', 'mode': 'pull', }
+    non_created_container = Container(
+        'myproject', THIS_DIR, persistent_container.client, **non_created_container_options)
+    non_created_container.dummy_action = types.MethodType(dummy_action, non_created_container)
+    assert non_created_container.dummy_action() is None
 
 
 class TestContainer(LXDTestCase):
