@@ -17,10 +17,13 @@ from .utils.identifier import folderid
 logger = logging.getLogger(__name__)
 
 
-def must_be_running(method):
+def must_be_created_and_running(method):
     @wraps(method)
     def wrapper(self, *args, **kwargs):
-        if not self.is_running:
+        if not self.exists:
+            logger.error('The container is not created.')
+            return
+        elif not self.is_running:
             logger.error('The container is not running.')
             return
         return method(self, *args, **kwargs)
@@ -74,7 +77,7 @@ class Container:
             logger.warn("Can't stop the container. Forcing...")
             self._container.stop(force=True, wait=True)
 
-    @must_be_running
+    @must_be_created_and_running
     def provision(self, barebone=None):
         """ Provisions the container. """
         # We run this in case our lxdock.yml config was modified since our last `lxdock up`.
@@ -104,7 +107,7 @@ class Container:
         self._container.config['user.lxdock.provisioned'] = 'true'
         self._container.save(wait=True)
 
-    @must_be_running
+    @must_be_created_and_running
     def shell(self, username=None):
         """ Opens a new interactive shell in the container. """
         # We run this in case our lxdock.yml config was modified since our last `lxdock up`.
