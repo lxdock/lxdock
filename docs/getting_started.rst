@@ -99,7 +99,7 @@ where your distribution keeps completion files):
 
 .. code-block:: console
 
-  $ sudo cp contrib/completion/bash/lxdock /etc/bash.completion.d/lxdock
+  $ sudo curl -L https://raw.githubusercontent.com/lxdock/lxdock/$(lxdock --version | cut -d ' ' -f 2)/contrib/completion/bash/lxdock -o /etc/bash_completion.d/lxdock
 
 Make sure to restart your shell before trying to use LXDock's bash completion.
 
@@ -111,7 +111,7 @@ To add zsh completion for LXDock, place the ``contrib/completion/zsh/_lxdock`` f
 
 .. code-block:: console
 
-  $ sudo cp contrib/completion/zsh/_lxdock /usr/share/zsh/vendor-completions/_lxdock
+  $ sudo curl -L https://raw.githubusercontent.com/lxdock/lxdock/$(lxdock --version | cut -d ' ' -f 2)/contrib/completion/zsh/_lxdock -o /usr/share/zsh/vendor-completions/_lxdock
 
 Make sure to restart your shell before trying to use LXDock's zsh completion.
 
