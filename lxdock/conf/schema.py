@@ -45,6 +45,11 @@ _container_options.update(_top_level_and_containers_common_options)
 _lxdock_options = {
     Required('name'): LXDIdentifier(),
     'containers': [_container_options, ],
+    'remote': {
+        Required('name'): LXDIdentifier(),
+        Required('endpoint'): Url(),
+        'verify': bool,
+    },
 }
 _lxdock_options.update(_top_level_and_containers_common_options)
 

@@ -13,6 +13,10 @@ def get_project(base_dir='.'):
     project_name = config['name']
 
     # Initializes the client instance that will be used to orchestrate containers.
-    client = get_client()
+    client_kwargs = {}
+    if 'remote' in config:
+        remote = config['remote']
+        client_kwargs = {'endpoint': remote['endpoint'], 'verify': remote['verify']}
+    client = get_client(**client_kwargs)
 
     return Project.from_config(project_name, client, config)

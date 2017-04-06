@@ -121,10 +121,10 @@ class Container:
             # This part is the result of quite a bit of `su` args trial-and-error.
             shellhome = shellcfg.get('home') if not username else None
             homearg = '--env HOME={}'.format(shellhome) if shellhome else ''
-            cmd = 'lxc exec {} {} -- su -m {}'.format(self.lxd_name, homearg, shelluser)
+            cmd = 'lxc exec {} {} -- su -m {}'.format(self.fqln, homearg, shelluser)
             subprocess.call(cmd, shell=True)
         else:
-            cmd = 'lxc exec {} -- su -m root'.format(self.lxd_name)
+            cmd = 'lxc exec {} -- su -m root'.format(self.fqln)
             subprocess.call(cmd, shell=True)
 
     def up(self):
@@ -179,6 +179,15 @@ class Container:
             return True
 
     @property
+    def fqln(self):
+        """ Returns the Fully Qualified LXD Name of the considered container.
+
+        ... that is, the name of the container including the corresponding remote name.
+        """
+        remote = self.options['remote']['name'] if 'remote' in self.options else 'local'
+        return '{remote}:{lxdname}'.format(remote=remote, lxdname=self.lxd_name)
+
+    @property
     def is_privileged(self):
         """ Returns a boolean indicating if the container is privileged. """
         return self._container.config.get('security.privileged') == 'true'
@@ -187,6 +196,11 @@ class Container:
     def is_provisioned(self):
         """ Returns a boolean indicating if the container is provisioned. """
         return self._container.config.get('user.lxdock.provisioned') == 'true'
+
+    @property
+    def is_remote(self):
+        """ Returns a boolean indicating if the container is stored on a remote LXD server. """
+        return 'remote' in self.options
 
     @property
     def is_running(self):
@@ -357,7 +371,7 @@ class Container:
 
         for i, share in enumerate(self.options.get('shares', []), start=1):
             source = os.path.join(self.homedir, share['source'])
-            if source not in existing_sources:
+            if not self.is_remote and source not in existing_sources:
                 logger.info('Setting host-side ACL for {}'.format(source))
                 self._host.give_current_user_access_to_share(source)
                 if not self.is_privileged:
