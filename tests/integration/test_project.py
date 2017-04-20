@@ -6,6 +6,7 @@ import pytest
 from lxdock.conf.config import Config
 from lxdock.container import Container
 from lxdock.exceptions import ProjectError
+from lxdock.project import logger as project_logger
 from lxdock.project import Project
 from lxdock.test import LXDTestCase
 
@@ -156,3 +157,11 @@ class TestProject(LXDTestCase):
         assert mocked_call.call_count == 1
         assert mocked_call.call_args[0][0] == \
             'lxc exec {} -- su -m root'.format(persistent_container.lxd_name)
+
+    @unittest.mock.patch.object(project_logger, 'info')
+    def test_can_return_the_statuses_of_containers(self, mock_info, persistent_container):
+        homedir = os.path.join(FIXTURE_ROOT, 'project03')
+        project = Project('project02', homedir, self.client, [persistent_container, ])
+        project.status(container_names=['testcase-persistent'])
+        assert mock_info.call_count == 2
+        assert mock_info.call_args[0][0] == 'testcase-persistent           (running)'
