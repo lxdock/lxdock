@@ -126,7 +126,7 @@ lxc_config
 -----------
 
 If your container needs custom configuration settings, you can use ``lxc_config`` to pass any arbitrary
-key-value pairs that you want to be assigned to the container at startup. ``lxc_config`` must be a dictionary 
+key-value pairs that you want to be assigned to the container at startup. ``lxc_config`` must be a dictionary
 that with an arbitrary number of key-values.
 
 .. code-block:: yaml
@@ -138,7 +138,6 @@ that with an arbitrary number of key-values.
 
   containers:
     - name: test01
-      test1_key: test1_value
     - name: test02
 
 mode
