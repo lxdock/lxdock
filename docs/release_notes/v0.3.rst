@@ -1,0 +1,14 @@
+############################################
+LXDock 0.3 release notes (UNDER DEVELOPMENT)
+############################################
+
+Requirements and compatibility
+------------------------------
+
+Python 3.4, 3.5 and 3.6. LXD 2.0+.
+
+New features
+------------
+
+* Add support for passing custom LXC parameters for containers in LXDock files
+  (`#47 <https://github.com/lxdock/lxdock/pull/47>`_)
