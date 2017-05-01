@@ -111,6 +111,14 @@ class Config(object):
         and can be used by each container.
         """
         container_config = dict(self._dict)
+
+        # If both global and container scope contains lxc_config, merge them
+        lxck = 'lxc_config'
+        if lxck in container_config and lxck in container_dict:
+            container_dict = dict(container_dict)
+            container_config[lxck].update(container_dict[lxck])
+            del container_dict[lxck]
+
         container_config.update(container_dict)
         del container_config['containers']
         return container_config

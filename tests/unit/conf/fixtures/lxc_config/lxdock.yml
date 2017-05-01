@@ -1,0 +1,9 @@
+name: project
+image: image
+lxc_config:
+  global_key: global_value
+
+containers:
+  - name: lxdock-test-lxc-config
+    lxc_config:
+      cont1_key: cont1_value

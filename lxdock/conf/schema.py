@@ -9,6 +9,7 @@ _top_level_and_containers_common_options = {
     'environment': {Extra: Coerce(str)},
     'hostnames': [Hostname(), ],
     'image': str,
+    'lxc_config': {Extra: str},
     'mode': In(['local', 'pull', ]),
     'privileged': bool,
     'protocol': In(['lxd', 'simplestreams', ]),

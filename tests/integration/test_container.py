@@ -2,6 +2,8 @@ import os
 import types
 import unittest.mock
 
+from pylxd.exceptions import NotFound
+
 from lxdock import constants
 from lxdock.container import Container, must_be_created_and_running
 from lxdock.test.testcases import LXDTestCase
@@ -178,3 +180,47 @@ class TestContainer(LXDTestCase):
         assert guest_mock.create_user.call_args_list[2][0][0] == 'user03'
         assert guest_mock.create_user.call_args_list[1][1]['home'] == '/opt/user02'
         assert guest_mock.create_user.call_args_list[2][1]['password'] == password
+
+    def test_get_container_lxc_config(self):
+        """Test that _get_container generates a valid lxc_config
+        """
+
+        # The options below has an lxc_config value, that overrides some values
+        # that are driven within lxdoc, these values are marked as invalid and should not
+        # be passed directly to the container at creation time.
+        container_options = {
+            'name': self.containername('lxc-config'),
+            'image': 'ubuntu/xenial',
+            'lxc_config': {
+                'security.privileged': 'invalid',
+                'user.lxdock.homedir': 'invalid',
+                'user.lxdock.made': 'invalid',
+                'valid_key': 'valid_value',
+            },
+        }
+
+        cont_return = ()  # mock container object to return
+
+        def mock_create(container_config, *args, **kwargs):
+            """Mocks the container create call, returns the mock container object
+            and also ensures that the container_config is correct
+            """
+            config = container_config['config']
+            # Values below should not be driven by the values in container_options
+            assert config['security.privileged'] != 'invalid'
+            assert config['user.lxdock.homedir'] != 'invalid'
+            assert config['user.lxdock.made'] != 'invalid'
+            # Value below is a custom value that should be passed from container_options
+            assert config['valid_key'] == 'valid_value'
+            return cont_return
+
+        client_mock = unittest.mock.Mock(**{
+            'containers.create.side_effect': mock_create,
+            'containers.get.side_effect': NotFound(''),
+        })
+
+        container = Container('myproject', THIS_DIR, client_mock, **container_options)
+
+        assert container._get_container() is cont_return
+        assert client_mock.containers.get.called
+        assert client_mock.containers.create.called

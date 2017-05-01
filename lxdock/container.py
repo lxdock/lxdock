@@ -259,6 +259,17 @@ class Container:
             'from image {image}'.format(name=self.lxd_name, image=self.options['image']))
         privileged = self.options.get('privileged', False)
         mode = self.options.get('mode', 'pull')
+
+        # Get user defined lxc configs
+        lxc_config = self.options.get('lxc_config', {}).copy()
+
+        # Overwrite any configuration settings with lxdock defaults
+        lxc_config.update({
+            'security.privileged': 'true' if privileged else 'false',
+            'user.lxdock.made': '1',
+            'user.lxdock.homedir': self.homedir,
+        })
+
         container_config = {
             'name': self.lxd_name,
             'source': {
@@ -280,12 +291,9 @@ class Container:
                            else ''),
                 'type': 'image',
             },
-            'config': {
-                'security.privileged': 'true' if privileged else 'false',
-                'user.lxdock.made': '1',
-                'user.lxdock.homedir': self.homedir,
-            },
+            'config': lxc_config,
         }
+
         try:
             return self.client.containers.create(container_config, wait=True)
         except LXDAPIException as e:

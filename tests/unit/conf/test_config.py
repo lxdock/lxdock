@@ -73,3 +73,9 @@ class TestConfig:
         project_dir = os.path.join(FIXTURE_ROOT, 'project01')
         config = Config.from_base_dir(project_dir)
         assert config.serialize() == 'image: ubuntu/xenial\nmode: pull\nname: project01\n'
+
+    def test_can_read_lxc_config(self):
+        project_dir = os.path.join(FIXTURE_ROOT, 'lxc_config')
+        config = Config.from_base_dir(project_dir)
+        assert config.containers[0]['lxc_config'] == {'global_key': 'global_value',
+                                                      'cont1_key': 'cont1_value'}
