@@ -32,6 +32,9 @@ use the ``debian/jessie`` image for a specific container:
 
 This section contains a list of all configuration options supported by LXDock files.
 
+Supported options
+#################
+
 containers
 ----------
 
@@ -283,4 +286,75 @@ for more information:
     - name: test02
       home: /opt/test02
     - name: test03
-      password: $6$cGzZBkDjOhGW$6C9wwqQteFEY4lQ6ZJBggE568SLSS7bIMKexwOD39mJQrJcZ5vIKJVIfwsKOZajhbPw0.Zqd0jU2NDLAnp9J/1
+      password: $$6$$cGzZBkDjOhGW$$6C9wwqQteFEY4lQ6ZJBggE568SLSS7bIMKexwOD39mJQrJcZ5vIKJVIfwsKOZajhbPw0.Zqd0jU2NDLAnp9J/1
+
+Variable substitution
+#####################
+
+LXDock files can contain variables. These variables are processed when your LXDock file is parsed by LXDock and can be
+defined in multiple places:
+
+* in your host's environment variables
+* in a ``.env`` file placed at the root of your project (that is, where your LXDock file is present)
+
+Note that the above list represents the order of precedence that is used by LXDock internally. The last listed variables
+of this list will always win prioritization if variables are defined in multiple places.
+
+Variables definitions
+---------------------
+
+Suppose you want to create a user whose name corresponds to your current username on the host. You
+could create a LXDock file which looks like:
+
+.. code-block:: yaml
+
+  name: myproject
+  image: ubuntu/xenial
+
+  users:
+    - name: ${USER}
+
+When processing this file, LXDock will look for the ``USER`` environment variable (which can be
+defined either in your host's environment variables or in a ``.env`` file) and will substitute its
+variable in.
+
+Both following syntaxes are supported for variables: ``${VAR}`` and ``$VAR``. You may want to insert
+a literal dollar sign into your LXDock config file (in the case where you have to use static values
+containing dollar signs) ; in that case you should use a double-dollar sign (``$$``) to prevent
+LXDock from trying to interpolate the corresponding value.
+
+Where to put variables
+----------------------
+
+As explained above, you can set your environment variables in multiple locations:
+
+* in your host's environment variables
+* in a ``.env`` file placed at the root of your project
+
+For example you may want to set a specific environment variable before running LXDock:
+
+.. code-block:: console
+
+  $ export MY_VAR=test
+  $ lxdock up    # MY_VAR=test will be used by LXDock
+
+You can also create a ``.env`` file at the root of your project. Such a file should only contain
+key/value pairs:
+
+::
+
+    # A .env file!
+    MY_VAR = thisisatest
+    LXDOCK_TEST=42
+
+Predefined variables
+--------------------
+
+LXDock provides some default variables that you can use in your LXDock files. These variables are
+automatically set by LXDock when your configuration file is processed.
+
+LXDOCK_YML_DIR
+~~~~~~~~~~~~~~
+
+The ``LXDOCK_YML_DIR`` variable can be used to refer to the absolute path where your LXDock file
+lives.

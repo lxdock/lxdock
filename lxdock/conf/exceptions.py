@@ -11,3 +11,7 @@ class ConfigFileNotFoundError(ConfigError):
 
 class ConfigFileValidationError(ConfigError):
     """ The LXDock config file was not valid. """
+
+
+class ConfigFileInterpolationError(ConfigError):
+    """ The variable substitution mechanism failed for the considered LXDock file. """

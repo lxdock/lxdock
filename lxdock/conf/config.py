@@ -3,10 +3,13 @@ import os
 from pathlib import Path
 
 import yaml
+from dotenv.main import dotenv_values
 from voluptuous.error import Invalid
 
 from . import constants
-from .exceptions import ConfigFileNotFoundError, ConfigFileValidationError
+from .exceptions import (ConfigFileInterpolationError, ConfigFileNotFoundError,
+                         ConfigFileValidationError)
+from .interpolation import interpolate_variables
 from .schema import schema
 
 logger = logging.getLogger(__name__)
@@ -75,10 +78,46 @@ class Config(object):
         finally:
             os.chdir(cwd)
 
+        # Performs variable substitution / interpolation in the configuration values.
+        config.interpolate()
+
         # Loads the containers.
         config.load_containers()
 
         return config
+
+    def interpolate(self):
+        """ Interpolates the considered config.
+
+        In order to perform this variable substitution LXDock will use environment variables plus
+        some other pre-defined variables. The later will be injected in the context used to perform
+        this interpolation.
+        """
+        # Builds a dictionary of variables that will be used to perform variable substitution in the
+        # config values.
+        mapping = {}
+        mapping.update(os.environ)
+
+        # Fetches variables that could be defined in a .env file and inserts them in the mapping.
+        env_filepath = os.path.join(self.homedir, '.env')
+        if os.path.exists(env_filepath):
+            mapping.update(dotenv_values(env_filepath))
+
+        # Inserts LXDock special variables into the final mapping.
+        mapping.update({
+            # The absolute path toward the home directory of the LXDock project is injected into
+            # the mapping used to perform variable substitution in the initial config.
+            # This can be useful to reference paths that are relative to the project's root
+            # directory in LXDock file options such as inline commands.
+            'LXDOCK_YML_DIR': self.homedir,
+        })
+
+        try:
+            self._dict = interpolate_variables(self._dict, mapping)
+        except KeyError as e:
+            raise ConfigFileInterpolationError(
+                'Variable substitution failed when parsing the LXDock file. The failing variable '
+                'name is: ${}'.format(e.args[0]))
 
     def load(self):
         """ Loads the YML configuration file and store it inside the `_dict` dictionary. """
