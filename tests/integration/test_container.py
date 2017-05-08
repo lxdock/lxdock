@@ -66,7 +66,7 @@ class TestContainer(LXDTestCase):
         persistent_container.halt()
         assert persistent_container._container.status_code == constants.CONTAINER_STOPPED
 
-    def test_can_try_to_halt_a_container_that_is_already_stoppeds(self, persistent_container):
+    def test_can_try_to_halt_a_container_that_is_already_stopped(self, persistent_container):
         persistent_container.halt()
         persistent_container.halt()
         assert persistent_container._container.status_code == constants.CONTAINER_STOPPED
