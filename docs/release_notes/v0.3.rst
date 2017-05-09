@@ -13,4 +13,5 @@ New features
 * Add support for passing custom LXC parameters for containers in LXDock files
   (`#47 <https://github.com/lxdock/lxdock/pull/47>`_)
 * Add support for variable interpolation in LXDock files
-  (`#65 <https://github.com/lxdock/lxdock/pull/65>`_)
+  (`#65 <https://github.com/lxdock/lxdock/pull/65>`_,
+  `#75 <https://github.com/lxdock/lxdock/pull/75>`_)
