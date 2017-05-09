@@ -5,6 +5,4 @@ provisioning:
   - type: shell
     inline: touch /opt/${DUMMY_VAR_01}
   - type: shell
-    inline: touch /opt/$DUMMY_VAR_02
-  - type: shell
-    inline: echo $$thisisatest
+    inline: echo $thisisatest

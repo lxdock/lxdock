@@ -88,18 +88,15 @@ class TestConfig:
         env = EnvironmentVarGuard()
         with env:
             env.set('DUMMY_VAR_01', 'test01')
-            env.set('DUMMY_VAR_02', 'test02')
             config = Config.from_base_dir(project_dir)
             assert config['provisioning'][0]['inline'] == 'touch /opt/test01'
-            assert config['provisioning'][1]['inline'] == 'touch /opt/test02'
-            assert config['provisioning'][2]['inline'] == 'echo $thisisatest'
+            assert config['provisioning'][1]['inline'] == 'echo $thisisatest'
 
     def test_can_manage_config_with_interpolated_variables_coming_from_an_env_file(self):
         project_dir = os.path.join(FIXTURE_ROOT, 'project_with_dynamic_variables_and_env_file')
         config = Config.from_base_dir(project_dir)
         assert config['provisioning'][0]['inline'] == 'touch /opt/test01'
-        assert config['provisioning'][1]['inline'] == 'touch /opt/test02'
-        assert config['provisioning'][2]['inline'] == 'echo $thisisatest'
+        assert config['provisioning'][1]['inline'] == 'echo $thisisatest'
 
     def test_raises_an_error_if_a_variable_cannot_be_substituded(self):
         project_dir = os.path.join(FIXTURE_ROOT, 'project_with_dynamic_variables')

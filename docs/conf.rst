@@ -126,7 +126,7 @@ And then use it in your LXDock file as follows:
   mode: local
 
 lxc_config
------------
+----------
 
 If your container needs custom configuration settings, you can use ``lxc_config`` to pass any arbitrary
 key-value pairs that you want to be assigned to the container at startup. ``lxc_config`` must be a dictionary
@@ -286,7 +286,7 @@ for more information:
     - name: test02
       home: /opt/test02
     - name: test03
-      password: $$6$$cGzZBkDjOhGW$$6C9wwqQteFEY4lQ6ZJBggE568SLSS7bIMKexwOD39mJQrJcZ5vIKJVIfwsKOZajhbPw0.Zqd0jU2NDLAnp9J/1
+      password: $6$cGzZBkDjOhGW$6C9wwqQteFEY4lQ6ZJBggE568SLSS7bIMKexwOD39mJQrJcZ5vIKJVIfwsKOZajhbPw0.Zqd0jU2NDLAnp9J/1
 
 Variable substitution
 #####################
@@ -317,11 +317,6 @@ could create a LXDock file which looks like:
 When processing this file, LXDock will look for the ``USER`` environment variable (which can be
 defined either in your host's environment variables or in a ``.env`` file) and will substitute its
 variable in.
-
-Both following syntaxes are supported for variables: ``${VAR}`` and ``$VAR``. You may want to insert
-a literal dollar sign into your LXDock config file (in the case where you have to use static values
-containing dollar signs) ; in that case you should use a double-dollar sign (``$$``) to prevent
-LXDock from trying to interpolate the corresponding value.
 
 Where to put variables
 ----------------------
