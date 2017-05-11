@@ -1,8 +1,11 @@
 import logging
 import os
+import shlex
 import subprocess
+import textwrap
 import time
 from functools import wraps
+from pathlib import PurePosixPath
 
 from pylxd.exceptions import LXDAPIException, NotFound
 
@@ -36,6 +39,9 @@ class Container:
 
     # The default image server that will be used to pull images in "pull" mode.
     _default_image_server = 'https://images.linuxcontainers.org'
+
+    # The default path for storing the command to execute during `lxdock shell`.
+    _guest_shell_script_file = '/.lxdock.d/shell_cmd.sh'
 
     def __init__(self, project_name, homedir, client, **options):
         self.project_name = project_name
@@ -108,7 +114,7 @@ class Container:
         self._container.save(wait=True)
 
     @must_be_created_and_running
-    def shell(self, username=None):
+    def shell(self, username=None, cmd_args=[]):
         """ Opens a new interactive shell in the container. """
         # We run this in case our lxdock.yml config was modified since our last `lxdock up`.
         self._setup_env()
@@ -122,10 +128,29 @@ class Container:
             shellhome = shellcfg.get('home') if not username else None
             homearg = '--env HOME={}'.format(shellhome) if shellhome else ''
             cmd = 'lxc exec {} {} -- su -m {}'.format(self.lxd_name, homearg, shelluser)
-            subprocess.call(cmd, shell=True)
         else:
             cmd = 'lxc exec {} -- su -m root'.format(self.lxd_name)
-            subprocess.call(cmd, shell=True)
+
+        if cmd_args:
+            # Again, a bit of trial-and-error.
+            # 1. Using `su -s SCRIPT_FILE` instead of `su -c COMMAND` because `su -c` cannot
+            #    receive SIGINT (Ctrl-C).
+            #    Ref: //sethmiller.org/it/su-forking-and-the-incorrect-trapping-of-sigint-ctrl-c/
+            #    See also: //github.com/lxdock/lxdock/pull/67#issuecomment-299755944
+            # 2. Applying shlex.quote to every argument to protect special characters.
+            #    e.g.: lxdock shell container_name -c echo "he re\"s" '$PATH'
+
+            self._guest.run(['mkdir', '-p',
+                             str(PurePosixPath(self._guest_shell_script_file).parent)])
+            self._container.files.put(self._guest_shell_script_file, textwrap.dedent(
+                """\
+                #!/bin/sh
+                {}
+                """.format(' '.join(map(shlex.quote, cmd_args)))))
+            self._guest.run(['chmod', 'a+rx', self._guest_shell_script_file])
+            cmd += ' -s {}'.format(self._guest_shell_script_file)
+
+        subprocess.call(cmd, shell=True)
 
     def up(self):
         """ Creates, starts and provisions the container. """

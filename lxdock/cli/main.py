@@ -74,11 +74,16 @@ class LXDock:
 
         # Creates the 'shell' action.
         self._parsers['shell'] = subparsers.add_parser(
-            'shell', help='Open a shell in a container.',
-            description='Open an interactive shell inside a specific container.')
+            'shell', help='Open a shell or execute a command in a container.',
+            description='Open an interactive shell inside a specific container. If a command is '
+                        'specified, execute the command instead.',
+            usage='lxdock shell [-h] [-u USERNAME] [name] [-c ...]')
         self._parsers['shell'].add_argument('name', nargs='?', help='Container name.')
         self._parsers['shell'].add_argument(
             '-u', '--username', help='Username to login as.')
+        self._parsers['shell'].add_argument(
+            '-c', '--command', nargs=argparse.REMAINDER, dest='cmd_args',
+            help='Command to be executed.')
 
         # Creates the 'status' action.
         self._parsers['status'] = subparsers.add_parser(
@@ -201,7 +206,8 @@ class LXDock:
         self.project.provision(container_names=args.name)
 
     def shell(self, args):
-        self.project.shell(container_name=args.name, username=args.username)
+        self.project.shell(
+            container_name=args.name, username=args.username, cmd_args=args.cmd_args)
 
     def status(self, args):
         self.project.status(container_names=args.name)

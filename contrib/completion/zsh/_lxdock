@@ -94,10 +94,10 @@ case $state in
         ;;
 
       (shell)
-        # lxdock shell [-h] [-u USERNAME] [name]
-        _arguments '(-u --username)'{-u,--username}'[Username to login as]:username:' \
-                   '::container:__container_list' \
-
+        # lxdock shell name [-h] [-u USERNAME] [-c ...]
+        _arguments '::container:__container_list' \
+                   '(-u --username)'{-u,--username}'[Username to login as]:username:' \
+                   '(-c --command)'{-c,--command}'[Command to be executed]:*command:command:'
         ;;
 
       (status)

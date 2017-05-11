@@ -105,6 +105,34 @@ class TestContainer(LXDTestCase):
             'lxc exec {} --env HOME=/opt -- su -m test'.format(container.lxd_name)
 
     @unittest.mock.patch('subprocess.call')
+    def test_can_run_quoted_shell_command_for_the_root_user(
+            self, mocked_call, persistent_container):
+        persistent_container.shell(cmd_args=['echo', 'he re"s', '-u', '$PATH'])
+        assert mocked_call.call_count == 1
+        assert mocked_call.call_args[0][0] == \
+            'lxc exec {} -- su -m root -s {}'.format(
+                persistent_container.lxd_name, persistent_container._guest_shell_script_file)
+        script = persistent_container._container.files.get(
+            persistent_container._guest_shell_script_file)
+        assert script == b"""#!/bin/sh\necho 'he re"s' -u '$PATH'\n"""
+
+    @unittest.mock.patch('subprocess.call')
+    def test_can_run_quoted_shell_command_for_a_specific_shelluser(self, mocked_call):
+        container_options = {
+            'name': self.containername('shellspecificuser'), 'image': 'ubuntu/xenial',
+            'shell': {'user': 'test', 'home': '/opt', },
+        }
+        container = Container('myproject', THIS_DIR, self.client, **container_options)
+        container.up()
+        container.shell(cmd_args=['echo', 'he re"s', '-u', '$PATH'])
+        assert mocked_call.call_count == 1
+        assert mocked_call.call_args[0][0] == \
+            'lxc exec {} --env HOME=/opt -- su -m test -s {}'.format(
+                container.lxd_name, container._guest_shell_script_file)
+        script = container._container.files.get(container._guest_shell_script_file)
+        assert script == b"""#!/bin/sh\necho 'he re"s' -u '$PATH'\n"""
+
+    @unittest.mock.patch('subprocess.call')
     def test_can_set_shell_environment_variables(self, mocked_call):
         # Environment variables in the shell can be set through configuration.
         container_options = {

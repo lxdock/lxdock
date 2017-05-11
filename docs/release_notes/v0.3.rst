@@ -15,3 +15,5 @@ New features
 * Add support for variable interpolation in LXDock files
   (`#65 <https://github.com/lxdock/lxdock/pull/65>`_,
   `#75 <https://github.com/lxdock/lxdock/pull/75>`_)
+* Add support for passing a command line with ``lxdock shell``
+  (`#67 <https://github.com/lxdock/lxdock/pull/67>`_)

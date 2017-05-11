@@ -69,7 +69,7 @@ _lxdock_complete () {
         shell)
           case "${cur}" in
             -*)
-              COMPREPLY=($(compgen -W "-u --username" -- ${cur})) ;;
+              COMPREPLY=($(compgen -W "-u --username -c --command" -- ${cur})) ;;
             *)
               containers="$(___lxdock_container_names)"
               COMPREPLY=($(compgen -W "$containers" -- ${cur}))
