@@ -2,10 +2,12 @@ import os
 import types
 import unittest.mock
 
+import pytest
 from pylxd.exceptions import NotFound
 
 from lxdock import constants
 from lxdock.container import Container, must_be_created_and_running
+from lxdock.exceptions import ContainerOperationFailed
 from lxdock.test.testcases import LXDTestCase
 
 
@@ -252,3 +254,20 @@ class TestContainer(LXDTestCase):
         assert container._get_container() is cont_return
         assert client_mock.containers.get.called
         assert client_mock.containers.create.called
+
+    def test_can_set_profiles(self):
+        container_options = {
+            'name': self.containername('newcontainer'), 'image': 'ubuntu/xenial', 'mode': 'pull',
+            'profiles': ['default']}
+        container = Container('myproject', THIS_DIR, self.client, **container_options)
+        container.up()
+        assert container._container.status_code == constants.CONTAINER_RUNNING
+        assert container._container.profiles == ['default']
+
+    def test_raises_an_error_if_profile_does_not_exist(self):
+        container_options = {
+            'name': self.containername('newcontainer'), 'image': 'ubuntu/xenial', 'mode': 'pull',
+            'profiles': ['default', '39mJQrJcZ5vIKJVIfwsKOZajhbPw0']}
+        container = Container('myproject', THIS_DIR, self.client, **container_options)
+        with pytest.raises(ContainerOperationFailed):
+            container.up()

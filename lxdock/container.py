@@ -319,6 +319,10 @@ class Container:
             'config': lxc_config,
         }
 
+        profiles = self.options.get('profiles')
+        if profiles:
+            container_config['profiles'] = profiles.copy()
+
         try:
             return self.client.containers.create(container_config, wait=True)
         except LXDAPIException as e:

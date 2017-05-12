@@ -12,6 +12,7 @@ _top_level_and_containers_common_options = {
     'lxc_config': {Extra: str},
     'mode': In(['local', 'pull', ]),
     'privileged': bool,
+    'profiles': [str, ],
     'protocol': In(['lxd', 'simplestreams', ]),
     'provisioning': [],  # will be set dynamically using provisioner classes...
     'server': Url(),

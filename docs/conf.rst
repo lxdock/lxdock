@@ -193,6 +193,25 @@ Here is an example on how to set up a privileged container in your LXDock file:
 
   Please refer to :doc:`glossary`  for more details on these notions.
 
+profiles
+----------
+
+The ``profiles`` option defines the configuration profiles to use when creating containers. It should
+contain a list of profile names that exist in ``lxc profile list``. Please use ``lxc profile`` command
+to manage profiles as they are system-wide.
+
+.. code-block:: yaml
+
+  name: myproject
+  image: ubuntu/xenial
+  profiles:
+    - default
+    - docker
+
+  containers:
+    - name: test01
+    - name: test02
+
 protocol
 --------
 
