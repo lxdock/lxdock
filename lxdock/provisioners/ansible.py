@@ -16,13 +16,13 @@ class AnsibleProvisioner(Provisioner):
     name = 'ansible'
 
     guest_required_packages_alpine = ['openssh', 'python', ]
-    guest_required_packages_archlinux = ['openssh', 'python2', ]
+    guest_required_packages_arch = ['openssh', 'python', ]
     guest_required_packages_centos = ['openssh-server', 'python', ]
     guest_required_packages_debian = ['apt-utils', 'aptitude', 'openssh-server', 'python', ]
     guest_required_packages_fedora = ['openssh-server', 'python2', ]
     guest_required_packages_gentoo = ['net-misc/openssh', 'dev-lang/python', ]
     guest_required_packages_opensuse = ['openSSH', 'python3-base', ]
-    guest_required_packages_oracle = ['openssh-server', 'python', ]
+    guest_required_packages_ol = ['openssh-server', 'python', ]
     guest_required_packages_ubuntu = ['apt-utils', 'aptitude', 'openssh-server', 'python', ]
 
     schema = {
@@ -43,6 +43,25 @@ class AnsibleProvisioner(Provisioner):
         # On alpine guests we have to ensure that ssd is started!
         self.guest.run(['rc-update', 'add', 'sshd'])
         self.guest.run(['/etc/init.d/sshd', 'start'])
+
+    def setup_guest_arch(self):
+        # On archlinux guests we have to ensure that sshd is started!
+        self.guest.run(['systemctl', 'enable', 'sshd'])
+        self.guest.run(['systemctl', 'start', 'sshd'])
+
+    def setup_guest_centos(self):
+        # On centos guests we have to ensure that sshd is started!
+        self.guest.run(['systemctl', 'enable', 'sshd'])
+        self.guest.run(['systemctl', 'start', 'sshd'])
+
+    def setup_guest_fedora(self):
+        # On fedora guests we have to ensure that sshd is started!
+        self.guest.run(['systemctl', 'enable', 'sshd'])
+        self.guest.run(['systemctl', 'start', 'sshd'])
+
+    def setup_guest_ol(self):
+        # On oracle linux guests we have to ensure that sshd is started!
+        self.guest.run(['/sbin/service', 'sshd', 'start'])
 
     ##################################
     # PRIVATE METHODS AND PROPERTIES #
