@@ -73,7 +73,7 @@ class TestContainer(LXDTestCase):
         persistent_container.halt()
         assert persistent_container._container.status_code == constants.CONTAINER_STOPPED
 
-    def test_can_provision_a_container(self):
+    def test_can_provision_a_container_ansible(self):
         container_options = {
             'name': self.containername('willprovision'), 'image': 'ubuntu/xenial', 'mode': 'pull',
             'provisioning': [
@@ -85,6 +85,21 @@ class TestContainer(LXDTestCase):
         container.up()
         assert container._container.config['user.lxdock.provisioned'] == 'true'
         assert container._container.files.get('/dummytest').strip() == b'dummytest'
+
+    def test_can_provision_a_container_shell_inline(self):
+        container_options = {
+            'name': self.containername('willprovision'), 'image': 'ubuntu/xenial', 'mode': 'pull',
+            'environment': {'PATH': '/dummy_test:/bin:/usr/bin:/usr/local/bin'},
+            'provisioning': [
+                {'type': 'shell',
+                 'inline': """touch f && echo "Here's the PATH" $PATH >> /tmp/test.txt""", }
+            ],
+        }
+        container = Container('myproject', THIS_DIR, self.client, **container_options)
+        container.up()
+        assert container._container.config['user.lxdock.provisioned'] == 'true'
+        assert container._container.files.get('/tmp/test.txt').strip() == (
+            b"Here's the PATH /dummy_test:/bin:/usr/bin:/usr/local/bin")
 
     @unittest.mock.patch('subprocess.call')
     def test_can_open_a_shell_for_the_root_user(self, mocked_call, persistent_container):

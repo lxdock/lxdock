@@ -17,16 +17,12 @@ Just append a ``shell`` provisioning operation to your LXDock file as follows:
 
   provisioning:
     - type: shell
-      inline: echo "Hello, World!"
+      inline: cd /tmp && echo "Here's the PATH" $$PATH >> test.txt
 
 .. note::
 
-  Keep in mind that the shell provisioner will use the LXD's ``exec`` method in order to run your
-  commands on containers (the same method used by the ``lxc exec`` command). This means that common
-  shell patterns (like file redirects, ``|``, ``>``, ``<``, ...) won't work because the ``exec``
-  method doesn't use a shell (so the kernel will not be able to understand these shell patterns).
-  The only way to overcome this is to put things like ``sh -c 'ls -l > /tmp/test'`` in your
-  ``inline`` options.
+  The inline command is executed by ``sh -c 'command_line'``. Keep in mind that dollar sign ``$``
+  means string interpolation in YAML and it is necessary to put ``$$`` to escape the dollar sign.
 
 Required options
 ----------------

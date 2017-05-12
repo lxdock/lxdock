@@ -11,20 +11,24 @@ class TestShellProvisioner:
         host = Host(unittest.mock.Mock())
         guest = DebianGuest(unittest.mock.Mock())
         provisioner = ShellProvisioner(
-            './', host, guest, {'inline': 'touch f', 'side': 'host', })
+            './', host, guest, {
+                'inline': """touch f && echo "Here's the PATH" $PATH >> /tmp/test.txt""",
+                'side': 'host', })
         provisioner.provision()
-        assert mock_popen.call_args[0] == ('touch f', )
+        assert mock_popen.call_args[0] == (
+            """sh -c 'touch f && echo "Here'"'"'s the PATH" $PATH >> /tmp/test.txt'""", )
 
     def test_can_run_commands_on_the_guest_side(self):
         lxd_container = unittest.mock.Mock()
         lxd_container.execute.return_value = ('ok', 'ok', '')
         host = Host(unittest.mock.Mock())
         guest = DebianGuest(lxd_container)
+        cmd = """touch f && echo "Here's the PATH" $PATH >> /tmp/test.txt"""
         provisioner = ShellProvisioner(
-            './', host, guest, {'inline': 'echo TEST'})
+            './', host, guest, {'inline': cmd})
         provisioner.provision()
         assert lxd_container.execute.call_count == 1
-        assert lxd_container.execute.call_args_list[0][0] == (['echo', 'TEST'], )
+        assert lxd_container.execute.call_args_list[0][0] == (['sh', '-c', cmd], )
 
     @unittest.mock.patch('subprocess.Popen')
     def test_can_run_a_script_on_the_host_side(self, mock_popen):

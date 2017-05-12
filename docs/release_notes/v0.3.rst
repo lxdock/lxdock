@@ -15,6 +15,8 @@ New features
 * Add support for variable interpolation in LXDock files
   (`#65 <https://github.com/lxdock/lxdock/pull/65>`_,
   `#75 <https://github.com/lxdock/lxdock/pull/75>`_)
+* Add support for shell patterns on the ``inline`` option of shell provisioner
+  (`#70 <https://github.com/lxdock/lxdock/pull/70>`_)
 * Add support for passing a command line with ``lxdock shell``
   (`#67 <https://github.com/lxdock/lxdock/pull/67>`_)
 * Add basic support for LXC profile in LXDock files

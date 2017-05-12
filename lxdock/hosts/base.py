@@ -8,6 +8,7 @@
 import logging
 import os
 import platform
+import shlex
 import subprocess
 from pathlib import Path
 
@@ -124,6 +125,6 @@ class Host(with_metaclass(_HostBase)):
 
     def run(self, cmd_args):
         """ Runs the specified command on the host. """
-        cmd = ' '.join(cmd_args)
+        cmd = ' '.join(map(shlex.quote, cmd_args))
         logger.debug('Running {0} on the host'.format(cmd))
         subprocess.Popen(cmd, shell=True).wait()
