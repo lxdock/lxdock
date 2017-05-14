@@ -21,3 +21,9 @@ New features
   (`#67 <https://github.com/lxdock/lxdock/pull/67>`_)
 * Add basic support for LXC profile in LXDock files
   (`#77 <https://github.com/lxdock/lxdock/pull/77>`_)
+
+Minor changes
+-------------
+
+* Fixed wrong guest names and ssh setup in some Ansible provisioner
+  (`#71 <https://github.com/lxdock/lxdock/issues/71>`_)
