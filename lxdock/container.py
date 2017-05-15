@@ -394,7 +394,9 @@ class Container:
 
         for i, share in enumerate(self.options.get('shares', []), start=1):
             source = os.path.join(self.homedir, share['source'])
-            if source not in existing_sources:
+            # It is possible to disable setting host side ACL but by default it is always enabled.
+            set_host_acl = share.get('set_host_acl', True)
+            if set_host_acl and source not in existing_sources:
                 logger.info('Setting host-side ACL for {}'.format(source))
                 self._host.give_current_user_access_to_share(source)
                 if not self.is_privileged:

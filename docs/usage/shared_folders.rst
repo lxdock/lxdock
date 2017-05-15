@@ -58,3 +58,31 @@ and will have read/write access to the shared folders:
     - name: test01
     - name: test02
       home: /opt/test02
+
+Disabling ACL support on shares
+-------------------------------
+
+By default ACLs will be turned on for all shares, however it is also possible to disable this
+functionality on a per-share basis.  One reason you might want to do this, is when you are
+using privileged containers and ensuring the container user matches the uid and gid
+of the host system.  This allows a share to be mapped without the use of ACLs, however the
+user should be aware of the security implications of making shares world-writable. This
+may be acceptable for development only containers for example.
+
+.. code-block:: yaml
+
+  name: myproject
+  image: ubuntu/xenial
+  privileged: yes
+
+  shares:
+    - source: .
+      dest: /myshare
+      set_host_acl: false
+
+  users:
+    - name: test01
+
+In this example, the Ansible provisioner can be used to change the uid and gid of
+the test01 user after it has been created by LXDock. How to implement this is
+up to the user, as LXDock does not provide a uid and gid option when creating users.

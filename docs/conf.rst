@@ -265,6 +265,12 @@ of shared items. Each shared item should define a ``source`` (a path on your hos
   shares:
     - source: /path/to/my/workspace/project/
       dest: /myshare
+      set_host_acl: true
+
+.. note::
+
+  The ``set_host_acl`` parameter is optional and defaults to true when left out,
+  please refer to :doc:`usage/shared_folders` for more information.
 
 shell
 -----

@@ -20,6 +20,7 @@ _top_level_and_containers_common_options = {
         # The existence of the source directory will be checked!
         'source': IsDir(),
         'dest': str,
+        'set_host_acl': bool,
     }],
     'shell': {
         'user': str,
