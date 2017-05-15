@@ -21,6 +21,8 @@ New features
   (`#67 <https://github.com/lxdock/lxdock/pull/67>`_)
 * Add basic support for LXC profile in LXDock files
   (`#77 <https://github.com/lxdock/lxdock/pull/77>`_)
+* Add a ``set_host_acl`` option to disable setting host ACL on a share
+  (`#79 <https://github.com/lxdock/lxdock/pull/79>`_)
 
 Minor changes
 -------------
