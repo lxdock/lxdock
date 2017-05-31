@@ -13,7 +13,7 @@ from . import constants
 from .exceptions import ContainerOperationFailed
 from .guests import Guest
 from .hosts import Host
-from .network import EtcHosts, get_ipv4_ip
+from .network import EtcHosts, get_ip
 from .provisioners import Provisioner
 from .utils.identifier import folderid
 
@@ -365,7 +365,7 @@ class Container:
 
     def _setup_ip(self):
         """ Setup the IP address of the considered container. """
-        ip = get_ipv4_ip(self._container)
+        ip = get_ip(self._container)
         if not ip:
             logger.info('No IP yet, waiting for at most 10 seconds...')
             ip = self._wait_for_ipv4_ip()
@@ -443,7 +443,7 @@ class Container:
         """ Waits some time before trying to get the IP of the container and returning it. """
         for i in range(seconds):
             time.sleep(1)
-            ip = get_ipv4_ip(self._container)
+            ip = get_ip(self._container)
             if ip:
                 return ip
         return ''

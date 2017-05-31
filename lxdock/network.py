@@ -4,16 +4,19 @@ import subprocess
 import tempfile
 
 
-def get_ipv4_ip(container):
+def get_ip(container):
     """ Returns the IP adress of a specific container. """
     state = container.state()
     if state.network is None:  # container is not running
         return ''
     eth0 = state.network['eth0']
+    ipv4, ipv6 = '', ''
     for addr in eth0['addresses']:
         if addr['family'] == 'inet':
-            return addr['address']
-    return ''
+            ipv4 = addr['address']
+        elif addr['family'] == 'inet6' and 'global' in addr['scope']:
+            ipv6 = addr['address']
+    return ipv4 or ipv6
 
 
 RE_ETCHOST_LINE = re.compile(r'^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+([\w\-_.]+)$')

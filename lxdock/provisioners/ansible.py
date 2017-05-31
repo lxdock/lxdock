@@ -3,7 +3,7 @@ import tempfile
 
 from voluptuous import IsFile, Required
 
-from ..network import get_ipv4_ip
+from ..network import get_ip
 
 from .base import Provisioner
 
@@ -33,7 +33,7 @@ class AnsibleProvisioner(Provisioner):
 
     def provision(self):
         """ Performs the provisioning operations using ansible-playbook. """
-        ip = get_ipv4_ip(self.guest.lxd_container)
+        ip = get_ip(self.guest.lxd_container)
         with tempfile.NamedTemporaryFile() as tmpinv:
             tmpinv.write('{} ansible_user=root'.format(ip).encode('ascii'))
             tmpinv.flush()
