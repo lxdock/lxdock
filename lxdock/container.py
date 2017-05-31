@@ -368,7 +368,7 @@ class Container:
         ip = get_ip(self._container)
         if not ip:
             logger.info('No IP yet, waiting for at most 10 seconds...')
-            ip = self._wait_for_ipv4_ip()
+            ip = self._wait_for_ip()
         if not ip:
             logger.warn('STILL no IP! Container is up, but probably broken.')
             logger.info('Maybe that restarting it will help? Not trying to provision.')
@@ -439,7 +439,7 @@ class Container:
         if etchosts.changed:
             etchosts.save()
 
-    def _wait_for_ipv4_ip(self, seconds=10):
+    def _wait_for_ip(self, seconds=10):
         """ Waits some time before trying to get the IP of the container and returning it. """
         for i in range(seconds):
             time.sleep(1)
