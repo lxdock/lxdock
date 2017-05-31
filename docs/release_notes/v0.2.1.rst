@@ -1,0 +1,15 @@
+#######################################
+LXDock 0.2.1 release notes (2017-05-30)
+#######################################
+
+Requirements and compatibility
+------------------------------
+
+Python 3.4, 3.5 and 3.6. LXD 2.0+.
+
+Fixes
+-----
+
+* Pin ``requests`` to avoid severe problems caused by new releases (`#81`_)
+
+.. _`#81`: https://github.com/lxdock/lxdock/issues/81

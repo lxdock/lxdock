@@ -39,6 +39,8 @@ setup(
         'python-dotenv>=0.6',
         'PyYAML>=3.0,<4.0',
         'voluptuous>=0.9,<1.0',
+        # TODO: find why requests >= 2.16 breaks our stuff. See #81
+        'requests>=2.5.1,<2.16',
     ],
     tests_require=[
         'pytest',
