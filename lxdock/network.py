@@ -10,13 +10,12 @@ def get_ip(container):
     if state.network is None:  # container is not running
         return ''
     eth0 = state.network['eth0']
-    ipv4, ipv6 = '', ''
+    # TODO: we only use IPv4 addresses for now. This should be updated in order to better support
+    # IPv6 addresses and LXD bridges configured for IPv6.
     for addr in eth0['addresses']:
         if addr['family'] == 'inet':
-            ipv4 = addr['address']
-        elif addr['family'] == 'inet6' and 'global' in addr['scope']:
-            ipv6 = addr['address']
-    return ipv4 or ipv6
+            return addr['address']
+    return ''
 
 
 RE_ETCHOST_LINE = re.compile(r'^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+([\w\-_.]+)$')
