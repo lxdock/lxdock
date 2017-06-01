@@ -3,6 +3,7 @@ import sys
 
 from colorlog import ColoredFormatter
 
+
 LOG_COLORS = {
     'DEBUG':    'reset',
     'INFO':     'reset',

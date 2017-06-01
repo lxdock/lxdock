@@ -1,7 +1,6 @@
 from voluptuous import All, Any, Coerce, Extra, In, IsDir, Length, Required, Schema, Url
 
 from ..provisioners import Provisioner
-
 from .validators import Hostname, LXDIdentifier
 
 

@@ -6,8 +6,8 @@ from .. import __version__
 from ..conf.exceptions import ConfigError
 from ..exceptions import LXDockException
 from ..logging import console_stderr_handler, console_stdout_handler
-
 from .exceptions import CLIError
+
 
 logger = logging.getLogger(__name__)
 

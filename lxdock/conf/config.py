@@ -12,6 +12,7 @@ from .exceptions import (ConfigFileInterpolationError, ConfigFileNotFoundError,
 from .interpolation import interpolate_variables
 from .schema import schema
 
+
 logger = logging.getLogger(__name__)
 
 

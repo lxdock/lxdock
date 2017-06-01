@@ -4,8 +4,8 @@ import tempfile
 from voluptuous import IsFile, Required
 
 from ..network import get_ip
-
 from .base import Provisioner
+
 
 logger = logging.getLogger(__name__)
 

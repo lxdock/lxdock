@@ -7,6 +7,7 @@ from .logging import (console_stderr_handler, console_stdout_handler, get_defaul
                       get_per_container_formatter)
 from .network import ContainerEtcHosts, EtcHosts
 
+
 logger = logging.getLogger(__name__)
 
 
