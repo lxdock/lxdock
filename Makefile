@@ -2,11 +2,13 @@
 
 install:
 	pip install -r requirements-dev.txt
-	pip install -e .
+	# Temporary while we need a dev version of pylxd
+	pip install --process-dependency-links -e .
 
 upgrade:
 	pip install -r requirements-dev.txt -U
-	pip install -e . -U
+	# Temporary while we need a dev version of pylxd
+	pip install --process-dependency-links -e . -U
 
 lint:
 	flake8
