@@ -85,13 +85,11 @@ class Container:
             self._container.stop(force=True, wait=True)
 
     @must_be_created_and_running
-    def provision(self, barebone=None):
+    def provision(self):
         """ Provisions the container. """
         # We run this in case our lxdock.yml config was modified since our last `lxdock up`.
         self._setup_env()
-
-        if barebone is None:  # None == only if the container isn't provisioned.
-            barebone = not self.is_provisioned
+        barebone = not self.is_provisioned
 
         provisioning_steps = self.options.get('provisioning', [])
 
@@ -153,7 +151,7 @@ class Container:
 
         subprocess.call(cmd, shell=True)
 
-    def up(self):
+    def up(self, provisioning_mode=None):
         """ Creates, starts and provisions the container. """
         if self.is_running:
             logger.info('Container "{name}" is already running'.format(name=self.name))
@@ -183,12 +181,17 @@ class Container:
         # Override environment variables
         self._setup_env()
 
-        # Provisions the container if applicable.
-        if not self.is_provisioned:
-            self.provision(barebone=True)
-        else:
-            logger.info(
-                'Container "{name}" already provisioned, not provisioning.'.format(name=self.name))
+        # Provisions the container if applicable; that is only if it hasn't been provisioned before
+        # or if the provisioning is manually enabled.
+        is_provisioned = self.is_provisioned
+        provisioning_mode = provisioning_mode or constants.ProvisioningMode.AUTO
+        if not provisioning_mode == constants.ProvisioningMode.DISABLED:
+            if (not is_provisioned and provisioning_mode == constants.ProvisioningMode.AUTO) or \
+                    provisioning_mode == constants.ProvisioningMode.ENABLED:
+                self.provision()
+            elif is_provisioned:
+                logger.info('Container "{name}" already provisioned, '
+                            'not provisioning.'.format(name=self.name))
 
     ##################################
     # UTILITY METHODS AND PROPERTIES #

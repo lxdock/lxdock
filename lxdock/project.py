@@ -76,13 +76,13 @@ class Project:
             logger.info('{container_name} ({status})'.format(
                 container_name=container.name.ljust(max_name_length + 10), status=container.status))
 
-    def up(self, container_names=None):
+    def up(self, container_names=None, **kwargs):
         """ Creates, starts and provisions the containers of the project. """
         containers = [self.get_container_by_name(name) for name in container_names] \
             if container_names else self.containers
         [logger.info('Bringing container "{}" up'.format(c.name)) for c in containers]
         for container in self._containers_generator(containers=containers):
-            container.up()
+            container.up(**kwargs)
         self._update_guest_etchosts()
 
     ##################################

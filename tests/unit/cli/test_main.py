@@ -8,6 +8,7 @@ from lxdock.cli.main import LXDock, main
 from lxdock.cli.project import get_project
 from lxdock.conf.config import Config
 from lxdock.conf.exceptions import ConfigError
+from lxdock.constants import ProvisioningMode
 from lxdock.container import Container
 from lxdock.exceptions import LXDockException
 from lxdock.project import Project
@@ -236,7 +237,8 @@ class TestLXDock:
             return_value=get_project(os.path.join(FIXTURE_ROOT, 'project01')))
         LXDock(['up'])
         assert mock_project_up.call_count == 1
-        assert mock_project_up.call_args == [{'container_names': [], }, ]
+        assert mock_project_up.call_args == [
+            {'container_names': [], 'provisioning_mode': None, }, ]
 
     @unittest.mock.patch.object(LXDock, 'project')
     @unittest.mock.patch.object(Project, 'up')
@@ -246,7 +248,30 @@ class TestLXDock:
             return_value=get_project(os.path.join(FIXTURE_ROOT, 'project01')))
         LXDock(['up', 'c1', 'c2'])
         assert mock_project_up.call_count == 1
-        assert mock_project_up.call_args == [{'container_names': ['c1', 'c2', ], }, ]
+        assert mock_project_up.call_args == [
+            {'container_names': ['c1', 'c2', ], 'provisioning_mode': None, }, ]
+
+    @unittest.mock.patch.object(LXDock, 'project')
+    @unittest.mock.patch.object(Project, 'up')
+    def test_can_run_the_up_action_with_provisioning_enabled(
+            self, mock_project_up, mock_project):
+        mock_project.__get__ = unittest.mock.Mock(
+            return_value=get_project(os.path.join(FIXTURE_ROOT, 'project01')))
+        LXDock(['up', '--provision', ])
+        assert mock_project_up.call_count == 1
+        assert mock_project_up.call_args == [
+            {'container_names': [], 'provisioning_mode': ProvisioningMode.ENABLED, }, ]
+
+    @unittest.mock.patch.object(LXDock, 'project')
+    @unittest.mock.patch.object(Project, 'up')
+    def test_can_run_the_up_action_with_provisioning_disabled(
+            self, mock_project_up, mock_project):
+        mock_project.__get__ = unittest.mock.Mock(
+            return_value=get_project(os.path.join(FIXTURE_ROOT, 'project01')))
+        LXDock(['up', '--no-provision', ])
+        assert mock_project_up.call_count == 1
+        assert mock_project_up.call_args == [
+            {'container_names': [], 'provisioning_mode': ProvisioningMode.DISABLED, }, ]
 
     def test_exit_if_no_action_is_provided(self):
         with pytest.raises(SystemExit):

@@ -4,6 +4,7 @@ import sys
 
 from .. import __version__
 from ..conf.exceptions import ConfigError
+from ..constants import ProvisioningMode
 from ..exceptions import LXDockException
 from ..logging import console_stderr_handler, console_stdout_handler
 from .exceptions import CLIError
@@ -97,6 +98,14 @@ class LXDock:
             description='Create, start and provision all the containers of the project according '
                         'to your LXDock file. If container names are specified, only the related '
                         'containers are created, started and provisioned.')
+        up_provision_group = self._parsers['up'].add_mutually_exclusive_group()
+        up_provision_group.add_argument(
+            '--provision', action='store_const', const=ProvisioningMode.ENABLED,
+            dest='provisioning_mode', help='Enable and force provisioning.')
+        up_provision_group.add_argument(
+            '--no-provision', action='store_const', const=ProvisioningMode.DISABLED,
+            dest='provisioning_mode', help='Disable provisioning.')
+        up_provision_group.set_defaults(provisioning_mode=None)
 
         # Add common arguments to the action parsers that can be used with one or more specific
         # containers.
@@ -213,7 +222,7 @@ class LXDock:
         self.project.status(container_names=args.name)
 
     def up(self, args):
-        self.project.up(container_names=args.name)
+        self.project.up(container_names=args.name, provisioning_mode=args.provisioning_mode)
 
     ##################################
     # UTILITY METHODS AND PROPERTIES #
