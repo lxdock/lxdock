@@ -39,6 +39,14 @@ For Debian and Ubuntu, the following command will ensure that LXD is installed:
     $ sudo apt-get update
     $ sudo apt-get install lxd
 
+For Fedora, LXD is available through an experimental COPR repository. Unfortunately SELinux is not
+yet supported, therefore make sure it is disabled or set to permissive. Then run:
+
+.. code-block:: console
+
+    # dnf copr enable ganto/lxd
+    # dnf install lxd lxd-tools
+
 You should now be able to configure your LXD installation using:
 
 .. code-block:: console
