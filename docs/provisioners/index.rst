@@ -28,4 +28,5 @@ Documentation sections for the supported provisioning tools or methods are liste
     :maxdepth: 1
 
     ansible
+    puppet
     shell

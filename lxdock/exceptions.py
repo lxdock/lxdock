@@ -9,3 +9,7 @@ class ProjectError(LXDockException):
 
 class ContainerOperationFailed(LXDockException):
     """ An operation on a specific container failed. """
+
+
+class ProvisionFailed(LXDockException):
+    """ A provisioning failed. """

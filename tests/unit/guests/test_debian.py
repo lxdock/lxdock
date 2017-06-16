@@ -9,6 +9,8 @@ class TestDebianGuest:
         lxd_container.execute.return_value = ('ok', 'ok', '')
         guest = DebianGuest(lxd_container)
         guest.install_packages(['python', 'openssh', ])
-        assert lxd_container.execute.call_count == 1
-        assert lxd_container.execute.call_args[0] == \
+        assert lxd_container.execute.call_count == 2
+        assert lxd_container.execute.call_args_list[0][0] == \
+            (['apt-get', 'update', ], )
+        assert lxd_container.execute.call_args_list[1][0] == \
             (['apt-get', 'install', '-y', 'python', 'openssh', ], )

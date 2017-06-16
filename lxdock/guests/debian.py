@@ -7,4 +7,5 @@ class DebianGuest(Guest):
     name = 'debian'
 
     def install_packages(self, packages):
+        self.run(['apt-get', 'update'])
         self.run(['apt-get', 'install', '-y'] + packages)

@@ -96,18 +96,29 @@ class Container:
         if barebone:
             self._perform_barebones_setup()
 
-        logger.info('Provisioning container "{name}"...'.format(name=self.name))
-
+        # Instantiate all provisioners
+        provisioners = []
         for provisioning_item in provisioning_steps:
             provisioning_type = provisioning_item['type'].lower()
             provisioner_class = Provisioner.provisioners.get(provisioning_type)
             if provisioner_class is not None:
                 provisioner = provisioner_class(
                     self.homedir, self._host, self._guest, provisioning_item)
-                logger.info('Provisioning with {0}'.format(provisioning_item['type']))
-                if barebone:
-                    provisioner.setup()
-                provisioner.provision()
+                provisioners.append(provisioner)
+
+        logger.info('Provisioning container "{name}"...'.format(name=self.name))
+
+        # Do barebone setups for each provisioner if necessary
+        if barebone:
+            for provisioner in provisioners:
+                logger.info('Performing barebones setup for provisioner {0}'.format(
+                    provisioner.name))
+                provisioner.setup()
+
+        # Provision
+        for provisioner in provisioners:
+            logger.info('Provisioning with {0}'.format(provisioner.name))
+            provisioner.provision()
 
         self._container.config['user.lxdock.provisioned'] = 'true'
         self._container.save(wait=True)

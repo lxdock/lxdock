@@ -33,8 +33,10 @@ class TestProvisioner:
         guest = DebianGuest(lxd_container)
         provisioner = DummyProvisioner('./', host, guest, {})
         provisioner.setup()
-        assert lxd_container.execute.call_count == 1
-        assert lxd_container.execute.call_args[0] == \
+        assert lxd_container.execute.call_count == 2
+        assert lxd_container.execute.call_args_list[0][0] == \
+            (['apt-get', 'update'], )
+        assert lxd_container.execute.call_args_list[1][0] == \
             (['apt-get', 'install', '-y', 'test01', 'test02', ], )
 
     def test_trigger_specific_setup_on_the_guest_if_the_related_method_is_defined(self):

@@ -1,3 +1,6 @@
+import os
+import pathlib
+import tempfile
 import unittest.mock
 
 import pytest
@@ -71,3 +74,58 @@ class TestGuest:
         assert lxd_container.execute.call_count == 1
         assert lxd_container.execute.call_args[0] == \
             (['useradd', '--create-home', '-p', password, 'usertest'], )
+
+    def test_can_copy_file(self):
+        class DummyGuest(Guest):
+            name = 'dummy'
+        lxd_container = unittest.mock.Mock()
+        lxd_container.execute.return_value = ('ok', 'ok', '')
+        lxd_container.files.put.return_value = True
+        guest = DummyGuest(lxd_container)
+        with tempfile.NamedTemporaryFile() as f:
+            f.write(b'dummy file')
+            f.flush()
+            guest.copy_file(pathlib.Path(f.name), pathlib.PurePath('/a/b/c'))
+        assert lxd_container.execute.call_count == 1
+        assert lxd_container.execute.call_args[0] == (['mkdir', '-p', '/a/b'], )
+        assert lxd_container.files.put.call_count == 1
+        assert lxd_container.files.put.call_args[0] == ('/a/b/c', b'dummy file')
+
+    @unittest.mock.patch('tarfile.TarFile.add')
+    @unittest.mock.patch('tarfile.TarFile.close')
+    def test_can_copy_directory(self, mock_close, mock_add):
+        class DummyGuest(Guest):
+            name = 'dummy'
+        lxd_container = unittest.mock.Mock()
+        lxd_container.execute.return_value = ('ok', 'ok', '')
+        lxd_container.files.put.return_value = True
+        guest = DummyGuest(lxd_container)
+        with tempfile.TemporaryDirectory() as d:
+            os.mkdir('{}/d1'.format(d))
+            os.mkdir('{}/d1/d2'.format(d))
+            with open('{}/d1/f1'.format(d), 'wb') as f1:
+                f1.write(b'dummy f1')
+            with open('{}/d1/d2/f2'.format(d), 'wb') as f2:
+                f2.write(b'dummy f2')
+            with open('{}/f3'.format(d), 'wb') as f3:
+                f3.write(b'dummy f3')
+            guest.copy_directory(pathlib.Path(d), pathlib.PurePosixPath('/a/b/c'))
+
+        assert mock_add.call_count == 1
+        assert mock_add.call_args[0][0] == str(pathlib.Path(d))
+        assert mock_add.call_args[1]['arcname'] == '.'
+
+        assert mock_close.call_count == 1
+
+        print(lxd_container.execute.call_args_list)
+        assert lxd_container.execute.call_count == 4
+        assert lxd_container.execute.call_args_list[0][0] == (['mkdir', '-p', '/a/b/c'], )
+        assert lxd_container.execute.call_args_list[1][0] == ([
+            'mkdir', '-p', str(pathlib.PurePosixPath(guest._guest_temporary_tar_path).parent)], )
+        assert lxd_container.execute.call_args_list[2][0] == ([
+            'tar', '-xf', guest._guest_temporary_tar_path, '-C', '/a/b/c'], )
+        assert lxd_container.execute.call_args_list[3][0] == ([
+            'rm', '-f', guest._guest_temporary_tar_path], )
+
+        assert lxd_container.files.put.call_count == 1
+        assert lxd_container.files.put.call_args[0][0] == guest._guest_temporary_tar_path

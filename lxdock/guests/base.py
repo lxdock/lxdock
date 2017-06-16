@@ -7,6 +7,9 @@
 
 import logging
 import re
+import tarfile
+import tempfile
+from pathlib import Path, PurePosixPath
 
 from pylxd.exceptions import NotFound
 
@@ -140,6 +143,37 @@ class Guest(with_metaclass(_GuestBase)):
         logger.debug(stdout)
         logger.debug(stderr)
         return exit_code
+
+    def copy_file(self, host_path, guest_path):
+        """
+        Copies a file from host_path (pathlib.Path) to guest_path (pathlib.PurePath).
+        Ensures `mkdir -p` before calling LXD file put.
+        """
+        self.run(['mkdir', '-p', str(guest_path.parent)])
+        with host_path.open('rb') as f:
+            logger.debug('Copying host:{} to guest:{}'.format(host_path, guest_path))
+            self.lxd_container.files.put(str(guest_path), f.read())
+
+    _guest_temporary_tar_path = '/.lxdock.d/copied_directory.tar'
+
+    def copy_directory(self, host_path, guest_path):
+        """
+        Copies a directory from host_path (pathlib.Path) to guest_path (pathlib.PurePath).
+        This is natively supported since LXD 2.2 but we have to support 2.0+
+        Refs: https://github.com/lxc/lxd/issues/2401
+
+        Uses tar to pack/unpack the directory.
+        """
+        guest_tar_path = self._guest_temporary_tar_path
+        self.run(['mkdir', '-p', str(guest_path)])
+        with tempfile.NamedTemporaryFile() as f:
+            logger.debug("Creating tar file from {}".format(host_path))
+            tar = tarfile.open(f.name, 'w')
+            tar.add(str(host_path), arcname='.')
+            tar.close()
+            self.copy_file(Path(f.name), PurePosixPath(guest_tar_path))
+        self.run(['tar', '-xf', guest_tar_path, '-C', str(guest_path)])
+        self.run(['rm', '-f', str(guest_tar_path)])
 
     ##################################
     # PRIVATE METHODS AND PROPERTIES #
