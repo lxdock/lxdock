@@ -16,13 +16,14 @@ from .schema import schema
 logger = logging.getLogger(__name__)
 
 
-class Config(object):
+class Config:
     """ Holds the configuration of a LXDock project. """
 
     def __init__(self, homedir, filename):
         self.homedir = homedir
         self.filename = filename
         self.containers = []
+        self.provisioning_steps = []
         self._dict = {}
 
     def __contains__(self, key):
@@ -82,8 +83,7 @@ class Config(object):
         # Performs variable substitution / interpolation in the configuration values.
         config.interpolate()
 
-        # Loads the containers.
-        config.load_containers()
+        config.extract_config_from_dict()
 
         return config
 
@@ -124,20 +124,26 @@ class Config(object):
         """ Loads the YML configuration file and store it inside the `_dict` dictionary. """
         self._dict = self._load_yml()
 
-    def load_containers(self):
-        """ Loads each container configuration and store it inside the `containers` attribute. """
+    def extract_config_from_dict(self):
+        """ Take config from the _dict and place them into ready-to-use config in `self`. """
         containers = [ContainerConfig(self._get_container_config_dict(cdict))
                       for cdict in self._dict.get('containers', [])]
         # If we cannot consider multiple containers, we just pass the full dictionary to initialize
         # the `ContainerConfig` instance.
         if not len(containers):
             unique_container_config = ContainerConfig(self._dict)
+            # We don't inherit global provisioning in specific container config.
+            if 'provisioning' in unique_container_config:
+                del unique_container_config['provisioning']
+
             # We associate a specific name to the unique container if it wasn't explicitly defined
             # under the 'containers' section of the LXDock file.
             unique_container_config['name'] = 'default'
             containers = [unique_container_config, ]
 
         self.containers.extend(containers)
+
+        self.provisioning_steps = self._dict.get('provisioning', [])
 
     def serialize(self):
         """ Returns the configuration as a string. """
@@ -151,6 +157,10 @@ class Config(object):
         and can be used by each container.
         """
         container_config = dict(self._dict)
+
+        # We don't inherit global provisioning in specific container config.
+        if 'provisioning' in container_config:
+            del container_config['provisioning']
 
         # If both global and container scope contains lxc_config, merge them
         lxck = 'lxc_config'

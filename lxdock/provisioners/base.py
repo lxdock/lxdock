@@ -90,34 +90,50 @@ class Provisioner(with_metaclass(_ProvisionerBase)):
     #
     # These packages will be installed during the "provision" operation.
 
-    def __init__(self, homedir, host, guest, options):
+    def __init__(self, homedir, host, guests, options):
         self.homedir = homedir
         self.host = host
-        self.guest = guest
+        self.guests = guests
         self.options = options.copy()
 
     def provision(self):
         """ Performs the provisioning operations using the considered provisioner. """
-        # This method should be overriden in `Provisioner` subclasses.
+        # This method should be overriden in `Provisioner` subclasses that implement global
+        # provisioning.
+        self.setup()
+        for guest in self.guests:
+            self.provision_single(guest)
+
+    def provision_single(self, guest):
+        """ Performs the provisioning operations on the specified guest. """
+        # This method should be overriden in `Provisioner` subclasses that don't implement
+        # global provisioning.
 
     def setup(self):
-        """ Setups the provisioner if applicable. """
+        for guest in self.guests:
+            if not guest.container.is_provisioned:
+                self.setup_single(guest)
+
+    def setup_single(self, guest):
+        """ Setups the guest to run the provisioner if applicable. """
         # Ensure that the packages required to properly use the considered provisioner are installed
         # on the guest.
+        logger.info('Preparing {0} up for provisioner {1}'.format(
+            guest.container.name, self.name))
         required_packages = getattr(
-            self, 'guest_required_packages_{}'.format(self.guest.name), None)
+            self, 'guest_required_packages_{}'.format(guest.name), None)
         if required_packages is not None:
             logger.info(
                 'Installing packages required for the {} provisioner '
                 'on the guest'.format(self.name))
-            self.guest.install_packages(required_packages)
+            guest.install_packages(required_packages)
 
         # We allow `Provisioner` subclasses to define their own "setup_guest_{guestname}" methods
         # if setup operations have to be done on some specific guest prior to any provisioning
         # actions.
-        guest_setup_method = getattr(self, 'setup_guest_{}'.format(self.guest.name), None)
+        guest_setup_method = getattr(self, 'setup_guest_{}'.format(guest.name), None)
         if guest_setup_method is not None:
-            guest_setup_method()
+            guest_setup_method(guest)
 
     ##################
     # HELPER METHODS #

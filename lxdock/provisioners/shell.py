@@ -15,7 +15,7 @@ class ShellProvisioner(Provisioner):
         'side': Any('guest', 'host'),
     }
 
-    def provision(self):
+    def provision_single(self, guest):
         """ Executes the shell commands in the guest container or in the host. """
         if 'script' in self.options and self._is_for_guest:
             # First case: we have to run the script inside the container. So the first step is
@@ -23,16 +23,20 @@ class ShellProvisioner(Provisioner):
             # that the script is executable and then run the script.
             guest_scriptpath = os.path.join('/tmp/', os.path.basename(self.options['script']))
             with open(self.homedir_expanded_path(self.options['script'])) as fd:
-                self.guest.lxd_container.files.put(guest_scriptpath, fd.read())
-            self.guest.run(['chmod', '+x', guest_scriptpath])
-            self.guest.run([guest_scriptpath, ])
+                guest.lxd_container.files.put(guest_scriptpath, fd.read())
+            guest.run(['chmod', '+x', guest_scriptpath])
+            guest.run([guest_scriptpath, ])
         elif 'script' in self.options and self._is_for_host:
             # Second case: the script is executed on the host side.
             self.host.run([self.homedir_expanded_path(self.options['script']), ])
         elif 'inline' in self.options:
             # Final case: we run a command directly inside the container or outside.
-            host_or_guest = getattr(self, self._side)
+            host_or_guest = self.host if self._side == 'host' else guest
             host_or_guest.run(['sh', '-c', self.options['inline']])
+
+    def setup(self):
+        # nothing to set up, avoid spurious messages with this override.
+        pass
 
     ##################################
     # PRIVATE METHODS AND PROPERTIES #

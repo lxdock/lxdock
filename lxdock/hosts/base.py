@@ -76,13 +76,16 @@ class Host(with_metaclass(_HostBase)):
     # The `name` of a host is a required attribute and should always be set on `Host` subclasses.
     name = None
 
-    def __init__(self, lxd_container):
-        self.lxd_container = lxd_container
-
     @classmethod
     def detect(cls):
         """ Detects if the host is an "instance" of the considered OS/distribution. """
         return cls.name.lower() in platform.platform().lower()
+
+    @classmethod
+    def get(cls):
+        """ Returns the `Host` instance associated with the considered host. """
+        class_ = next((k for k in Host.hosts if k.detect()), Host)
+        return class_()
 
     def get_ssh_pubkey(self):
         """ Returns the SSH public key of the current user or None if it cannot be found. """
@@ -96,7 +99,7 @@ class Host(with_metaclass(_HostBase)):
         """ Give read/write access to `source` for the current user. """
         self.run(['setfacl', '-Rdm',  'u:{}:rwX'.format(os.getuid()), source])
 
-    def give_mapped_user_access_to_share(self, source, userpath=None):
+    def give_mapped_user_access_to_share(self, lxd_container, source, userpath=None):
         """ Give read/write access to `source` for the mapped user owning `userpath`.
 
         `userpath` is a path that is relative to the LXD base directory (where LXD store contaners).
@@ -109,7 +112,7 @@ class Host(with_metaclass(_HostBase)):
         # any other user's UserID) on the guest-side. This will allow to set ACL on the host-side
         # for this UID. By doing this we will also allow "root" user on the guest-side to read/write
         # in shared folders.
-        container_path_parts = [get_lxd_dir(), 'containers', self.lxd_container.name, 'rootfs']
+        container_path_parts = [get_lxd_dir(), 'containers', lxd_container.name, 'rootfs']
         container_path_parts += userpath.split('/') if userpath else []
         container_path = os.path.join(*container_path_parts)
         container_path_stats = os.stat(container_path)

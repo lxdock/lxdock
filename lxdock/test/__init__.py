@@ -5,5 +5,6 @@
     or run tests.
 """
 
+from .fakes import *  # noqa
 from .fixtures import *  # noqa
 from .testcases import *  # noqa

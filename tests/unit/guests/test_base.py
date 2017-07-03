@@ -8,6 +8,7 @@ from pylxd.exceptions import NotFound
 
 from lxdock.guests import Guest
 from lxdock.guests.base import InvalidGuest
+from lxdock.test import FakeContainer
 
 
 class TestGuest:
@@ -32,74 +33,64 @@ class TestGuest:
     def test_can_add_ssh_pubkey_to_root_authorized_keys(self):
         class DummyGuest(Guest):
             name = 'dummy'
-        lxd_container = unittest.mock.Mock()
-        lxd_container.execute.return_value = ('ok', 'ok', '')
-        guest = DummyGuest(lxd_container)
+        guest = DummyGuest(FakeContainer())
         guest.add_ssh_pubkey_to_root_authorized_keys('pubkey')
-        assert lxd_container.execute.call_count == 1
-        assert lxd_container.execute.call_args[0] == (['mkdir', '-p', '/root/.ssh'], )
-        assert lxd_container.files.put.call_count == 1
-        assert lxd_container.files.put.call_args[0] == ('/root/.ssh/authorized_keys', 'pubkey', )
+        assert guest.lxd_container.execute.call_count == 1
+        assert guest.lxd_container.execute.call_args[0] == (['mkdir', '-p', '/root/.ssh'], )
+        assert guest.lxd_container.files.put.call_count == 1
+        assert guest.lxd_container.files.put.call_args[0] == \
+            ('/root/.ssh/authorized_keys', 'pubkey', )
 
     def test_can_create_a_user_with_a_default_home_directory(self):
         class DummyGuest(Guest):
             name = 'dummy'
-        lxd_container = unittest.mock.Mock()
-        lxd_container.execute.return_value = ('ok', 'ok', '')
-        guest = DummyGuest(lxd_container)
+        guest = DummyGuest(FakeContainer())
         guest.create_user('usertest')
-        assert lxd_container.execute.call_count == 1
-        assert lxd_container.execute.call_args[0] == (['useradd', '--create-home', 'usertest'], )
+        assert guest.lxd_container.execute.call_count == 1
+        assert guest.lxd_container.execute.call_args[0] == \
+            (['useradd', '--create-home', 'usertest'], )
 
     def test_can_create_a_user_with_a_custom_home_directory(self):
         class DummyGuest(Guest):
             name = 'dummy'
-        lxd_container = unittest.mock.Mock()
-        lxd_container.execute.return_value = ('ok', 'ok', '')
-        guest = DummyGuest(lxd_container)
+        guest = DummyGuest(FakeContainer())
         guest.create_user('usertest', home='/opt/usertest')
-        assert lxd_container.execute.call_count == 1
-        assert lxd_container.execute.call_args[0] == \
+        assert guest.lxd_container.execute.call_count == 1
+        assert guest.lxd_container.execute.call_args[0] == \
             (['useradd', '--create-home', '--home-dir', '/opt/usertest', 'usertest'], )
 
     def test_can_create_a_user_with_a_custom_password(self):
         class DummyGuest(Guest):
             name = 'dummy'
-        lxd_container = unittest.mock.Mock()
-        lxd_container.execute.return_value = ('ok', 'ok', '')
         password = '$6$cGzZBkDjOhGW$6C9wwqQteFEY4lQ6ZJBggE568SLSS7bIMKexwOD' \
                    '39mJQrJcZ5vIKJVIfwsKOZajhbPw0.Zqd0jU2NDLAnp9J/1'
-        guest = DummyGuest(lxd_container)
+        guest = DummyGuest(FakeContainer())
         guest.create_user('usertest', password=password)
-        assert lxd_container.execute.call_count == 1
-        assert lxd_container.execute.call_args[0] == \
+        assert guest.lxd_container.execute.call_count == 1
+        assert guest.lxd_container.execute.call_args[0] == \
             (['useradd', '--create-home', '-p', password, 'usertest'], )
 
     def test_can_copy_file(self):
         class DummyGuest(Guest):
             name = 'dummy'
-        lxd_container = unittest.mock.Mock()
-        lxd_container.execute.return_value = ('ok', 'ok', '')
-        lxd_container.files.put.return_value = True
-        guest = DummyGuest(lxd_container)
+        guest = DummyGuest(FakeContainer())
+        guest.lxd_container.files.put.return_value = True
         with tempfile.NamedTemporaryFile() as f:
             f.write(b'dummy file')
             f.flush()
             guest.copy_file(pathlib.Path(f.name), pathlib.PurePath('/a/b/c'))
-        assert lxd_container.execute.call_count == 1
-        assert lxd_container.execute.call_args[0] == (['mkdir', '-p', '/a/b'], )
-        assert lxd_container.files.put.call_count == 1
-        assert lxd_container.files.put.call_args[0] == ('/a/b/c', b'dummy file')
+        assert guest.lxd_container.execute.call_count == 1
+        assert guest.lxd_container.execute.call_args[0] == (['mkdir', '-p', '/a/b'], )
+        assert guest.lxd_container.files.put.call_count == 1
+        assert guest.lxd_container.files.put.call_args[0] == ('/a/b/c', b'dummy file')
 
     @unittest.mock.patch('tarfile.TarFile.add')
     @unittest.mock.patch('tarfile.TarFile.close')
     def test_can_copy_directory(self, mock_close, mock_add):
         class DummyGuest(Guest):
             name = 'dummy'
-        lxd_container = unittest.mock.Mock()
-        lxd_container.execute.return_value = ('ok', 'ok', '')
-        lxd_container.files.put.return_value = True
-        guest = DummyGuest(lxd_container)
+        guest = DummyGuest(FakeContainer())
+        guest.lxd_container.files.put.return_value = True
         with tempfile.TemporaryDirectory() as d:
             os.mkdir('{}/d1'.format(d))
             os.mkdir('{}/d1/d2'.format(d))
@@ -117,15 +108,14 @@ class TestGuest:
 
         assert mock_close.call_count == 1
 
-        print(lxd_container.execute.call_args_list)
-        assert lxd_container.execute.call_count == 4
-        assert lxd_container.execute.call_args_list[0][0] == (['mkdir', '-p', '/a/b/c'], )
-        assert lxd_container.execute.call_args_list[1][0] == ([
+        assert guest.lxd_container.execute.call_count == 4
+        assert guest.lxd_container.execute.call_args_list[0][0] == (['mkdir', '-p', '/a/b/c'], )
+        assert guest.lxd_container.execute.call_args_list[1][0] == ([
             'mkdir', '-p', str(pathlib.PurePosixPath(guest._guest_temporary_tar_path).parent)], )
-        assert lxd_container.execute.call_args_list[2][0] == ([
+        assert guest.lxd_container.execute.call_args_list[2][0] == ([
             'tar', '-xf', guest._guest_temporary_tar_path, '-C', '/a/b/c'], )
-        assert lxd_container.execute.call_args_list[3][0] == ([
+        assert guest.lxd_container.execute.call_args_list[3][0] == ([
             'rm', '-f', guest._guest_temporary_tar_path], )
 
-        assert lxd_container.files.put.call_count == 1
-        assert lxd_container.files.put.call_args[0][0] == guest._guest_temporary_tar_path
+        assert guest.lxd_container.files.put.call_count == 1
+        assert guest.lxd_container.files.put.call_args[0][0] == guest._guest_temporary_tar_path

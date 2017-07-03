@@ -58,10 +58,10 @@ class TestPuppetProvisioner:
     def test_can_run_puppet_manifest_mode(self, mock_run, mock_copy_dir):
         class DummyGuest(Guest):
             name = 'dummy'
-        host = Host(unittest.mock.Mock())
+        host = Host()
         guest = DummyGuest(unittest.mock.Mock())
         mock_run.return_value = 0
-        provisioner = PuppetProvisioner('./', host, guest, {
+        provisioner = PuppetProvisioner('./', host, [guest], {
             'manifest_file': 'test_site.pp',
             'manifests_path': 'test_manifests'})
         provisioner.provision()
@@ -84,10 +84,10 @@ class TestPuppetProvisioner:
     def test_can_run_puppet_environment_mode(self, mock_run, mock_copy_dir):
         class DummyGuest(Guest):
             name = 'dummy'
-        host = Host(unittest.mock.Mock())
+        host = Host()
         guest = DummyGuest(unittest.mock.Mock())
         mock_run.return_value = 0
-        provisioner = PuppetProvisioner('./', host, guest, {
+        provisioner = PuppetProvisioner('./', host, [guest], {
             'environment': 'test_production',
             'environment_path': 'test_environments'})
         provisioner.provision()
@@ -111,10 +111,10 @@ class TestPuppetProvisioner:
     def test_raise_error_if_puppet_is_not_found(self, mock_run, mock_copy_file):
         class DummyGuest(Guest):
             name = 'dummy'
-        host = Host(unittest.mock.Mock())
+        host = Host()
         guest = DummyGuest(unittest.mock.Mock())
         mock_run.return_value = 1  # Mock the error
-        provisioner = PuppetProvisioner('./', host, guest, {
+        provisioner = PuppetProvisioner('./', host, [guest], {
             'manifest_file': 'test_site.pp',
             'manifests_path': 'test_manifests'})
         with pytest.raises(ProvisionFailed):
@@ -128,10 +128,10 @@ class TestPuppetProvisioner:
     def test_can_set_binary_path(self, mock_run, mock_copy_dir):
         class DummyGuest(Guest):
             name = 'dummy'
-        host = Host(unittest.mock.Mock())
+        host = Host()
         guest = DummyGuest(unittest.mock.Mock())
         mock_run.return_value = 0
-        provisioner = PuppetProvisioner('./', host, guest, {
+        provisioner = PuppetProvisioner('./', host, [guest], {
             'manifest_file': 'test_site.pp',
             'manifests_path': 'test_manifests',
             'binary_path': '/test/path'})
@@ -150,10 +150,10 @@ class TestPuppetProvisioner:
     def test_can_set_facter(self, mock_run, mock_copy_dir):
         class DummyGuest(Guest):
             name = 'dummy'
-        host = Host(unittest.mock.Mock())
+        host = Host()
         guest = DummyGuest(unittest.mock.Mock())
         mock_run.return_value = 0
-        provisioner = PuppetProvisioner('./', host, guest, {
+        provisioner = PuppetProvisioner('./', host, [guest], {
             'manifest_file': 'site.pp',
             'manifests_path': 'test_manifests',
             'facter': {'foo': 'bah', 'bar': 'baz baz'}})
@@ -172,10 +172,10 @@ class TestPuppetProvisioner:
     def test_can_set_hiera_config_path(self, mock_run, mock_copy_dir, mock_copy_file):
         class DummyGuest(Guest):
             name = 'dummy'
-        host = Host(unittest.mock.Mock())
+        host = Host()
         guest = DummyGuest(unittest.mock.Mock())
         mock_run.return_value = 0
-        provisioner = PuppetProvisioner('./', host, guest, {
+        provisioner = PuppetProvisioner('./', host, [guest], {
             'manifest_file': 'site.pp',
             'manifests_path': 'test_manifests',
             'hiera_config_path': 'hiera.yaml'})
@@ -199,10 +199,10 @@ class TestPuppetProvisioner:
     def test_can_set_module_path(self, mock_run, mock_copy_dir):
         class DummyGuest(Guest):
             name = 'dummy'
-        host = Host(unittest.mock.Mock())
+        host = Host()
         guest = DummyGuest(unittest.mock.Mock())
         mock_run.return_value = 0
-        provisioner = PuppetProvisioner('./', host, guest, {
+        provisioner = PuppetProvisioner('./', host, [guest], {
             'manifest_file': 'mani.pp',
             'manifests_path': 'test_manifests',
             'module_path': 'test-puppet-modules'})
@@ -228,10 +228,10 @@ class TestPuppetProvisioner:
     def test_can_set_environment_variables(self, mock_run, mock_copy_dir):
         class DummyGuest(Guest):
             name = 'dummy'
-        host = Host(unittest.mock.Mock())
+        host = Host()
         guest = DummyGuest(unittest.mock.Mock())
         mock_run.return_value = 0
-        provisioner = PuppetProvisioner('./', host, guest, {
+        provisioner = PuppetProvisioner('./', host, [guest], {
             'manifest_file': 'site.pp',
             'manifests_path': 'test_manifests',
             'environment_variables': {'FOO': 'bah', 'BAR': 'baz baz'}})
@@ -249,10 +249,10 @@ class TestPuppetProvisioner:
     def test_can_set_options(self, mock_run, mock_copy_dir):
         class DummyGuest(Guest):
             name = 'dummy'
-        host = Host(unittest.mock.Mock())
+        host = Host()
         guest = DummyGuest(unittest.mock.Mock())
         mock_run.return_value = 0
-        provisioner = PuppetProvisioner('./', host, guest, {
+        provisioner = PuppetProvisioner('./', host, [guest], {
             'manifest_file': 'site.pp',
             'manifests_path': 'test_manifests',
             'options': '--a --c="test space" --b'})

@@ -81,19 +81,19 @@ class PuppetProvisioner(Provisioner):
     _guest_environment_path = '/.lxdock.d/puppet/environments'
     _guest_hiera_file = '/.lxdock.d/puppet/hiera.yaml'
 
-    def provision(self):
+    def provision_single(self, guest):
         """ Performs the provisioning operations using puppet. """
         # Verify if `puppet` has been installed.
         binary_path = self.options.get('binary_path')
         if binary_path is not None:
             puppet_bin = str(PurePosixPath(binary_path) / 'puppet')
-            retcode = self.guest.run(['test', '-x', puppet_bin])
+            retcode = guest.run(['test', '-x', puppet_bin])
             fail_msg = (
                 "puppet executable is not found in the specified path {} in the "
                 "guest container. ".format(binary_path)
             )
         else:
-            retcode = self.guest.run(['which', 'puppet'])
+            retcode = guest.run(['which', 'puppet'])
             fail_msg = (
                 "puppet was not automatically installed for this guest. "
                 "Please specify the command to install it in LXDock file using "
@@ -106,24 +106,24 @@ class PuppetProvisioner(Provisioner):
         # Copy manifests dir
         manifests_path = self.options.get('manifests_path')
         if manifests_path is not None:
-            self.guest.copy_directory(
+            guest.copy_directory(
                 Path(manifests_path), PurePosixPath(self._guest_manifests_path))
 
         # Copy module dir
         module_path = self.options.get('module_path')
         if module_path is not None:
-            self.guest.copy_directory(Path(module_path), PurePosixPath(self._guest_module_path))
+            guest.copy_directory(Path(module_path), PurePosixPath(self._guest_module_path))
 
         # Copy environment dir
         environment_path = self.options.get('environment_path')
         if environment_path is not None:
-            self.guest.copy_directory(
+            guest.copy_directory(
                 Path(environment_path), PurePosixPath(self._guest_environment_path))
 
         # Copy hiera file
         hiera_file = self.options.get('hiera_config_path')
         if hiera_file is not None:
-            self.guest.copy_file(Path(hiera_file), PurePosixPath(self._guest_hiera_file))
+            guest.copy_file(Path(hiera_file), PurePosixPath(self._guest_hiera_file))
 
         # Run puppet.
         command = self._build_puppet_command()
@@ -133,7 +133,7 @@ class PuppetProvisioner(Provisioner):
         else:
             logger.info("Running Puppet with {}...".format(self.options['manifest_file']))
 
-        self.guest.run(['sh', '-c', ' '.join(command)])
+        guest.run(['sh', '-c', ' '.join(command)])
 
     ##################################
     # PRIVATE METHODS AND PROPERTIES #

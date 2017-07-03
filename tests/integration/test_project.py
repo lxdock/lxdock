@@ -3,6 +3,7 @@ import unittest.mock
 
 import pytest
 
+from lxdock import constants
 from lxdock.conf.config import Config
 from lxdock.container import Container
 from lxdock.exceptions import ProjectError
@@ -84,16 +85,16 @@ class TestProject(LXDTestCase):
         homedir = os.path.join(FIXTURE_ROOT, 'project03')
         container_options = {
             'name': self.containername('dummytest'), 'image': 'ubuntu/xenial', 'mode': 'pull',
-            'provisioning': [
-                {'type': 'ansible',
-                 'playbook': os.path.join(THIS_DIR, 'fixtures/provision_with_ansible.yml'), }
-            ],
         }
+        provisioning_steps = [
+            {'type': 'ansible',
+             'playbook': os.path.join(THIS_DIR, 'fixtures/provision_with_ansible.yml'), }
+        ]
         project = Project(
             'project02', homedir, self.client,
-            [Container('myproject', THIS_DIR, self.client, **container_options)])
-        project.up()
-        project.provision()
+            [Container('myproject', THIS_DIR, self.client, **container_options)],
+            provisioning_steps=provisioning_steps)
+        project.up()  # implicit provisioning
         for container in project.containers:
             assert container.is_provisioned
 
@@ -108,8 +109,9 @@ class TestProject(LXDTestCase):
         }
         project = Project(
             'project02', homedir, self.client,
-            [Container('myproject', THIS_DIR, self.client, **container_options)])
-        project.up()
+            [Container('myproject', THIS_DIR, self.client, **container_options)],
+            provisioning_steps=[])
+        project.up(provisioning_mode=constants.ProvisioningMode.DISABLED)
         project.provision(container_names=['lxdock-pytest-thisisatest'])
         container_web = project.get_container_by_name('lxdock-pytest-thisisatest')
         assert container_web.is_provisioned
@@ -117,15 +119,12 @@ class TestProject(LXDTestCase):
     def test_can_destroy_all_the_containers_of_a_project(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project03')
         container_options = {
-            'name': self.containername('dummytest'), 'image': 'ubuntu/xenial', 'mode': 'pull',
-            'provisioning': [
-                {'type': 'ansible',
-                 'playbook': os.path.join(THIS_DIR, 'fixtures/provision_with_ansible.yml'), }
-            ],
+            'name': self.containername('dummytest'), 'image': 'ubuntu/xenial',
         }
         project = Project(
             'project02', homedir, self.client,
-            [Container('myproject', THIS_DIR, self.client, **container_options)])
+            [Container('myproject', THIS_DIR, self.client, **container_options)],
+            provisioning_steps=[])
         project.up()
         project.destroy()
         for container in project.containers:
@@ -152,7 +151,7 @@ class TestProject(LXDTestCase):
     @unittest.mock.patch('subprocess.call')
     def test_can_open_a_shell_for_a_specific_container(self, mocked_call, persistent_container):
         homedir = os.path.join(FIXTURE_ROOT, 'project03')
-        project = Project('project02', homedir, self.client, [persistent_container, ])
+        project = Project('project02', homedir, self.client, [persistent_container, ], [])
         project.shell(container_name='testcase-persistent')
         assert mocked_call.call_count == 1
         assert mocked_call.call_args[0][0] == \
@@ -162,7 +161,7 @@ class TestProject(LXDTestCase):
     def test_can_run_shell_command_for_a_specific_container(
             self, mocked_call, persistent_container):
         homedir = os.path.join(FIXTURE_ROOT, 'project03')
-        project = Project('project02', homedir, self.client, [persistent_container, ])
+        project = Project('project02', homedir, self.client, [persistent_container, ], [])
         project.shell(container_name='testcase-persistent', cmd_args=['echo', 'HELLO'])
         assert mocked_call.call_count == 1
         assert mocked_call.call_args[0][0] == \
@@ -172,7 +171,7 @@ class TestProject(LXDTestCase):
     @unittest.mock.patch.object(project_logger, 'info')
     def test_can_return_the_statuses_of_containers(self, mock_info, persistent_container):
         homedir = os.path.join(FIXTURE_ROOT, 'project03')
-        project = Project('project02', homedir, self.client, [persistent_container, ])
+        project = Project('project02', homedir, self.client, [persistent_container, ], [])
         project.status(container_names=['testcase-persistent'])
         assert mock_info.call_count == 2
         assert mock_info.call_args[0][0] == 'testcase-persistent           (running)'

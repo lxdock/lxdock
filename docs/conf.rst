@@ -239,6 +239,16 @@ can be an Ansible playbook to run:
     - type: ansible
       playbook: deploy/site.yml
 
+
+Unlike normal configuration options, whether it is declared globally or specifically to a container
+has a special meaning for some provisioners. For example, a global ``ansible`` provisioner will
+only run **once** with an inventory including all containers. For some other provisioner, the global
+context doesn't make sense, so in these cases, these provisioner will be ran individually on each
+container.
+
+Like with other configuration options, however, you can of course declare a ``provisioning`` section
+locally to target a specific container.
+
 .. note::
 
   Please refer to :doc:`provisioners/index` to see the full list of supported provisioners.

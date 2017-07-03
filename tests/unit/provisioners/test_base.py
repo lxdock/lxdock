@@ -5,6 +5,7 @@ import pytest
 from lxdock.guests import DebianGuest
 from lxdock.provisioners import Provisioner
 from lxdock.provisioners.base import InvalidProvisioner
+from lxdock.test import FakeContainer
 
 
 class TestProvisioner:
@@ -27,11 +28,12 @@ class TestProvisioner:
 
             guest_required_packages_debian = ['test01', 'test02', ]
 
-        lxd_container = unittest.mock.Mock()
+        container = FakeContainer()
+        lxd_container = container._container
         lxd_container.execute.return_value = ('ok', 'ok', '')
         host = unittest.mock.Mock()
-        guest = DebianGuest(lxd_container)
-        provisioner = DummyProvisioner('./', host, guest, {})
+        guest = DebianGuest(container)
+        provisioner = DummyProvisioner('./', host, [guest], {})
         provisioner.setup()
         assert lxd_container.execute.call_count == 2
         assert lxd_container.execute.call_args_list[0][0] == \
@@ -45,13 +47,14 @@ class TestProvisioner:
             schema = {'test': 'test', }
             called = False
 
-            def setup_guest_debian(self):
+            def setup_guest_debian(self, guest):
                 self.called = True
 
-        lxd_container = unittest.mock.Mock()
+        container = FakeContainer()
+        lxd_container = container._container
         lxd_container.execute.return_value = ('ok', 'ok', '')
         host = unittest.mock.Mock()
-        guest = DebianGuest(lxd_container)
-        provisioner = DummyProvisioner('./', host, guest, {})
+        guest = DebianGuest(container)
+        provisioner = DummyProvisioner('./', host, [guest], {})
         provisioner.setup()
         assert provisioner.called

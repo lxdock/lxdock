@@ -1,0 +1,6 @@
+codecov>=1.6
+pytest>=3.0
+pytest-cov>=1.8
+pytest-spec>=0.2
+pytest-sugar>=0.7.0
+tox>=1.7

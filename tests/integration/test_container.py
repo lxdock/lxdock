@@ -83,7 +83,7 @@ class TestContainer(LXDTestCase):
         }
         container = Container('myproject', THIS_DIR, self.client, **container_options)
         container.up()
-        assert container._container.config['user.lxdock.provisioned'] == 'true'
+        container.provision()
         assert container._container.files.get('/dummytest').strip() == b'dummytest'
 
     def test_can_provision_a_container_shell_inline(self):
@@ -97,7 +97,7 @@ class TestContainer(LXDTestCase):
         }
         container = Container('myproject', THIS_DIR, self.client, **container_options)
         container.up()
-        assert container._container.config['user.lxdock.provisioned'] == 'true'
+        container.provision()
         assert container._container.files.get('/tmp/test.txt').strip() == (
             b"Here's the PATH /dummy_test:/bin:/usr/bin:/usr/local/bin")
 
@@ -180,7 +180,8 @@ class TestContainer(LXDTestCase):
         persistent_container._container.config['user.lxdock.provisioned'] = 'false'
         persistent_container._container.save(wait=True)
         assert not persistent_container.is_provisioned
-        persistent_container.provision()
+        persistent_container._container.config['user.lxdock.provisioned'] = 'true'
+        persistent_container._container.save(wait=True)
         assert persistent_container.is_provisioned
 
     def test_can_tell_if_a_container_is_running_or_not(self, persistent_container):

@@ -85,43 +85,27 @@ class Container:
             self._container.stop(force=True, wait=True)
 
     @must_be_created_and_running
-    def provision(self):
+    def provision(self, force=True):
         """ Provisions the container. """
         # We run this in case our lxdock.yml config was modified since our last `lxdock up`.
         self._setup_env()
-        barebone = not self.is_provisioned
 
-        provisioning_steps = self.options.get('provisioning', [])
+        try:
+            provisioning_steps = self.options['provisioning']
+        except KeyError:
+            return
 
-        if barebone:
-            self._perform_barebones_setup()
+        if not force and self.is_provisioned:
+            return
 
-        # Instantiate all provisioners
-        provisioners = []
         for provisioning_item in provisioning_steps:
             provisioning_type = provisioning_item['type'].lower()
             provisioner_class = Provisioner.provisioners.get(provisioning_type)
             if provisioner_class is not None:
                 provisioner = provisioner_class(
-                    self.homedir, self._host, self._guest, provisioning_item)
-                provisioners.append(provisioner)
-
-        logger.info('Provisioning container "{name}"...'.format(name=self.name))
-
-        # Do barebone setups for each provisioner if necessary
-        if barebone:
-            for provisioner in provisioners:
-                logger.info('Performing barebones setup for provisioner {0}'.format(
-                    provisioner.name))
-                provisioner.setup()
-
-        # Provision
-        for provisioner in provisioners:
-            logger.info('Provisioning with {0}'.format(provisioner.name))
-            provisioner.provision()
-
-        self._container.config['user.lxdock.provisioned'] = 'true'
-        self._container.save(wait=True)
+                    self.homedir, self._host, [self._guest], provisioning_item)
+                logger.info('Provisioning with {0}'.format(provisioner.name))
+                provisioner.provision()
 
     @must_be_created_and_running
     def shell(self, username=None, cmd_args=[]):
@@ -162,7 +146,7 @@ class Container:
 
         subprocess.call(cmd, shell=True)
 
-    def up(self, provisioning_mode=None):
+    def up(self):
         """ Creates, starts and provisions the container. """
         if self.is_running:
             logger.info('Container "{name}" is already running'.format(name=self.name))
@@ -191,18 +175,6 @@ class Container:
 
         # Override environment variables
         self._setup_env()
-
-        # Provisions the container if applicable; that is only if it hasn't been provisioned before
-        # or if the provisioning is manually enabled.
-        is_provisioned = self.is_provisioned
-        provisioning_mode = provisioning_mode or constants.ProvisioningMode.AUTO
-        if not provisioning_mode == constants.ProvisioningMode.DISABLED:
-            if (not is_provisioned and provisioning_mode == constants.ProvisioningMode.AUTO) or \
-                    provisioning_mode == constants.ProvisioningMode.ENABLED:
-                self.provision()
-            elif is_provisioned:
-                logger.info('Container "{name}" already provisioned, '
-                            'not provisioning.'.format(name=self.name))
 
     ##################################
     # UTILITY METHODS AND PROPERTIES #
@@ -344,17 +316,6 @@ class Container:
             logger.error("Can't create container: {error}".format(error=e))
             raise ContainerOperationFailed()
 
-    def _perform_barebones_setup(self):
-        """ Performs bare bones setup on the machine. """
-        logger.info('Doing bare bones setup on the machine...')
-
-        # Add the current user's SSH pubkey to the container's root SSH config.
-        ssh_pubkey = self._host.get_ssh_pubkey()
-        if ssh_pubkey is not None:
-            self._guest.add_ssh_pubkey_to_root_authorized_keys(ssh_pubkey)
-        else:
-            logger.warning('SSH pubkey was not found. Provisioning tools may not work correctly...')
-
     def _setup_env(self):
         """ Add environment overrides from the conf to our container config. """
         env_override = self.options.get('environment')
@@ -417,12 +378,13 @@ class Container:
                 if not self.is_privileged:
                     # We are considering a safe container. So give the mapped root user permissions
                     # to read/write contents in the shared folders too.
-                    self._host.give_mapped_user_access_to_share(source)
+                    self._host.give_mapped_user_access_to_share(self._container, source)
                     # We also give these permissions to any user that was created with LXDock.
                     for uconfig in self.options.get('users', []):
                         username = uconfig.get('name')
                         self._host.give_mapped_user_access_to_share(
-                            source, userpath=uconfig.get('home', '/home/' + username))
+                            self._container, source,
+                            userpath=uconfig.get('home', '/home/' + username))
 
             shareconf = {'type': 'disk', 'source': source, 'path': share['dest'], }
             container.devices['lxdockshare%s' % i] = shareconf
@@ -472,20 +434,14 @@ class Container:
 
     @property
     def _guest(self):
-        """ Returns the `Guest` instance associated with the considered container.
-
-        None is returned if no guest class can be determined for the considered container. """
+        """ Returns the `Guest` instance associated with the considered container. """
         if not hasattr(self, '_container_guest'):
-            guest_class = next((k for k in Guest.guests if k.detect(self._container)), Guest)
-            self._container_guest = guest_class(self._container)
+            self._container_guest = Guest.get(self)
         return self._container_guest
 
     @property
     def _host(self):
-        """ Returns the `Host` instance associated with the considered host.
-
-        None is returned if no guest class can be determined for the considered container. """
+        """ Returns the `Host` instance associated with the considered host. """
         if not hasattr(self, '_container_host'):
-            host_class = next((k for k in Host.hosts if k.detect()), Host)
-            self._container_host = host_class(self._container)
+            self._container_host = Host.get()
         return self._container_host

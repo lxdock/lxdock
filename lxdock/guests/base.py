@@ -76,8 +76,9 @@ class Guest(with_metaclass(_GuestBase)):
     # The `name` of a guest is a required attribute and should always be set on `Guest` subclasses.
     name = None
 
-    def __init__(self, lxd_container):
-        self.lxd_container = lxd_container
+    def __init__(self, container):
+        self.container = container
+        self.lxd_container = container._container
 
     @classmethod
     def detect(cls, lxd_container):
@@ -103,6 +104,12 @@ class Guest(with_metaclass(_GuestBase)):
             if found:
                 break
         return found
+
+    @classmethod
+    def get(cls, container):
+        """ Returns the `Guest` instance associated with the considered container. """
+        class_ = next((k for k in cls.guests if k.detect(container._container)), Guest)
+        return class_(container)
 
     def add_ssh_pubkey_to_root_authorized_keys(self, pubkey):
         """ Add a given SSH public key to the root user's authorized keys. """
