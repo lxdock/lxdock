@@ -25,6 +25,8 @@ New features
   (`#79 <https://github.com/lxdock/lxdock/pull/79>`_)
 * Add experimental support for Puppet provisioning
   (`#69 <https://github.com/lxdock/lxdock/pull/69>`_)
+* Add global provisioning capabilities
+  (`#90 <https://github.com/lxdock/lxdock/pull/90>`_)
 
 Minor changes
 -------------
