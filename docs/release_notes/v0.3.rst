@@ -1,6 +1,6 @@
-############################################
-LXDock 0.3 release notes (UNDER DEVELOPMENT)
-############################################
+#####################################
+LXDock 0.3 release notes (2017-07-10)
+#####################################
 
 Requirements and compatibility
 ------------------------------
@@ -23,6 +23,8 @@ New features
   (`#77 <https://github.com/lxdock/lxdock/pull/77>`_)
 * Add a ``set_host_acl`` option to disable setting host ACL on a share
   (`#79 <https://github.com/lxdock/lxdock/pull/79>`_)
+* Add support for provisioning-specific arguments to the ``up`` command
+  (`#84 <https://github.com/lxdock/lxdock/pull/84>`_)
 * Add experimental support for Puppet provisioning
   (`#69 <https://github.com/lxdock/lxdock/pull/69>`_)
 * Add global provisioning capabilities
@@ -33,3 +35,4 @@ Minor changes
 
 * Fixed wrong guest names and ssh setup in some Ansible provisioner
   (`#71 <https://github.com/lxdock/lxdock/issues/71>`_)
+* Ensure the container is created when running provision or shell subcommands
