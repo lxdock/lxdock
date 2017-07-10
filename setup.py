@@ -35,16 +35,12 @@ setup(
     zip_safe=False,
     install_requires=[
         'colorlog>=2.0,<3.0',
-        'pylxd==2.2.4',
+        'pylxd>=2.2.4',
         'python-dotenv>=0.6',
         'PyYAML>=3.0,<4.0',
         'voluptuous>=0.9,<1.0',
         # TODO: find why requests >= 2.16 breaks our stuff. See #81
         'requests>=2.5.1,<2.16',
-    ],
-    dependency_links=[
-        # Temporary, until https://github.com/lxc/pylxd/pull/234 is merged and released
-        'git+https://github.com/hsoft/pylxd.git@fix-for-lxdock#egg=pylxd-2.2.4',
     ],
     tests_require=[
         'pytest',
