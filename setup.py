@@ -4,7 +4,6 @@ from os.path import abspath
 from os.path import dirname
 from os.path import join
 
-from setuptools import find_packages
 from setuptools import setup
 
 import lxdock
@@ -25,7 +24,7 @@ setup(
     version=lxdock.__version__,
     author='Virgil Dupras, Morgan Aubert',
     author_email='',
-    packages=find_packages(),
+    packages=['lxdock'],
     include_package_data=True,
     url='https://github.com/lxdock/lxdock',
     license='GPLv3',
