@@ -67,3 +67,19 @@ class TestAnsibleProvisioner:
         assert lxd_container.execute.call_args_list[2][0] == (['rc-update', 'add', 'sshd'], )
         assert lxd_container.execute.call_args_list[3][0] == (['/etc/init.d/sshd', 'start'], )
         assert lxd_container.execute.call_args_list[4][0] == (['mkdir', '-p', '/root/.ssh'], )
+
+    def test_inventory_contains_groups(self):
+        c1 = FakeContainer(name='c1')
+        c2 = FakeContainer(name='c2')
+        provisioner = AnsibleProvisioner(
+            './',
+            Host(),
+            [DebianGuest(c1), DebianGuest(c2)],
+            {'playbook': 'deploy.yml', 'groups': {'g1': ['c1', 'c2'], 'g2': ['c1']}}
+        )
+        inv = provisioner.get_inventory()
+        # group order is not guaranteed. our tests have to be written with that in mind.
+        groups = re.findall(r'\[(g1|g2)\]([^[]+)', inv, re.MULTILINE)
+        # we sort so that g1 will be first all the time
+        groups = sorted([(gname, hosts.strip()) for gname, hosts in groups])
+        assert sorted(groups) == [('g1', 'c1\nc2'), ('g2', 'c1')]

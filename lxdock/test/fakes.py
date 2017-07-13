@@ -13,4 +13,7 @@ class FakeContainer(Container):
     def _get_container(self, create=True):
         result = Mock()
         result.execute.return_value = ('ok', 'ok', '')
+        network_state = Mock()
+        network_state.network = None
+        result.state.return_value = network_state
         return result

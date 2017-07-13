@@ -1,7 +1,7 @@
 import logging
 import tempfile
 
-from voluptuous import IsFile, Required
+from voluptuous import Extra, IsFile, Required
 
 from ..network import get_ip
 from .base import Provisioner
@@ -29,20 +29,27 @@ class AnsibleProvisioner(Provisioner):
         Required('playbook'): IsFile(),
         'ask_vault_pass': bool,
         'vault_password_file': IsFile(),
+        'groups': {Extra: [str, ]},
     }
 
-    def get_inventory(self, guests):
+    def get_inventory(self):
         def line(guest):
             ip = get_ip(guest.lxd_container)
-            return '{} ansible_user=root'.format(ip)
+            return '{} ansible_host={} ansible_user=root'.format(guest.container.name, ip)
 
-        return '\n'.join(line(guest) for guest in guests)
+        def fmtgroup(name, hosts):
+            return '[{}]\n{}'.format(name, '\n'.join(hosts))
+
+        all_hosts_lines = '\n'.join(line(guest) for guest in self.guests)
+        groups = self.options.get('groups', {})
+        groups_lines = '\n\n'.join(fmtgroup(key, val) for key, val in groups.items())
+        return '\n\n'.join([all_hosts_lines, groups_lines])
 
     def provision(self):
         """ Performs the provisioning operations using ansible-playbook. """
         self.setup()
         with tempfile.NamedTemporaryFile() as tmpinv:
-            tmpinv.write(self.get_inventory(self.guests).encode('ascii'))
+            tmpinv.write(self.get_inventory().encode('ascii'))
             tmpinv.flush()
             self.host.run(self._build_ansible_playbook_command_args(tmpinv.name))
 
