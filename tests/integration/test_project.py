@@ -27,7 +27,7 @@ class TestProject(LXDTestCase):
         assert project.containers[0].name == 'default'
         assert project.containers[0].homedir == homedir
         assert project.containers[0].options['mode'] == 'pull'
-        assert project.containers[0].options['image'] == 'ubuntu/xenial'
+        assert project.containers[0].options['image'] == 'alpine/3.6'
 
     def test_can_return_a_container_by_name(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project02')
@@ -84,7 +84,7 @@ class TestProject(LXDTestCase):
     def test_can_provision_all_the_containers_of_a_project(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project03')
         container_options = {
-            'name': self.containername('dummytest'), 'image': 'ubuntu/xenial', 'mode': 'pull',
+            'name': self.containername('dummytest'), 'image': 'alpine/3.6', 'mode': 'pull',
         }
         provisioning_steps = [
             {'type': 'ansible',
@@ -101,7 +101,7 @@ class TestProject(LXDTestCase):
     def test_can_provision_some_specific_containers_of_a_project(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project03')
         container_options = {
-            'name': self.containername('thisisatest'), 'image': 'ubuntu/xenial', 'mode': 'pull',
+            'name': self.containername('thisisatest'), 'image': 'alpine/3.6', 'mode': 'pull',
             'provisioning': [
                 {'type': 'ansible',
                  'playbook': os.path.join(THIS_DIR, 'fixtures/provision_with_ansible.yml'), }
@@ -119,7 +119,7 @@ class TestProject(LXDTestCase):
     def test_can_destroy_all_the_containers_of_a_project(self):
         homedir = os.path.join(FIXTURE_ROOT, 'project03')
         container_options = {
-            'name': self.containername('dummytest'), 'image': 'ubuntu/xenial',
+            'name': self.containername('dummytest'), 'image': 'alpine/3.6',
         }
         project = Project(
             'project02', homedir, self.client,

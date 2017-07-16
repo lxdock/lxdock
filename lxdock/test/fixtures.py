@@ -35,7 +35,7 @@ def persistent_container():
     if _persistent_container is None:
         _persistent_container = Container(
             'lxdtestcase-persistentcontainer', THIS_DIR, get_client(), **{
-                'name': 'testcase-persistent', 'image': 'ubuntu/xenial', 'mode': 'pull',
+                'name': 'testcase-persistent', 'image': 'alpine/3.6', 'mode': 'pull',
             })
     # Ensures the persistent container is up and running.
     if not _persistent_container.exists \
