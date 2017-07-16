@@ -73,18 +73,21 @@ class TestContainer(LXDTestCase):
         persistent_container.halt()
         assert persistent_container._container.status_code == constants.CONTAINER_STOPPED
 
-    def test_can_provision_a_container_ansible(self):
-        container_options = {
-            'name': self.containername('willprovision'), 'image': 'ubuntu/xenial', 'mode': 'pull',
-            'provisioning': [
-                {'type': 'ansible',
-                 'playbook': os.path.join(THIS_DIR, 'fixtures/provision_with_ansible.yml'), }
-            ],
-        }
-        container = Container('myproject', THIS_DIR, self.client, **container_options)
-        container.up()
-        container.provision()
-        assert container._container.files.get('/dummytest').strip() == b'dummytest'
+    @pytest.mark.parametrize("lxd_transport", [False, True])
+    def test_can_provision_a_container_ansible(self, persistent_container, lxd_transport):
+        # We want to make sure that barebone setup is executed on provision()
+        persistent_container._container.config['user.lxdock.provisioned'] = 'false'
+        persistent_container._container.save(wait=True)
+        persistent_container.options['provisioning'] = [{
+            'type': 'ansible',
+            'playbook': os.path.join(THIS_DIR, 'fixtures/provision_with_ansible.yml'),
+            'lxd_transport': lxd_transport,
+        }]
+        persistent_container.up()
+        persistent_container.provision()
+        assert persistent_container._container.files.get('/dummytest').strip() == b'dummytest'
+        persistent_container._container.execute(['rm', '/dummytest'])
+        del persistent_container.options['provisioning']
 
     def test_can_provision_a_container_shell_inline(self):
         container_options = {

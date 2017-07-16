@@ -1,6 +1,8 @@
 import re
 import unittest.mock
 
+import pytest
+
 from lxdock.guests import AlpineGuest, DebianGuest
 from lxdock.hosts import Host
 from lxdock.provisioners import AnsibleProvisioner
@@ -8,49 +10,28 @@ from lxdock.test import FakeContainer
 
 
 class TestAnsibleProvisioner:
+    @pytest.mark.parametrize("options,expected_cmdargs", [
+        ({}, ''),
+        ({'vault_password_file': '.vpass'}, '--vault-password-file ./.vpass'),
+        ({'ask_vault_pass': True}, '--ask-vault-pass'),
+        ({'lxd_transport': True}, '-c lxd'),
+    ])
     @unittest.mock.patch('subprocess.Popen')
-    def test_can_run_ansible_playbooks(self, mock_popen):
+    def test_can_run_ansible_playbooks(self, mock_popen, options, expected_cmdargs):
         host = Host()
         guest = DebianGuest(FakeContainer())
         lxd_state = unittest.mock.Mock()
         lxd_state.network.__getitem__ = unittest.mock.MagicMock(
             return_value={'addresses': [{'family': 'init', 'address': '0.0.0.0', }, ]})
         guest.lxd_container.state.return_value = lxd_state
-        provisioner = AnsibleProvisioner('./', host, [guest], {'playbook': 'deploy.yml'})
+        options['playbook'] = 'deploy.yml'
+        provisioner = AnsibleProvisioner('./', host, [guest], options)
         provisioner.provision()
-        assert re.match(
-            'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook --inventory-file /[/\w]+ '
-            './deploy.yml', mock_popen.call_args[0][0])
-
-    @unittest.mock.patch('subprocess.Popen')
-    def test_can_run_ansible_playbooks_with_the_vault_password_file_option(self, mock_popen):
-        host = Host()
-        guest = DebianGuest(FakeContainer())
-        lxd_state = unittest.mock.Mock()
-        lxd_state.network.__getitem__ = unittest.mock.MagicMock(
-            return_value={'addresses': [{'family': 'init', 'address': '0.0.0.0', }, ]})
-        guest.lxd_container.state.return_value = lxd_state
-        provisioner = AnsibleProvisioner(
-            './', host, [guest], {'playbook': 'deploy.yml', 'vault_password_file': '.vpass'})
-        provisioner.provision()
-        assert re.match(
-            'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook --inventory-file /[/\w]+ '
-            '--vault-password-file ./.vpass ./deploy.yml', mock_popen.call_args[0][0])
-
-    @unittest.mock.patch('subprocess.Popen')
-    def test_can_run_ansible_playbooks_with_the_ask_vault_pass_option(self, mock_popen):
-        host = Host()
-        guest = DebianGuest(FakeContainer())
-        lxd_state = unittest.mock.Mock()
-        lxd_state.network.__getitem__ = unittest.mock.MagicMock(
-            return_value={'addresses': [{'family': 'init', 'address': '0.0.0.0', }, ]})
-        guest.lxd_container.state.return_value = lxd_state
-        provisioner = AnsibleProvisioner(
-            './', host, [guest], {'playbook': 'deploy.yml', 'ask_vault_pass': True})
-        provisioner.provision()
-        assert re.match(
-            'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook --inventory-file /[/\w]+ '
-            '--ask-vault-pass ./deploy.yml', mock_popen.call_args[0][0])
+        m = re.match(
+            r'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook --inventory-file /[/\w]+ '
+            '(.*)\s?./deploy.yml', mock_popen.call_args[0][0])
+        assert m
+        assert m.group(1).strip() == expected_cmdargs
 
     def test_can_properly_setup_ssh_for_alpine_guests(self):
         container = FakeContainer()
@@ -60,13 +41,17 @@ class TestAnsibleProvisioner:
         guest = AlpineGuest(container)
         provisioner = AnsibleProvisioner('./', host, [guest], {'playbook': 'deploy.yml'})
         provisioner.setup()
-        assert lxd_container.execute.call_count == 5
-        assert lxd_container.execute.call_args_list[0][0] == (['apk', 'update'], )
-        assert lxd_container.execute.call_args_list[1][0] == \
-            (['apk', 'add'] + AnsibleProvisioner.guest_required_packages_alpine, )
-        assert lxd_container.execute.call_args_list[2][0] == (['rc-update', 'add', 'sshd'], )
-        assert lxd_container.execute.call_args_list[3][0] == (['/etc/init.d/sshd', 'start'], )
-        assert lxd_container.execute.call_args_list[4][0] == (['mkdir', '-p', '/root/.ssh'], )
+        EXPECTED = [
+            ['apk', 'update'],
+            ['apk', 'add'] + AnsibleProvisioner.guest_required_packages_alpine,
+            ['apk', 'update'],
+            ['apk', 'add', 'openssh'],
+            ['rc-update', 'add', 'sshd'],
+            ['/etc/init.d/sshd', 'start'],
+            ['mkdir', '-p', '/root/.ssh'],
+        ]
+        calls = [tup[0][0] for tup in lxd_container.execute.call_args_list]
+        assert calls == EXPECTED
 
     def test_inventory_contains_groups(self):
         c1 = FakeContainer(name='c1')
@@ -83,3 +68,14 @@ class TestAnsibleProvisioner:
         # we sort so that g1 will be first all the time
         groups = sorted([(gname, hosts.strip()) for gname, hosts in groups])
         assert sorted(groups) == [('g1', 'c1\nc2'), ('g2', 'c1')]
+
+    def test_inventory_with_lxd_transport(self):
+        c = FakeContainer(name='c1')
+        provisioner = AnsibleProvisioner(
+            './',
+            Host(),
+            [DebianGuest(c)],
+            {'playbook': 'deploy.yml', 'lxd_transport': True}
+        )
+        inv = provisioner.get_inventory()
+        assert 'ansible_host={}'.format(c.lxd_name) in inv

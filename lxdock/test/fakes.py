@@ -9,6 +9,7 @@ class FakeContainer(Container):
             client = Mock()
         options.setdefault('name', 'fakecontainer')
         super().__init__(project_name, homedir, client, **options)
+        self._lxd_name = "{}-{}-123".format(project_name, self.name)
 
     def _get_container(self, create=True):
         result = Mock()

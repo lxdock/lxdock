@@ -22,8 +22,11 @@ matrix:
   allow_failures:
     - python: "3.7-dev"
 
+# We set HOME because lxc needs somewhere writable to not crash during testing.
 script:
-  - make travis
+  - cp -R /home/travis/.ssh $TRAVIS_BUILD_DIR
+  - HOME=$TRAVIS_BUILD_DIR make travis
+
 after_success:
   - codecov
 branches:

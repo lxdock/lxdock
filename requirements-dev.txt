@@ -1,8 +1,5 @@
 ipython>=5.1.0
 
-# Provisioners
-ansible>=2.1
-
 # Testing
 -r requirements-tests.txt
 

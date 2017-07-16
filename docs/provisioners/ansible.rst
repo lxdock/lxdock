@@ -84,4 +84,14 @@ This option is a hash of lists of container names. Example:
         group2:
           - container2
     
+lxd_transport
+=============
+
+If this boolean option is set to ``true``, we will use ansible's ``lxd`` transport instead of the
+``ssh`` one, thus bypassing ssh entirely and using ``lxc exec`` directly.
+
+It should be noted that while very cool-sounding, this transport method comes with a couple of
+drawbacks due to its incomplete support in Ansible. For example, ``synchronize`` actions don't
+work.
+
 .. _Ansible: https://www.ansible.com/
