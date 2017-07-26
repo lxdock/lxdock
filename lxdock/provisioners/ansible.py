@@ -42,10 +42,12 @@ class AnsibleProvisioner(Provisioner):
             return '{} ansible_host={} ansible_user=root'.format(guest.container.name, ip)
 
         def fmtgroup(name, hosts):
+            hosts = [host for host in hosts if host in guestnames]
             return '[{}]\n{}'.format(name, '\n'.join(hosts))
 
         all_hosts_lines = '\n'.join(line(guest) for guest in self.guests)
         groups = self.options.get('groups', {})
+        guestnames = {guest.container.name for guest in self.guests}
         groups_lines = '\n\n'.join(fmtgroup(key, val) for key, val in groups.items())
         return '\n\n'.join([all_hosts_lines, groups_lines])
 

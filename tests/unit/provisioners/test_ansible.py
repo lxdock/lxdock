@@ -56,11 +56,15 @@ class TestAnsibleProvisioner:
     def test_inventory_contains_groups(self):
         c1 = FakeContainer(name='c1')
         c2 = FakeContainer(name='c2')
+        # c3 is deliberately not part of our guests list. This is to test that it doesn't end up
+        # in the inventory and result in spurious unreachable hosts. These situations can happen
+        # in two ways: errors in the config file, or guest filtering in the command line ("lxdock
+        # provision c1, c2" for example).
         provisioner = AnsibleProvisioner(
             './',
             Host(),
             [DebianGuest(c1), DebianGuest(c2)],
-            {'playbook': 'deploy.yml', 'groups': {'g1': ['c1', 'c2'], 'g2': ['c1']}}
+            {'playbook': 'deploy.yml', 'groups': {'g1': ['c1', 'c2'], 'g2': ['c1', 'c3']}}
         )
         inv = provisioner.get_inventory()
         # group order is not guaranteed. our tests have to be written with that in mind.
