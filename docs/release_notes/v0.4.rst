@@ -1,0 +1,16 @@
+############################################
+LXDock 0.4 release notes (UNDER DEVELOPMENT)
+############################################
+
+Requirements and compatibility
+------------------------------
+
+Python 3.4, 3.5 and 3.6. LXD 2.0+.
+
+New features
+------------
+
+* Add a ``lxd_transport`` option to the Ansible provisioner to make use of the ansible's ``lxd``
+  transport instead of the ``ssh`` one (`#94 <https://github.com/lxdock/lxdock/pull/94>`_)
+* Add a ``groups`` option to the Ansible provisioner
+  (`#95 <https://github.com/lxdock/lxdock/pull/95>`_)
