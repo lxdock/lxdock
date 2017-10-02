@@ -1,5 +1,5 @@
 ############################################
-LXDock 0.4 release notes (UNDER DEVELOPMENT)
+LXDock 0.4 release notes (2017-10-02)
 ############################################
 
 Requirements and compatibility
