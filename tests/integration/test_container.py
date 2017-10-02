@@ -1,4 +1,5 @@
 import os
+import sys
 import types
 import unittest.mock
 
@@ -73,6 +74,10 @@ class TestContainer(LXDTestCase):
         persistent_container.halt()
         assert persistent_container._container.status_code == constants.CONTAINER_STOPPED
 
+    @pytest.mark.skipif(
+        sys.version_info < (3, 5),
+        reason="ansible requires python 3.5+"
+    )
     @pytest.mark.parametrize("lxd_transport", [False, True])
     def test_can_provision_a_container_ansible(self, persistent_container, lxd_transport):
         # We want to make sure that barebone setup is executed on provision()
