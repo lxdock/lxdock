@@ -10,6 +10,7 @@ LXDock 0.4
 .. toctree::
     :maxdepth: 1
 
+    v0.4.1
     v0.4
 
 LXDock 0.3
