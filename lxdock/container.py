@@ -70,6 +70,10 @@ class Container:
 
     def halt(self):
         """ Stops the container. """
+        if not self.exists:
+            logger.info("The container doesn't exist.")
+            return
+
         if self.is_stopped:
             logger.info('The container is already stopped.')
             return

@@ -65,6 +65,13 @@ class TestContainer(LXDTestCase):
         container.destroy()
         assert not container.exists
 
+    def test_halting_a_container_doesnt_create_it(self):
+        container_options = {
+            'name': self.containername('doesnotexist'), 'image': 'alpine/3.6', }
+        container = Container('myproject', THIS_DIR, self.client, **container_options)
+        container.halt()
+        assert not container.exists
+
     def test_can_halt_a_container_that_is_running(self, persistent_container):
         persistent_container.halt()
         assert persistent_container._container.status_code == constants.CONTAINER_STOPPED
