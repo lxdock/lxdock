@@ -29,6 +29,12 @@ using a workflow similar to Vagrant.
 .. contents:: Table of Contents
     :local:
 
+Status: Unmaintained
+====================
+
+As we can see in `issue #106 <https://github.com/lxdock/lxdock/issues/106>`_, the two creators of
+LXDock stopped using it. If you're interested in picking it up, it's up for grabs.
+
 Why use LXDock?
 ===============
 
