@@ -84,7 +84,6 @@ class Config:
         finally:
             os.chdir(cwd)
 
-
         config.extract_config_from_dict()
 
         return config
