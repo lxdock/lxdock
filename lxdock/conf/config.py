@@ -70,6 +70,10 @@ class Config:
         # config is initialized from a subfolder of the project.
         cwd = os.getcwd()
         os.chdir(config.homedir)
+
+        # Performs variable substitution / interpolation in the configuration values.
+        config.interpolate()
+
         try:
             schema(config._dict)
         except Invalid as e:
@@ -80,8 +84,6 @@ class Config:
         finally:
             os.chdir(cwd)
 
-        # Performs variable substitution / interpolation in the configuration values.
-        config.interpolate()
 
         config.extract_config_from_dict()
 
