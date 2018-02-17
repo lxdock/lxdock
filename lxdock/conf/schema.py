@@ -32,6 +32,7 @@ def get_schema():
             Required('name'): All(str, Length(max=32)),
             'home': str,
             'password': str,
+            'shell': str,
         }],
     }
 

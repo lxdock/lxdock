@@ -117,13 +117,15 @@ class Guest(with_metaclass(_GuestBase)):
         self.run(['mkdir', '-p', '/root/.ssh'])
         self.lxd_container.files.put('/root/.ssh/authorized_keys', pubkey)
 
-    def create_user(self, username, home=None, password=None):
+    def create_user(self, username, home=None, password=None, shell=None):
         """ Adds the passed user to the container system. """
         options = ['--create-home', ]
         if home is not None:
             options += ['--home-dir', home, ]
         if password is not None:
             options += ['-p', password, ]
+        if shell is not None:
+            options += ['-s', shell, ]
         self.run(['useradd', ] + options + [username, ])
 
     ########################################################
