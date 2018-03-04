@@ -13,6 +13,7 @@ from pathlib import Path, PurePosixPath
 
 from pylxd.exceptions import NotFound
 
+from ..exceptions import ContainerOperationFailed
 from ..utils.metaclass import with_metaclass
 
 
@@ -126,6 +127,18 @@ class Guest(with_metaclass(_GuestBase)):
             options += ['-p', password, ]
         self.run(['useradd', ] + options + [username, ])
 
+    def uidgid(self, username):
+        """Obtain the uid and gid """
+        exit_code, uid, _ = self.run(['id', '-u', username])
+        if exit_code != 0:
+            raise ContainerOperationFailed("cannot get uid from container")
+
+        exit_code, gid, _ = self.run(['id', '-g', username])
+        if exit_code != 0:
+            raise ContainerOperationFailed("cannot get gid from container")
+
+        return int(uid), int(gid)
+
     ########################################################
     # METHODS THAT SHOULD BE OVERRIDEN IN GUEST SUBCLASSES #
     ########################################################
@@ -149,7 +162,7 @@ class Guest(with_metaclass(_GuestBase)):
         exit_code, stdout, stderr = self.lxd_container.execute(cmd_args)
         logger.debug(stdout)
         logger.debug(stderr)
-        return exit_code
+        return exit_code, stdout, stderr
 
     def copy_file(self, host_path, guest_path):
         """

@@ -358,12 +358,15 @@ class Container:
 
         logger.info('Setting up shares...')
 
+        if not self._host.has_subuidgid_been_set():
+            raise ContainerOperationFailed()
+
         container = self._container
 
         # First, let's make an inventory of shared sources that were already there.
         existing_shares = {
-            k: d for k, d in container.devices.items() if k.startswith('lxdockshare')}
-        existing_sources = {d['source'] for d in existing_shares.values()}
+            k: d for k, d in container.devices.items() if k.startswith('lxdockshare')
+        }
 
         # Let's get rid of previously set up lxdock shares.
         for k in existing_shares:
@@ -371,25 +374,24 @@ class Container:
 
         for i, share in enumerate(self.options.get('shares', []), start=1):
             source = os.path.join(self.homedir, share['source'])
-            # It is possible to disable setting host side ACL but by default it is always enabled.
-            set_host_acl = share.get('set_host_acl', True)
-            if set_host_acl and source not in existing_sources:
-                logger.info('Setting host-side ACL for {}'.format(source))
-                self._host.give_current_user_access_to_share(source)
-                if not self.is_privileged:
-                    # We are considering a safe container. So give the mapped root user permissions
-                    # to read/write contents in the shared folders too.
-                    self._host.give_mapped_user_access_to_share(self._container, source)
-                    # We also give these permissions to any user that was created with LXDock.
-                    for uconfig in self.options.get('users', []):
-                        username = uconfig.get('name')
-                        self._host.give_mapped_user_access_to_share(
-                            self._container, source,
-                            userpath=uconfig.get('home', '/home/' + username))
-
             shareconf = {'type': 'disk', 'source': source, 'path': share['dest'], }
             container.devices['lxdockshare%s' % i] = shareconf
+
+        guest_username = self.options.get("users", [{"name": "root"}])[0]["name"]
+        host_uid, host_gid = self._host.uidgid()
+        guest_uid, guest_gid = self._guest.uidgid(guest_username)
+        raw_idmap = "uid {} {}\ngid {} {}".format(host_uid, guest_uid, host_gid, guest_gid)
+        raw_idmap_updated = container.config.get("raw.idmap") != raw_idmap
+        if raw_idmap_updated:
+            container.config["raw.idmap"] = raw_idmap
+
         container.save(wait=True)
+
+        if raw_idmap_updated:
+            # the container must be restarted for this to take effect
+            logger.info("share uid map (raw.idmap) updated, container must be restarted to take effect")
+            container.restart(wait=True)
+            self._setup_ip()
 
     def _setup_users(self):
         """ Creates users defined in the container's options if applicable. """

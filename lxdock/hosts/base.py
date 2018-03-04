@@ -95,33 +95,40 @@ class Host(with_metaclass(_HostBase)):
         except FileNotFoundError:  # pragma: no cover
             pass
 
-    def give_current_user_access_to_share(self, source):
-        """ Give read/write access to `source` for the current user. """
-        self.run(['setfacl', '-Rdm',  'u:{}:rwX'.format(os.getuid()), source])
+    def uidgid(self):
+        return os.getuid(), os.getgid()
 
-    def give_mapped_user_access_to_share(self, lxd_container, source, userpath=None):
-        """ Give read/write access to `source` for the mapped user owning `userpath`.
+    def has_subuidgid_been_set(self):
+        # Setup host subuid and subgid mapping
+        # For more information, see
+        # https://stgraber.org/2017/06/15/custom-user-mappings-in-lxd-containers/
 
-        `userpath` is a path that is relative to the LXD base directory (where LXD store contaners).
-        """
-        # LXD uses user namespaces when running safe containers. This means that it maps a set of
-        # uids and gids on the host to a set of uids and gids in the container.
-        # When considering unprivileged containers we want to ensure that the "root user" (or any
-        # other user) of such containers have the proper rights to write in shared folders. To do so
-        # we have to retrieve the UserID on the host-side that is mapped to the "root"'s UserID (or
-        # any other user's UserID) on the guest-side. This will allow to set ACL on the host-side
-        # for this UID. By doing this we will also allow "root" user on the guest-side to read/write
-        # in shared folders.
-        container_path_parts = [get_lxd_dir(), 'containers', lxd_container.name, 'rootfs']
-        container_path_parts += userpath.split('/') if userpath else []
-        container_path = os.path.join(*container_path_parts)
-        container_path_stats = os.stat(container_path)
-        host_userpath_uid = container_path_stats.st_uid
-        self.run([
-            'setfacl', '-Rm',
-            'user:lxd:rwx,default:user:lxd:rwx,'
-            'user:{0}:rwx,default:user:{0}:rwx'.format(host_userpath_uid), source,
-        ])
+        host_uid, host_gid = self.uidgid()
+        subuid_lines = ["lxd:{}:1".format(host_uid), "root:{}:1".format(host_uid)]
+        subgid_lines = ["lxd:{}:1".format(host_gid), "root:{}:1".format(host_gid)]
+
+        configured_correctly = True
+
+        with open("/etc/subuid") as f:
+            subuid_content = f.read()
+
+        for line in subuid_lines:
+            if line not in subuid_content:
+                logger.error("/etc/subuid missing the line: {}".format(line))
+                configured_correctly = False
+
+        with open("/etc/subgid") as f:
+            subgid_content = f.read()
+
+        for line in subgid_lines:
+            if line not in subgid_content:
+                logger.error("/etc/subgid missing the line: {}".format(line))
+                configured_correctly = False
+
+        if not configured_correctly:
+            logger.error("you must set these lines and then restart the lxd daemon before continuing")
+
+        return configured_correctly
 
     ##################
     # HELPER METHODS #

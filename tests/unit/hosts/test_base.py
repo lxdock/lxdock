@@ -1,4 +1,3 @@
-import os
 import platform
 import unittest.mock
 from pathlib import Path
@@ -7,7 +6,6 @@ import pytest
 
 from lxdock.hosts import Host
 from lxdock.hosts.base import InvalidHost
-from lxdock.test import FakeContainer
 
 
 class TestGuest:
@@ -32,22 +30,12 @@ class TestGuest:
         assert host.get_ssh_pubkey()
         assert mock_open.call_count == 1
 
-    @unittest.mock.patch('subprocess.Popen')
-    def test_can_give_current_user_access_to_share(self, mocked_call):
-        host = Host()
-        host.give_current_user_access_to_share('.')
-        assert mocked_call.call_count == 1
-        assert mocked_call.call_args[0][0] == 'setfacl -Rdm u:{}:rwX .'.format(os.getuid())
+    @unittest.mock.patch("os.getuid")
+    @unittest.mock.patch("os.getgid")
+    def test_uidgid(self, mock_getuid, mock_getgid):
+        mock_getuid.return_value = 10000
+        mock_getgid.return_value = 10001
 
-    @unittest.mock.patch('subprocess.Popen')
-    @unittest.mock.patch('os.stat')
-    def test_can_give_mapped_user_access_to_share(self, mocked_stat, mocked_call):
-        class MockedContainer(object):
-            name = 'test'
-        mocked_stat.return_value = unittest.mock.MagicMock(st_uid='19958953')
         host = Host()
-        host.give_mapped_user_access_to_share(FakeContainer(), '.', '.')
-        assert mocked_call.call_count == 1
-        assert mocked_call.call_args[0] == (
-            'setfacl -Rm user:lxd:rwx,default:user:lxd:rwx,user:19958953:rwx,default:user:19958953'
-            ':rwx .',)
+
+        assert host.uidgid(), (10000, 10001)

@@ -119,3 +119,13 @@ class TestGuest:
 
         assert guest.lxd_container.files.put.call_count == 1
         assert guest.lxd_container.files.put.call_args[0][0] == guest._guest_temporary_tar_path
+
+    def test_uidgid(self):
+        class DummyGuest(Guest):
+            name = 'dummy'
+        guest = DummyGuest(FakeContainer())
+        guest.lxd_container.execute.return_value = (0, "10000", "")
+
+        uid, gid = guest.uidgid("user")
+        assert uid == 10000
+        assert gid == 10000
