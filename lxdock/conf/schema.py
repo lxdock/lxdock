@@ -25,7 +25,7 @@ def get_schema():
         }],
         'shell': {
             'user': str,
-            'home': str,
+            'home': str,  # TODO: deprecated
         },
         'users': [{
             # Usernames max length is set 32 characters according to useradd's man page.
