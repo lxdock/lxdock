@@ -11,3 +11,6 @@ __pycache__
 .env/
 env/
 *.retry
+
+.vagrant/
+.pytest_cache/
