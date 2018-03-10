@@ -389,7 +389,9 @@ class Container:
 
         if raw_idmap_updated:
             # the container must be restarted for this to take effect
-            logger.info("share uid map (raw.idmap) updated, container must be restarted to take effect")
+            logger.info(
+              "share uid map (raw.idmap) updated, container must be restarted to take effect"
+            )
             container.restart(wait=True)
             self._setup_ip()
 

@@ -12,7 +12,6 @@ import shlex
 import subprocess
 from pathlib import Path
 
-from ..utils.lxd import get_lxd_dir
 from ..utils.metaclass import with_metaclass
 
 
@@ -126,7 +125,9 @@ class Host(with_metaclass(_HostBase)):
                 configured_correctly = False
 
         if not configured_correctly:
-            logger.error("you must set these lines and then restart the lxd daemon before continuing")
+            logger.error(
+              "you must set these lines and then restart the lxd daemon before continuing"
+            )
 
         return configured_correctly
 

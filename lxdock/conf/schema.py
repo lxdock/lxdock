@@ -21,7 +21,7 @@ def get_schema():
             # The existence of the source directory will be checked!
             'source': IsDir(),
             'dest': str,
-            'set_host_acl': bool, # TODO: need a way to deprecate this
+            'set_host_acl': bool,  # TODO: need a way to deprecate this
         }],
         'shell': {
             'user': str,
