@@ -1,3 +1,4 @@
+import copy
 import logging
 import os
 import shlex
@@ -402,10 +403,9 @@ class Container:
 
         logger.info('Ensuring users are created...')
         for user_config in users:
-            name = user_config.get('name')
-            home = user_config.get('home')
-            password = user_config.get('password')
-            self._guest.create_user(name, home=home, password=password)
+            config = copy.copy(user_config)
+            name = config.pop('name')
+            self._guest.create_user(name, **config)
 
     def _unsetup_hostnames(self):
         """ Removes the configuration associated with the hostnames of the container. """

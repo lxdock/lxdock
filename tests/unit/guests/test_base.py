@@ -70,6 +70,16 @@ class TestGuest:
         assert guest.lxd_container.execute.call_args[0] == \
             (['useradd', '--create-home', '-p', password, 'usertest'], )
 
+    def test_can_create_a_user_with_a_custom_shell(self):
+        class DummyGuest(Guest):
+            name = 'dummy'
+        guest = DummyGuest(FakeContainer())
+        shell = "/bin/zsh"
+        guest.create_user('usertest', shell=shell)
+        assert guest.lxd_container.execute.call_count == 1
+        assert guest.lxd_container.execute.call_args[0] == \
+            (['useradd', '--create-home', '-s', shell, 'usertest'], )
+
     def test_can_copy_file(self):
         class DummyGuest(Guest):
             name = 'dummy'
