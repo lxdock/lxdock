@@ -7,8 +7,8 @@ from lxdock import constants
 from lxdock.conf.config import Config
 from lxdock.container import Container
 from lxdock.exceptions import ProjectError
-from lxdock.project import logger as project_logger
 from lxdock.project import Project
+from lxdock.project import logger as project_logger
 from lxdock.test import LXDTestCase
 
 
