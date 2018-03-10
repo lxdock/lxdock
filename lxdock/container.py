@@ -348,8 +348,9 @@ class Container:
         """ Setup the IP address of the considered container. """
         ip = get_ip(self._container)
         if not ip:
-            logger.info('No IP yet, waiting for at most 10 seconds...')
-            ip = self._wait_for_ip()
+            network_wait_timeout = self.options.get("extras", {}).get("network_wait_timeout", 10)
+            logger.info('No IP yet, waiting for at most {} seconds...'.format(network_wait_timeout))
+            ip = self._wait_for_ip(network_wait_timeout)
         if not ip:
             logger.warn('STILL no IP! Container is up, but probably broken.')
             logger.info('Maybe that restarting it will help? Not trying to provision.')

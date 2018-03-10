@@ -34,6 +34,9 @@ def get_schema():
             'password': str,
             'shell': str,
         }],
+        'extras': {
+            'network_wait_timeout': int
+        }
     }
 
     def _check_provisioner_config(config):
