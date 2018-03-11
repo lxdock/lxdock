@@ -2,11 +2,13 @@
 
 set -xe
 
+sudo -E apt-get update -q
 sudo -E apt-get purge -y lxd lxd-client
-sudo -E apt-get install -y snapd python3-setuptools python3-dev python3-virtualenv
+sudo -E apt-get install -y snapd
 sudo snap install lxd
 sudo snap list
 sudo lxd --version
+sudo snap start lxd
 
 export PATH="/snap/bin:$PATH"
 
@@ -16,7 +18,7 @@ while [ ! -S /var/snap/lxd/common/lxd/unix.socket ]; do
 done
 
 user=`whoami`
-sudo usermod -a -G lxd $user
+sudo usermod -a -G lxd ${user}
 
 sudo lxd init --auto
 sudo lxc network create lxdbr0 ipv6.address=none ipv4.address=10.0.3.1/24 ipv4.nat=true
