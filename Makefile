@@ -1,4 +1,4 @@
-.PHONY: test-setup install spec test upgrade lint coverage isort travis docs
+.PHONY: test-setup install spec upgrade lint coverage isort travis docs
 
 install:
 	pip install -r requirements-dev.txt
