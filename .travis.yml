@@ -13,8 +13,7 @@ matrix:
     - python: "3.7-dev"
 
 install:
-  - make travis-sysdeps
-  - ssh-keygen -t rsa -b 2048 -f ~/.ssh/id_rsa -P ""
+  - make test-setup
 
 env:
   global:
