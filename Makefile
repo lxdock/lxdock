@@ -27,7 +27,6 @@ travis-sysdeps:
 	sudo snap install lxd
 	sudo snap list
 	sudo snap start lxd
-	sudo sh -c 'echo PATH=/snap/bin:$$PATH >> /etc/environment'
 	while [ ! -S /var/snap/lxd/common/lxd/unix.socket ]; do \
 		sleep 0.5; \
 	done
