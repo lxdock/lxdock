@@ -11,6 +11,6 @@ class GentooGuest(Guest):
         # It contains "equery" that can check which package has been installed.
         self.run(['emerge', 'app-portage/gentoolkit'])
         for p in packages:
-            retcode = self.run(['equery', 'list', p])
+            retcode, _, _ = self.run(['equery', 'list', p])
             if retcode != 0:  # Not installed yet
                 self.run(['emerge', p])

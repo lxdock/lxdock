@@ -121,7 +121,7 @@ class TestContainer(LXDTestCase):
         persistent_container.shell()
         assert mocked_call.call_count == 1
         assert mocked_call.call_args[0][0] == \
-            'lxc exec {} -- su -m root'.format(persistent_container.lxd_name)
+            'lxc exec {} -- su -l root'.format(persistent_container.lxd_name)
 
     @unittest.mock.patch('subprocess.call')
     def test_can_open_a_shell_for_a_specific_shelluser(self, mocked_call):
@@ -134,7 +134,7 @@ class TestContainer(LXDTestCase):
         container.shell()
         assert mocked_call.call_count == 1
         assert mocked_call.call_args[0][0] == \
-            'lxc exec {} --env HOME=/opt -- su -m test'.format(container.lxd_name)
+            'lxc exec {} -- su -l test'.format(container.lxd_name)
 
     @unittest.mock.patch('subprocess.call')
     def test_can_run_quoted_shell_command_for_the_root_user(
@@ -142,7 +142,7 @@ class TestContainer(LXDTestCase):
         persistent_container.shell(cmd_args=['echo', 'he re"s', '-u', '$PATH'])
         assert mocked_call.call_count == 1
         assert mocked_call.call_args[0][0] == \
-            'lxc exec {} -- su -m root -s {}'.format(
+            'lxc exec {} -- su -l root -s {}'.format(
                 persistent_container.lxd_name, persistent_container._guest_shell_script_file)
         script = persistent_container._container.files.get(
             persistent_container._guest_shell_script_file)
@@ -159,7 +159,7 @@ class TestContainer(LXDTestCase):
         container.shell(cmd_args=['echo', 'he re"s', '-u', '$PATH'])
         assert mocked_call.call_count == 1
         assert mocked_call.call_args[0][0] == \
-            'lxc exec {} --env HOME=/opt -- su -m test -s {}'.format(
+            'lxc exec {} -- su -l test -s {}'.format(
                 container.lxd_name, container._guest_shell_script_file)
         script = container._container.files.get(container._guest_shell_script_file)
         assert script == b"""#!/bin/sh\necho 'he re"s' -u '$PATH'\n"""

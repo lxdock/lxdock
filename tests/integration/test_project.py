@@ -155,7 +155,7 @@ class TestProject(LXDTestCase):
         project.shell(container_name='testcase-persistent')
         assert mocked_call.call_count == 1
         assert mocked_call.call_args[0][0] == \
-            'lxc exec {} -- su -m root'.format(persistent_container.lxd_name)
+            'lxc exec {} -- su -l root'.format(persistent_container.lxd_name)
 
     @unittest.mock.patch('subprocess.call')
     def test_can_run_shell_command_for_a_specific_container(
@@ -165,7 +165,7 @@ class TestProject(LXDTestCase):
         project.shell(container_name='testcase-persistent', cmd_args=['echo', 'HELLO'])
         assert mocked_call.call_count == 1
         assert mocked_call.call_args[0][0] == \
-            "lxc exec {} -- su -m root -s {}".format(
+            "lxc exec {} -- su -l root -s {}".format(
                 persistent_container.lxd_name, persistent_container._guest_shell_script_file)
 
     @unittest.mock.patch.object(project_logger, 'info')
