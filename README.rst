@@ -43,7 +43,7 @@ PR's to be merged, with more to come.
 
 There is also a Vagrantfile included for running the tests locally.
 
-The next release will be v0.5.0, but no release date has yet been set at this point.
+The next release will be v0.5.0, but no release date has been set at this point.
 
 More to come...
 
