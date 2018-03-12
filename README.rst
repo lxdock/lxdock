@@ -32,7 +32,8 @@ using a workflow similar to Vagrant.
 Status: New Maintainers
 =======================
 
-As of LXDock v0.4.1 the two creators of LXDock stopped using it, but have new maintainers now.
+As of LXDock v0.4.1 the two creators of LXDock stopped using it, however the
+project has several new maintainers now.
 
 See: `issue #106 <https://github.com/lxdock/lxdock/issues/106>`_
 
