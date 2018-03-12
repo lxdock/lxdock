@@ -1,7 +1,11 @@
-.PHONY: install spec upgrade lint coverage isort travis docs
+.PHONY: install install-tests spec upgrade lint coverage isort travis docs
 
 install:
 	pip install -r requirements-dev.txt
+	pip install -e .
+
+install-tests:
+	pip install -r requirements-tests.txt
 	pip install -e .
 
 upgrade:
@@ -20,7 +24,7 @@ coverage:
 spec:
 	py.test --spec -p no:sugar
 
-travis: install lint isort coverage
+travis: install-tests lint isort coverage
 
 docs:
 	cd docs && rm -rf _build && make html
