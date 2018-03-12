@@ -19,11 +19,6 @@ env:
   global:
     - PATH=/snap/bin:$PATH
 
-before_script:
-  - sudo addgroup lxd || true
-  - sudo usermod -a -G lxd $USER || true
-  - sudo ln -s /snap/bin/lxc /usr/bin/lxc
-
 # We set HOME because lxc needs somewhere writable to not crash during testing.
 # The "sudo -E" line is needed because the user was added to the lxd group which needs to be applied.
 script:
