@@ -10,7 +10,7 @@ import lxdock
 
 
 if sys.version_info < (3, 4):
-    sys.exit('lxdock requires Python 3.4+ to run')
+    sys.exit('lxdock requires Python 3.4+ to run.')
 
 
 def read_relative_file(filename):
