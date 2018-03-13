@@ -29,11 +29,23 @@ using a workflow similar to Vagrant.
 .. contents:: Table of Contents
     :local:
 
-Status: Unmaintained
-====================
+Status: New Maintainers
+=======================
 
-As we can see in `issue #106 <https://github.com/lxdock/lxdock/issues/106>`_, the two creators of
-LXDock stopped using it. If you're interested in picking it up, it's up for grabs.
+As of LXDock v0.4.1 the two creators of LXDock stopped using it, however the
+project has several new maintainers now.
+
+See: `issue #106 <https://github.com/lxdock/lxdock/issues/106>`_
+
+The Travis CI tests are working again as we have switched to the Snap version of LXD since the
+PPA is no longer maintained. This is great news as it has allowed a number of outstanding
+PR's to be merged, with more to come.
+
+There is also a Vagrantfile included for running the tests locally.
+
+The next release will be v0.5.0, but no release date has been set at this point.
+
+More to come...
 
 Why use LXDock?
 ===============
@@ -73,8 +85,14 @@ Communication
 You can join the ``#lxdock`` channel on irc.freenode.net to get help and ask questions related to
 the development of LXDock.
 
-Authors
-=======
+Current Maintainers
+===================
+
+Rob van der Linde (`@robvdl <https://github.com/robvdl>`_),
+Norman Kabir (`@nkabir <https://github.com/nkabir>`_)
+
+Original Authors
+================
 
 Virgil Dupras (`@hsoft <https://github.com/hsoft>`_), Morgan Aubert
 (`@ellmetha <https://github.com/ellmetha>`_) and contributors_.
