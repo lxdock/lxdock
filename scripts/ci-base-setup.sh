@@ -28,3 +28,8 @@ sudo lxc network attach-profile lxdbr0 default eth0
 if [ ! -f $HOME/.ssh/id_rsa ]; then
   ssh-keygen -t rsa -b 2048 -f $HOME/.ssh/id_rsa -P ""
 fi
+
+# allows testing shares with raw.idmap
+printf "lxd:$(id -u):1\nroot:$(id -u):1\n" | sudo tee -a /etc/subuid
+printf "lxd:$(id -g):1\nroot:$(id -g):1\n" | sudo tee -a /etc/subgid
+sudo snap restart lxd
