@@ -203,4 +203,4 @@ class Guest(with_metaclass(_GuestBase)):
 
     def _warn_guest_not_supported(self, for_msg):  # pragma: no cover
         """ Warns the user that a specific operation cannot be performed. """
-        logger.warn('Guest not supported {}, doing nothing...'.format(for_msg))
+        logger.warning('Guest not supported {}, doing nothing...'.format(for_msg))

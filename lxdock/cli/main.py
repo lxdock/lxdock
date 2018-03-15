@@ -131,7 +131,7 @@ class LXDock:
             # use dispatch pattern to invoke method with same name
             getattr(self, args.action)(args)
         except KeyboardInterrupt:
-            logger.warn('\nAborting.')
+            logger.warning('\nAborting.')
             sys.exit(1)
         except (CLIError, ConfigError, LXDockException) as e:
             if e.msg is not None:

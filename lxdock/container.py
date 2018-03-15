@@ -86,7 +86,7 @@ class Container:
         try:
             self._container.stop(timeout=30, force=False, wait=True)
         except LXDAPIException:
-            logger.warn("Can't stop the container. Forcing...")
+            logger.warning("Can't stop the container. Forcing...")
             self._container.stop(force=True, wait=True)
 
     @must_be_created_and_running
@@ -265,7 +265,7 @@ class Container:
         if not create:
             return
 
-        logger.warn('Unable to find container "{name}" for directory "{homedir}"'.format(
+        logger.warning('Unable to find container "{name}" for directory "{homedir}"'.format(
             name=self.name, homedir=self.homedir))
 
         logger.info(
@@ -349,7 +349,7 @@ class Container:
             logger.info('No IP yet, waiting for at most {} seconds...'.format(network_wait_timeout))
             ip = self._wait_for_ip(network_wait_timeout)
         if not ip:
-            logger.warn('STILL no IP! Container is up, but probably broken.')
+            logger.warning('STILL no IP! Container is up, but probably broken.')
             logger.info('Maybe that restarting it will help? Not trying to provision.')
         return ip
 
