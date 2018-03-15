@@ -1,7 +1,6 @@
 import copy
 import logging
 import os
-import shlex
 import subprocess
 import textwrap
 import time
@@ -113,7 +112,7 @@ class Container:
                 provisioner.provision()
 
     @must_be_created_and_running
-    def shell(self, username=None, cmd_args=[]):
+    def shell(self, username=None, command=None):
         """ Opens a new interactive shell in the container. """
         # We run this in case our lxdock.yml config was modified since our last `lxdock up`.
         self._setup_env()
@@ -127,14 +126,14 @@ class Container:
         else:
             cmd = 'lxc exec {} -- su -l root'.format(self.lxd_name)
 
-        if cmd_args:
+        # Optionally run a command and exit.
+        # For multiple commands use: lxdock shell -c "command1; command2"
+        if command:
             # Again, a bit of trial-and-error.
             # 1. Using `su -s SCRIPT_FILE` instead of `su -c COMMAND` because `su -c` cannot
             #    receive SIGINT (Ctrl-C).
             #    Ref: //sethmiller.org/it/su-forking-and-the-incorrect-trapping-of-sigint-ctrl-c/
             #    See also: //github.com/lxdock/lxdock/pull/67#issuecomment-299755944
-            # 2. Applying shlex.quote to every argument to protect special characters.
-            #    e.g.: lxdock shell container_name -c echo "he re\"s" '$PATH'
 
             self._guest.run(['mkdir', '-p',
                              str(PurePosixPath(self._guest_shell_script_file).parent)])
@@ -142,7 +141,7 @@ class Container:
                 """\
                 #!/bin/sh
                 {}
-                """.format(' '.join(map(shlex.quote, cmd_args)))))
+                """.format(command)))
             self._guest.run(['chmod', 'a+rx', self._guest_shell_script_file])
             cmd += ' -s {}'.format(self._guest_shell_script_file)
 

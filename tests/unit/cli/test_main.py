@@ -152,7 +152,7 @@ class TestLXDock:
         LXDock(['shell'])
         assert mock_project_shell.call_count == 1
         assert mock_project_shell.call_args == [{
-            'container_name': None, 'username': None, 'cmd_args': None}, ]
+            'container_name': None, 'username': None, 'command': None}, ]
 
     @unittest.mock.patch.object(LXDock, 'project')
     @unittest.mock.patch.object(Project, 'shell')
@@ -163,7 +163,7 @@ class TestLXDock:
         LXDock(['shell', 'c1'])
         assert mock_project_shell.call_count == 1
         assert mock_project_shell.call_args == [{
-            'container_name': 'c1', 'username': None, 'cmd_args': None}, ]
+            'container_name': 'c1', 'username': None, 'command': None}, ]
 
     @unittest.mock.patch.object(LXDock, 'project')
     @unittest.mock.patch.object(Project, 'shell')
@@ -173,29 +173,29 @@ class TestLXDock:
         LXDock(['shell', '-u', 'foobar'])
         assert mock_project_shell.call_count == 1
         assert mock_project_shell.call_args == [{
-            'container_name': None, 'username': 'foobar', 'cmd_args': None}, ]
+            'container_name': None, 'username': 'foobar', 'command': None}, ]
 
     @unittest.mock.patch.object(LXDock, 'project')
     @unittest.mock.patch.object(Project, 'shell')
     def test_can_run_shell_command_for_a_specific_container(self, mock_project_shell, mock_project):
         mock_project.__get__ = unittest.mock.Mock(
             return_value=get_project(os.path.join(FIXTURE_ROOT, 'project01')))
-        LXDock(['shell', 'c1', '-c', 'echo', 'he re"s', '-u', '$PATH'])
+        LXDock(['shell', 'c1', '-c', 'cd /; ls -l'])
         assert mock_project_shell.call_count == 1
         assert mock_project_shell.call_args == [{
             'container_name': 'c1', 'username': None,
-            'cmd_args': ['echo', 'he re\"s', '-u', '$PATH']}, ]
+            'command': 'cd /; ls -l'}, ]
 
     @unittest.mock.patch.object(LXDock, 'project')
     @unittest.mock.patch.object(Project, 'shell')
     def test_can_run_shell_command_for_a_specific_user(self, mock_project_shell, mock_project):
         mock_project.__get__ = unittest.mock.Mock(
             return_value=get_project(os.path.join(FIXTURE_ROOT, 'project01')))
-        LXDock(['shell', '-u', 'foobar', '-c', 'echo', 'he re"s', '-u', '$PATH'])
+        LXDock(['shell', '-u', 'foobar', '-c', 'cd /; ls -l'])
         assert mock_project_shell.call_count == 1
         assert mock_project_shell.call_args == [{
             'container_name': None, 'username': 'foobar',
-            'cmd_args': ['echo', 'he re\"s', '-u', '$PATH']}, ]
+            'command': 'cd /; ls -l'}, ]
 
     @unittest.mock.patch.object(LXDock, 'project')
     @unittest.mock.patch.object(Project, 'shell')
@@ -203,11 +203,11 @@ class TestLXDock:
             self, mock_project_shell, mock_project):
         mock_project.__get__ = unittest.mock.Mock(
             return_value=get_project(os.path.join(FIXTURE_ROOT, 'project01')))
-        LXDock(['shell', '-u', 'foobar', 'c1', '-c', 'echo', 'he re"s', '-u', '$PATH'])
+        LXDock(['shell', '-u', 'foobar', 'c1', '-c', 'cd /; ls -l'])
         assert mock_project_shell.call_count == 1
         assert mock_project_shell.call_args == [{
             'container_name': 'c1', 'username': 'foobar',
-            'cmd_args': ['echo', 'he re\"s', '-u', '$PATH']}, ]
+            'command': 'cd /; ls -l'}, ]
 
     @unittest.mock.patch.object(LXDock, 'project')
     @unittest.mock.patch.object(Project, 'status')
