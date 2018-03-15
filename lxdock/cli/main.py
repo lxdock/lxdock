@@ -83,8 +83,7 @@ class LXDock:
         self._parsers['shell'].add_argument(
             '-u', '--username', help='Username to login as.')
         self._parsers['shell'].add_argument(
-            '-c', '--command', nargs=argparse.REMAINDER, dest='cmd_args',
-            help='Command to be executed.')
+            '-c', '--command', nargs='?', help='Command to be executed.')
 
         # Creates the 'status' action.
         self._parsers['status'] = subparsers.add_parser(
@@ -216,7 +215,7 @@ class LXDock:
 
     def shell(self, args):
         self.project.shell(
-            container_name=args.name, username=args.username, cmd_args=args.cmd_args)
+            container_name=args.name, username=args.username, command=args.command)
 
     def status(self, args):
         self.project.status(container_names=args.name)

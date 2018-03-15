@@ -162,7 +162,7 @@ class TestProject(LXDTestCase):
             self, mocked_call, persistent_container):
         homedir = os.path.join(FIXTURE_ROOT, 'project03')
         project = Project('project02', homedir, self.client, [persistent_container, ], [])
-        project.shell(container_name='testcase-persistent', cmd_args=['echo', 'HELLO'])
+        project.shell(container_name='testcase-persistent', command='echo "HELLO"')
         assert mocked_call.call_count == 1
         assert mocked_call.call_args[0][0] == \
             "lxc exec {} -- su -l root -s {}".format(
