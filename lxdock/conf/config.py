@@ -55,9 +55,9 @@ class Config:
 
         config_dirname, config_filename = os.path.split(existing_config_paths[0])
         if len(existing_config_paths) > 1:
-            logger.warn('Multiple config files were found: {0}'.format(
+            logger.warning('Multiple config files were found: {0}'.format(
                 ', '.join([os.path.split(p)[1] for p in existing_config_paths])))
-            logger.warn('Using: {0}'.format(config_filename))
+            logger.warning('Using: {0}'.format(config_filename))
 
         # Initializes the config instance.
         config = cls(config_dirname, config_filename)

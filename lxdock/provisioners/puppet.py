@@ -18,17 +18,17 @@ def finalize_options(options):
     # https://github.com/mitchellh/vagrant/blob/9c299a2a357fcf87f356bb9d56e18a037a53d138/
     #         plugins/provisioners/puppet/config/puppet.rb#L58
     if options.get('environment_path') is None and options.get('manifests_path') is None:
-        logger.warn("environment_path and manifests_path are both unset, "
+        logger.warning("environment_path and manifests_path are both unset, "
                     "assuming manifests mode and manifests_path as 'manifests'...")
         options['manifests_path'] = 'manifests'
 
     if options.get('environment_path') is None:
         if options.get('manifest_file') is None:
-            logger.warn("manifest_file is not set. Assuming 'default.pp'...")
+            logger.warning("manifest_file is not set. Assuming 'default.pp'...")
             options['manifest_file'] = 'default.pp'
     else:
         if options.get('environment') is None:
-            logger.warn("environment is not set. Assuming 'production'...")
+            logger.warning("environment is not set. Assuming 'production'...")
             options['environment'] = 'production'
 
     return options
