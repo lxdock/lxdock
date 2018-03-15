@@ -19,7 +19,7 @@ def finalize_options(options):
     #         plugins/provisioners/puppet/config/puppet.rb#L58
     if options.get('environment_path') is None and options.get('manifests_path') is None:
         logger.warning("environment_path and manifests_path are both unset, "
-                    "assuming manifests mode and manifests_path as 'manifests'...")
+                       "assuming manifests mode and manifests_path as 'manifests'...")
         options['manifests_path'] = 'manifests'
 
     if options.get('environment_path') is None:
