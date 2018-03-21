@@ -34,7 +34,7 @@ configuration options of LXDock.
     Privileged container
         Privileged containers are containers where the root user (in the container) is mapped to the
         host's root user. This is not really "root-safe" and could lead to potential security
-        flawns. That said it should be noted that privileged containers come with some protection
+        flaws. That said it should be noted that privileged containers come with some protection
         mechanisms in order to protect the host. You can refer to `LXC's documentation
         <https://linuxcontainers.org/fr/lxc/security/>`_ for more details on this topic.
 

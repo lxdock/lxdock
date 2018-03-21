@@ -6,7 +6,6 @@ Requirements
 
 * `Python`_ 3.4+
 * `LXD`_ 2.0+
-* ``getfacl/setfacl`` if you plan to use shared folders
 * any provisioning tool you wish to use with LXDock
 
 .. _Python: https://www.python.org
@@ -20,32 +19,46 @@ LXDock should build very easily on Linux provided you have LXD available on your
 Prerequisite: install LXD
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You may want to skip this section if you already have a working installation of LXD on your system.
+You may want to skip this section if you already have a working installation
+of LXD on your system.
 
-For Debian and Ubuntu, the following command will ensure that LXD is installed:
+LXD is available in the repository for Debian or Ubuntu 16.04 and higher:
 
 .. code-block:: console
 
   $ sudo apt-get install lxd
 
+You can now also install LXD from Snap which works on Ubuntu 14.04 and higher.
+Since the LXD PPA has been deprecated, this is now the easiest way to get
+the latest version of LXD on Ubuntu.
+
 .. note::
 
-  If you're using an old version of Ubuntu you should first add the LXD's apt repository and install
-  the ``lxd`` package as follows:
+  If you have already installed and configured LXD from apt earlier and
+  want to upgrade to the Snap version, you may need to purge LXD packages
+  first and reboot for the old network bridge to be removed. You can migrate
+  existing containers using ``lxd.migrate`` or just start fresh.
 
   .. code-block:: console
 
-    $ sudo add-apt-repository -y ppa:ubuntu-lxc/lxd-stable
-    $ sudo apt-get update
-    $ sudo apt-get install lxd
+    $ sudo apt-get purge lxd lxd-client
 
-For Fedora, LXD is available through an experimental COPR repository. Unfortunately SELinux is not
-yet supported, therefore make sure it is disabled or set to permissive. Then run:
+To install LXD from a Snap instead of apt:
 
 .. code-block:: console
 
-    # dnf copr enable ganto/lxd
-    # dnf install lxd lxd-tools
+  $ sudo apt-get install snapd
+  $ sudo snap install lxd
+  $ sudo snap start lxd
+
+For Fedora, LXD is available through an experimental COPR repository.
+Unfortunately SELinux is not yet supported, therefore make sure it is
+disabled or set to permissive. Then run:
+
+.. code-block:: console
+
+  $ dnf copr enable ganto/lxd
+  $ dnf install lxd lxd-tools
 
 You should now be able to configure your LXD installation using:
 
@@ -77,6 +90,24 @@ You can now check if your LXD installation is working using:
 
   You can use ``lxc stop first-machine`` to stop the previously created container.
 
+Prepare host for shared folders
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+LXDock uses ``raw.idmap`` for shared folders to so that files on the share
+that are owned by the host user appear to be owned by the container user
+inside the container, even if new files are created inside the container.
+
+To use shares, the following needs to be run once to prepare the host,
+then LXD needs to be restarted.
+
+.. code-block:: console
+
+  $ printf "lxd:$(id -u):1\nroot:$(id -u):1\n" | sudo tee -a /etc/subuid
+  $ printf "lxd:$(id -g):1\nroot:$(id -g):1\n" | sudo tee -a /etc/subgid
+
+To restart LXD use ``sudo snap restart lxd`` or ``sudo service restart lxd``
+or equivalent for your system.
+
 Install LXDock
 ~~~~~~~~~~~~~~
 
@@ -85,6 +116,14 @@ You should now be able to install LXDock using:
 .. code-block:: console
 
   $ pip3 install lxdock
+
+.. note::
+
+  It is good practice to install lxdock in a virtualenv rather than installing
+  it globally as root, but make sure you always use a python3 virtualenv.
+  To use lxdock from any location without having to activate this virtualenv,
+  you can create a symlink from the lxdock executable in the virtualenv to
+  ``/usr/bin/lxdock`` or ``/usr/local/bin/lxdock``.
 
 .. note::
 
