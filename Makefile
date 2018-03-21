@@ -1,4 +1,4 @@
-.PHONY: install install-tests spec upgrade lint coverage isort travis docs
+.PHONY: install install-tests spec upgrade lint coverage isort travis docs clean
 
 install:
 	pip install -r requirements-dev.txt
@@ -28,3 +28,6 @@ travis: install-tests lint isort coverage
 
 docs:
 	cd docs && rm -rf _build && make html
+
+clean:
+	find . -name '*.pyc' -exec rm -r {} \;
