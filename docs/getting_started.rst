@@ -60,6 +60,16 @@ disabled or set to permissive. Then run:
   $ dnf copr enable ganto/lxd
   $ dnf install lxd lxd-tools
 
+Alternatively, Fedora users can also install snapd and use the LXD snap
+instead, this method is known to work with Fedora 27:
+
+.. code-block:: console
+
+  $ sudo dnf install snapd
+  $ sudo systemctl enable --now snapd.socket
+  $ sudo snap install lxd
+  $ sudo snap start lxd
+
 You should now be able to configure your LXD installation using:
 
 .. code-block:: console
