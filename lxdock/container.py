@@ -376,6 +376,18 @@ class Container:
         for i, share in enumerate(self.options.get('shares', []), start=1):
             source = os.path.join(self.homedir, share['source'])
             shareconf = {'type': 'disk', 'source': source, 'path': share['dest'], }
+
+            extra_properties = share.pop('share_properties', {})
+            extra_properties.pop("type", None)
+            extra_properties.pop("source", None)
+            extra_properties.pop("path", None)
+            shareconf.update(extra_properties)
+
+            # Upstream issue: https://github.com/lxc/lxd/issues/4538
+            if shareconf.get("optional", "false").lower() in {"true", "1", "on", "yes"}:
+                if not os.path.exists(source):
+                    continue
+
             container.devices['lxdockshare%s' % i] = shareconf
 
         guest_username = self.options.get("users", [{"name": "root"}])[0]["name"]

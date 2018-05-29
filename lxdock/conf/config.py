@@ -75,7 +75,7 @@ class Config:
         config.interpolate()
 
         try:
-            schema(config._dict)
+            config._dict = schema(config._dict)
         except Invalid as e:
             # Formats the voluptuous error
             path = ' @ %s' % '.'.join(map(str, e.path)) if e.path else ''

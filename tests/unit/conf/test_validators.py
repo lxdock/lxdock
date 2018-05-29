@@ -1,7 +1,9 @@
+import os.path
+
 import pytest
 from voluptuous.error import ValueInvalid
 
-from lxdock.conf.validators import Hostname, LXDIdentifier
+from lxdock.conf.validators import ExpandUserIfExists, Hostname, LXDIdentifier
 
 
 class TestHostnameValidator:
@@ -43,3 +45,9 @@ class TestLXDIdentifier:
         assert id_validator('i' * 63)
         with pytest.raises(ValueInvalid):
             id_validator('i' * 64)
+
+
+class TestExpandUserIfExists:
+    def test_converts_dir_if_encountering_tilde(self):
+        expanded_path = ExpandUserIfExists("~/.ssh")
+        assert expanded_path == os.path.expanduser("~/.ssh")
