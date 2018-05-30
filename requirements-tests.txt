@@ -1,4 +1,4 @@
-ansible>=2.3
+ansible>=2.3,<2.5
 codecov>=1.6
 pytest>=3.0
 pytest-cov>=1.8
