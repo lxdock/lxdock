@@ -20,9 +20,8 @@ done
 user=`whoami`
 sudo usermod -a -G lxd ${user}
 
+# lxd init now sets up a bridge so we no longer need to
 sudo lxd init --auto
-sudo lxc network create lxdbr0 ipv6.address=none ipv4.address=10.0.3.1/24 ipv4.nat=true
-sudo lxc network attach-profile lxdbr0 default eth0
 
 # ansible test needs ssh
 if [ ! -f $HOME/.ssh/id_rsa ]; then
