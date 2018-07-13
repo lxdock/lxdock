@@ -34,7 +34,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'colorlog>=2.0,<3.0',
-        'pylxd>=2.2.5',
+        'pylxd>=2.2.5,<2.2.7',  # See: https://github.com/lxc/pylxd/issues/316
         'python-dotenv>=0.6',
         'PyYAML>=3.0,<4.0',
         'voluptuous>=0.9,<1.0',
