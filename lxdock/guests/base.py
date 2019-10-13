@@ -158,12 +158,15 @@ class Guest(with_metaclass(_GuestBase)):
     # HELPER METHODS #
     ##################
 
-    def run(self, cmd_args):
+    def run(self, cmd_args, stdin_payload=None):
         """ Runs the specified command inside the current container. """
         logger.debug('Running {0}'.format(' '.join(cmd_args)))
-        exit_code, stdout, stderr = self.lxd_container.execute(cmd_args)
-        logger.debug(stdout)
-        logger.debug(stderr)
+        exit_code, stdout, stderr = self.lxd_container.execute(
+           cmd_args,
+           stdin_payload=stdin_payload,
+           stdout_handler=self._log_stdout,
+           stderr_handler=self._log_stderr
+        )
         return exit_code, stdout, stderr
 
     def copy_file(self, host_path, guest_path):
@@ -200,6 +203,12 @@ class Guest(with_metaclass(_GuestBase)):
     ##################################
     # PRIVATE METHODS AND PROPERTIES #
     ##################################
+
+    def _log_stdout(self, line):
+        logger.info("STDOUT: {}".format(line.strip()))
+
+    def _log_stderr(self, line):
+        logger.info("STDERR: {}".format(line.strip()))
 
     def _warn_guest_not_supported(self, for_msg):  # pragma: no cover
         """ Warns the user that a specific operation cannot be performed. """
