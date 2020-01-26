@@ -35,12 +35,17 @@ def persistent_container():
     if _persistent_container is None:
         _persistent_container = Container(
             'lxdtestcase-persistentcontainer', THIS_DIR, get_client(), **{
-                'name': 'testcase-persistent', 'image': 'alpine/3.6', 'mode': 'pull',
+                'name': 'testcase-persistent', 'image': 'alpine/3.11', 'mode': 'pull',
             })
     # Ensures the persistent container is up and running.
     if not _persistent_container.exists \
             or (_persistent_container.exists and _persistent_container.is_stopped):
         _persistent_container.up()
+    # We need to set a root password in the container, otherwise ssh login is blocked
+    # See https://alpinelinux.org/posts/Docker-image-vulnerability-CVE-2019-5021.html
+    exit_code, stdout, stderr = _persistent_container._container.execute(
+        ['/usr/bin/passwd'], stdin_payload=('n0tASecurePassw0rd\nn0tASecurePassw0rd'))
+    assert exit_code == 0
     return _persistent_container
 
 

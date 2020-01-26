@@ -1,5 +1,5 @@
 name: project03
-image: alpine/3.6
+image: alpine/3.10
 mode: pull
 
 containers:

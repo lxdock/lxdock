@@ -81,4 +81,4 @@ class TestValidateProvisionerSchemas:
                     'b': 'yes'
                 }]
             })
-        assert "['provisioning'][1]['a']" in str(e)
+            assert "['provisioning'][1]['a']" in str(e)

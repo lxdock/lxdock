@@ -29,7 +29,7 @@ class TestAnsibleProvisioner:
         provisioner.provision()
         m = re.match(
             r'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook --inventory-file /[/\w]+ '
-            '(.*)\s?./deploy.yml', mock_popen.call_args[0][0])
+            r'(.*)\s?./deploy.yml', mock_popen.call_args[0][0])
         assert m
         assert m.group(1).strip() == expected_cmdargs
 

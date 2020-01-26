@@ -27,7 +27,7 @@ def test_must_be_created_and_running_decorator_works(persistent_container):
     del persistent_container.dummy_action
 
     non_created_container_options = {
-        'name': 'lxdock-nonexistingcontainer', 'image': 'alpine/3.6', 'mode': 'pull', }
+        'name': 'lxdock-nonexistingcontainer', 'image': 'alpine/3.10', 'mode': 'pull', }
     non_created_container = Container(
         'myproject', THIS_DIR, persistent_container.client, **non_created_container_options)
     non_created_container.dummy_action = types.MethodType(dummy_action, non_created_container)
@@ -37,7 +37,7 @@ def test_must_be_created_and_running_decorator_works(persistent_container):
 class TestContainer(LXDTestCase):
     def test_can_set_up_a_container_that_does_not_exist(self):
         container_options = {
-            'name': self.containername('newcontainer'), 'image': 'alpine/3.6', 'mode': 'pull', }
+            'name': self.containername('newcontainer'), 'image': 'alpine/3.10', 'mode': 'pull', }
         container = Container('myproject', THIS_DIR, self.client, **container_options)
         container.up()
         assert container._container.status_code == constants.CONTAINER_RUNNING
@@ -56,7 +56,7 @@ class TestContainer(LXDTestCase):
 
     def test_can_destroy_a_container_and_run_this_action_for_a_container_that_does_not_exist(self):
         container_options = {
-            'name': self.containername('doesnotexist'), 'image': 'alpine/3.6', 'mode': 'pull', }
+            'name': self.containername('doesnotexist'), 'image': 'alpine/3.10', 'mode': 'pull', }
         container = Container('myproject', THIS_DIR, self.client, **container_options)
         container.destroy()
         assert not container.exists
@@ -67,7 +67,7 @@ class TestContainer(LXDTestCase):
 
     def test_halting_a_container_doesnt_create_it(self):
         container_options = {
-            'name': self.containername('doesnotexist'), 'image': 'alpine/3.6', }
+            'name': self.containername('doesnotexist'), 'image': 'alpine/3.10', }
         container = Container('myproject', THIS_DIR, self.client, **container_options)
         container.halt()
         assert not container.exists
@@ -103,7 +103,7 @@ class TestContainer(LXDTestCase):
 
     def test_can_provision_a_container_shell_inline(self):
         container_options = {
-            'name': self.containername('willprovision'), 'image': 'alpine/3.6', 'mode': 'pull',
+            'name': self.containername('willprovision'), 'image': 'alpine/3.10', 'mode': 'pull',
             'environment': {'PATH': '/dummy_test:/bin:/usr/bin:/usr/local/bin'},
             'provisioning': [
                 {'type': 'shell',
@@ -126,7 +126,7 @@ class TestContainer(LXDTestCase):
     @unittest.mock.patch('subprocess.call')
     def test_can_open_a_shell_for_a_specific_shelluser(self, mocked_call):
         container_options = {
-            'name': self.containername('shellspecificuser'), 'image': 'alpine/3.6',
+            'name': self.containername('shellspecificuser'), 'image': 'alpine/3.10',
             'shell': {'user': 'test'},
         }
         container = Container('myproject', THIS_DIR, self.client, **container_options)
@@ -151,7 +151,7 @@ class TestContainer(LXDTestCase):
     @unittest.mock.patch('subprocess.call')
     def test_can_run_shell_command_for_a_specific_shelluser(self, mocked_call):
         container_options = {
-            'name': self.containername('shellspecificuser'), 'image': 'alpine/3.6',
+            'name': self.containername('shellspecificuser'), 'image': 'alpine/3.10',
             'shell': {'user': 'test'},
         }
         container = Container('myproject', THIS_DIR, self.client, **container_options)
@@ -168,7 +168,7 @@ class TestContainer(LXDTestCase):
     def test_can_set_shell_environment_variables(self, mocked_call):
         # Environment variables in the shell can be set through configuration.
         container_options = {
-            'name': self.containername('shell-env'), 'image': 'alpine/3.6',
+            'name': self.containername('shell-env'), 'image': 'alpine/3.10',
             'environment': {'FOO': 'bar', 'BAR': 42},
         }
         container = Container('myproject', THIS_DIR, self.client, **container_options)
@@ -179,7 +179,7 @@ class TestContainer(LXDTestCase):
 
     def test_can_tell_if_a_container_exists_or_not(self, persistent_container):
         unknown_container = Container('myproject', THIS_DIR, self.client, **{
-            'name': self.containername('unknown'), 'image': 'alpine/3.6', 'mode': 'pull', })
+            'name': self.containername('unknown'), 'image': 'alpine/3.10', 'mode': 'pull', })
         assert persistent_container.exists
         assert not unknown_container.exists
 
@@ -213,7 +213,7 @@ class TestContainer(LXDTestCase):
 
     def test_can_return_its_status(self, persistent_container):
         unknown_container = Container('myproject', THIS_DIR, self.client, **{
-            'name': self.containername('unknown'), 'image': 'alpine/3.6', 'mode': 'pull', })
+            'name': self.containername('unknown'), 'image': 'alpine/3.10', 'mode': 'pull', })
         assert unknown_container.status == 'not-created'
         persistent_container.halt()
         assert persistent_container.status == 'stopped'
@@ -224,7 +224,7 @@ class TestContainer(LXDTestCase):
         password = '$6$cGzZBkDjOhGW$6C9wwqQteFEY4lQ6ZJBggE568SLSS7bIMKexwOD' \
                    '39mJQrJcZ5vIKJVIfwsKOZajhbPw0.Zqd0jU2NDLAnp9J/1'
         container_options = {
-            'name': self.containername('createusers'), 'image': 'alpine/3.6',
+            'name': self.containername('createusers'), 'image': 'alpine/3.10',
             'users': [
                 {'name': 'user01'},
                 {'name': 'user02', 'home': '/opt/user02'},
@@ -251,7 +251,7 @@ class TestContainer(LXDTestCase):
         # be passed directly to the container at creation time.
         container_options = {
             'name': self.containername('lxc-config'),
-            'image': 'alpine/3.6',
+            'image': 'alpine/3.10',
             'lxc_config': {
                 'security.privileged': 'invalid',
                 'user.lxdock.homedir': 'invalid',
@@ -288,7 +288,7 @@ class TestContainer(LXDTestCase):
 
     def test_can_set_profiles(self):
         container_options = {
-            'name': self.containername('newcontainer'), 'image': 'alpine/3.6', 'mode': 'pull',
+            'name': self.containername('newcontainer'), 'image': 'alpine/3.10', 'mode': 'pull',
             'profiles': ['default']}
         container = Container('myproject', THIS_DIR, self.client, **container_options)
         container.up()
@@ -297,7 +297,7 @@ class TestContainer(LXDTestCase):
 
     def test_raises_an_error_if_profile_does_not_exist(self):
         container_options = {
-            'name': self.containername('newcontainer'), 'image': 'alpine/3.6', 'mode': 'pull',
+            'name': self.containername('newcontainer'), 'image': 'alpine/3.10', 'mode': 'pull',
             'profiles': ['default', '39mJQrJcZ5vIKJVIfwsKOZajhbPw0']}
         container = Container('myproject', THIS_DIR, self.client, **container_options)
         with pytest.raises(ContainerOperationFailed):
