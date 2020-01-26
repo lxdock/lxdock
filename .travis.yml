@@ -1,6 +1,6 @@
 language: python
 sudo: true
-dist: trusty
+dist: bionic
 
 python:
   - "3.5"
