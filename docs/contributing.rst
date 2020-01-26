@@ -83,6 +83,29 @@ You can easily get the code coverage of the project using the following command:
 
   $ make coverage
 
+Test environment
+################
+
+There is a `Vagrant based <https://www.vagrantup.com/>`_ test environment for running the tests in a predefined environment. The environment is defined in the file  ``Vagrantfile``
+
+In order to use, you need to have Virtualbox and Vagrant installed and your user needs the necessary permissions to run a VM. In Ubuntu 18.04, you need to install the packages ``virtualbox`` and ``vagrant`` and add your user to the ``vboxusers`` group.
+
+Start and deploy the VM::
+
+  vagrant up
+
+Connect to the VM and run the tests::
+
+  vagrant ssh
+  make install
+  make coverage
+
+You can delete the VM if you are done with::
+
+  vagrant destroy
+
+Note: If you want to run tests on the host and in the VM, you need to run ``make clean`` everytime you switch system, since pycache files are incompatible.
+  
 Using the issue tracker
 -----------------------
 
