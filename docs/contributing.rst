@@ -83,6 +83,8 @@ You can easily get the code coverage of the project using the following command:
 
   $ make coverage
 
+Note: The tests will fail, if you have a `lydock.yml` file lying arund in your source directory.
+  
 Test environment
 ################
 
