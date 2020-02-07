@@ -411,17 +411,24 @@ class Container:
     def _setup_users(self):
         """ Creates users defined in the container's options if applicable. """
         users = self.options.get('users', [])
+        ssh_pubkey = self._host.get_ssh_pubkey()
+
         if users:
             logger.info('Ensuring users are created...')
             for user_config in users:
                 config = copy.copy(user_config)
                 name = config.pop('name')
                 self._guest.create_user(name, **config)
+                if ssh_pubkey is not None:
+                    # Use the default home directory for the SSH key, unless explicitely configured
+                    home_dir = '/home/'+name
+                    if 'home' in config:
+                        home_dir = config['home']
+                    self._guest.add_ssh_pubkey_to_authorized_keys(ssh_pubkey, home_dir)
 
         # Add the current user's SSH pubkey to the container's root SSH config.
-        ssh_pubkey = self._host.get_ssh_pubkey()
         if ssh_pubkey is not None:
-            self._guest.add_ssh_pubkey_to_root_authorized_keys(ssh_pubkey)
+            self._guest.add_ssh_pubkey_to_authorized_keys(ssh_pubkey, '/root')
         else:
             logger.warning('SSH pubkey was not found. Provisioning tools may not work correctly...')
 

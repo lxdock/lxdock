@@ -34,7 +34,7 @@ class TestGuest:
         class DummyGuest(Guest):
             name = 'dummy'
         guest = DummyGuest(FakeContainer())
-        guest.add_ssh_pubkey_to_root_authorized_keys('pubkey')
+        guest.add_ssh_pubkey_to_authorized_keys('pubkey', '/root')
         assert guest.lxd_container.execute.call_count == 1
         assert guest.lxd_container.execute.call_args[0] == (['mkdir', '-p', '/root/.ssh'], )
         assert guest.lxd_container.files.put.call_count == 1
