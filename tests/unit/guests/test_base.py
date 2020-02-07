@@ -41,6 +41,18 @@ class TestGuest:
         assert guest.lxd_container.files.put.call_args[0] == \
             ('/root/.ssh/authorized_keys', 'pubkey', )
 
+    def test_setup_users_adds_ssh_pubkey_to_authorized_keys(self):
+        class DummyGuest(Guest):
+            name = 'dummy'
+        container = FakeContainer()
+        container._setup_users()
+        guest = DummyGuest(container)
+        assert guest.lxd_container.execute.call_count == 1
+        assert guest.lxd_container.execute.call_args[0] == (['mkdir', '-p', '/root/.ssh'], )
+        assert guest.lxd_container.files.put.call_count == 1
+        assert guest.lxd_container.files.put.call_args[0][0] == \
+            '/root/.ssh/authorized_keys'
+
     def test_can_create_a_user_with_a_default_home_directory(self):
         class DummyGuest(Guest):
             name = 'dummy'
