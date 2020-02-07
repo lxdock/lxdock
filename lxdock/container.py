@@ -411,14 +411,19 @@ class Container:
     def _setup_users(self):
         """ Creates users defined in the container's options if applicable. """
         users = self.options.get('users', [])
-        if not users:
-            return
+        if users:
+            logger.info('Ensuring users are created...')
+            for user_config in users:
+                config = copy.copy(user_config)
+                name = config.pop('name')
+                self._guest.create_user(name, **config)
 
-        logger.info('Ensuring users are created...')
-        for user_config in users:
-            config = copy.copy(user_config)
-            name = config.pop('name')
-            self._guest.create_user(name, **config)
+        # Add the current user's SSH pubkey to the container's root SSH config.
+        ssh_pubkey = self._host.get_ssh_pubkey()
+        if ssh_pubkey is not None:
+            self._guest.add_ssh_pubkey_to_root_authorized_keys(ssh_pubkey)
+        else:
+            logger.warning('SSH pubkey was not found. Provisioning tools may not work correctly...')
 
     def _unsetup_hostnames(self):
         """ Removes the configuration associated with the hostnames of the container. """

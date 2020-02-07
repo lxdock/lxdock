@@ -48,7 +48,6 @@ class TestAnsibleProvisioner:
             ['apk', 'add', 'openssh'],
             ['rc-update', 'add', 'sshd'],
             ['/etc/init.d/sshd', 'start'],
-            ['mkdir', '-p', '/root/.ssh'],
         ]
         calls = [tup[0][0] for tup in lxd_container.execute.call_args_list]
         assert calls == EXPECTED
