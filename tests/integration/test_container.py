@@ -233,14 +233,29 @@ class TestContainer(LXDTestCase):
         }
         container = Container('myproject', THIS_DIR, self.client, **container_options)
         guest_mock = unittest.mock.Mock()
+        mock_uids = {'user01': (1000, 1000), 'user02': (1001, 1001), 'user03': (1002, 1002)}
+        guest_mock.uidgid = unittest.mock.Mock()
+        guest_mock.uidgid.side_effect = lambda name: mock_uids[name]
         container._container_guest = guest_mock
+        host_mock = unittest.mock.Mock()
+        host_mock.get_ssh_pubkey = unittest.mock.Mock(return_value='pubkey')
+        container._container_host = host_mock
         container.up()
+        # Check if all users have been created
         assert guest_mock.create_user.call_count == 3
         assert guest_mock.create_user.call_args_list[0][0][0] == 'user01'
         assert guest_mock.create_user.call_args_list[1][0][0] == 'user02'
         assert guest_mock.create_user.call_args_list[2][0][0] == 'user03'
         assert guest_mock.create_user.call_args_list[1][1]['home'] == '/opt/user02'
         assert guest_mock.create_user.call_args_list[2][1]['password'] == password
+        # Check if the SSH key has been deployed to all users
+        guest_mock.add_ssh_pubkey_to_authorized_keys.assert_any_call('pubkey', '/root')
+        guest_mock.add_ssh_pubkey_to_authorized_keys.assert_any_call(
+            'pubkey', '/home/user01', 1000, 1000)
+        guest_mock.add_ssh_pubkey_to_authorized_keys.assert_any_call(
+            'pubkey', '/opt/user02', 1001, 1001)
+        guest_mock.add_ssh_pubkey_to_authorized_keys.assert_any_call(
+            'pubkey', '/home/user03', 1002, 1002)
 
     def test_get_container_lxc_config(self):
         """Test that _get_container generates a valid lxc_config

@@ -112,15 +112,14 @@ class Guest(with_metaclass(_GuestBase)):
         class_ = next((k for k in cls.guests if k.detect(container._container)), Guest)
         return class_(container)
 
-    def add_ssh_pubkey_to_authorized_keys(self, pubkey, homedir):
+    def add_ssh_pubkey_to_authorized_keys(self, pubkey, homedir, uid=None, gid=None):
         """ Add a given SSH public key to the root user's authorized keys. """
         logger.info("Adding {} to machine's authorized keys in home directory {}."
                     .format(pubkey, homedir))
         ssh_dir = '{}/.ssh'.format(homedir)
         authorized_keys_file = '{}/authorized_keys'.format(ssh_dir)
-        # TODO: Set UID of files
         self.run(['mkdir', '-p', ssh_dir])
-        self.lxd_container.files.put(authorized_keys_file, pubkey)
+        self.lxd_container.files.put(authorized_keys_file, pubkey, uid=uid, gid=gid)
 
     def create_user(self, username, home=None, password=None, shell=None):
         """ Adds the passed user to the container system. """

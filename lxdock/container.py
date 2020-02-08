@@ -424,7 +424,8 @@ class Container:
                     home_dir = '/home/'+name
                     if 'home' in config:
                         home_dir = config['home']
-                    self._guest.add_ssh_pubkey_to_authorized_keys(ssh_pubkey, home_dir)
+                    uid, gid = self._guest.uidgid(name)
+                    self._guest.add_ssh_pubkey_to_authorized_keys(ssh_pubkey, home_dir, uid, gid)
 
         # Add the current user's SSH pubkey to the container's root SSH config.
         if ssh_pubkey is not None:
