@@ -88,11 +88,15 @@ class Host(with_metaclass(_HostBase)):
 
     def get_ssh_pubkey(self):
         """ Returns the SSH public key of the current user or None if it cannot be found. """
-        pubkey_path = Path(os.path.expanduser('~/.ssh/id_rsa.pub'))
-        try:
-            return pubkey_path.open().read()
-        except FileNotFoundError:  # pragma: no cover
-            pass
+        # Define a list of acceptable SSH key types
+        # 'dsa' ist not included, because the algorithm is deprecated
+        ssh_key_types = ['ed25519', 'rsa', 'ecdsa']
+        for ssh_key_type in ssh_key_types:
+            pubkey_path = Path(os.path.expanduser('~/.ssh/id_{}.pub'.format(ssh_key_type)))
+            try:
+                return pubkey_path.open().read()
+            except FileNotFoundError:  # pragma: no cover
+                pass
 
     def uidgid(self):
         return os.getuid(), os.getgid()
