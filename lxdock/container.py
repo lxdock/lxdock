@@ -140,6 +140,7 @@ class Container:
             self._container.files.put(self._guest_shell_script_file, textwrap.dedent(
                 """\
                 #!/bin/sh
+                export SHELL=/bin/sh
                 {}
                 """.format(command)))
             self._guest.run(['chmod', 'a+rx', self._guest_shell_script_file])
