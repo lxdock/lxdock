@@ -4,8 +4,6 @@ Ansible
 
 LXDock provides built-in support for `Ansible`_ provisioning.
 
-.. _Ansible: https://www.ansible.com/
-
 Requirements
 ------------
 
@@ -83,7 +81,7 @@ This option is a hash of lists of container names. Example:
           - container2
         group2:
           - container2
-    
+
 lxd_transport
 =============
 

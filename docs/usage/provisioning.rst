@@ -6,7 +6,7 @@ LXDock supports many provisioning tools in order to allow you to easily provisio
 using LXD. Using provisioning tools such as Ansible with LXDock will allow you to alter the
 configuration, install software, deploy applications and more on the containers. Using the built-in
 provisioning capabilities of LXDock will allow you to run these provisioning operations as part of
-the ``lxdock up`` wokflow. To be more precise, the provisioning tools associated with your LXDock
+the ``lxdock up`` workflow. To be more precise, the provisioning tools associated with your LXDock
 configuration are executed in the following situations:
 
 * when you run ``lxdock up`` the first time; that is when the container does not exist yet
@@ -31,7 +31,7 @@ playbook as follows:
       playbook: deploy/site.yml
 
 Note that you can use *many* provisioning tools. The order in which provisioning tools are defined
-in your LXdock file defines the order in which they are executed.
+in your LXDock file defines the order in which they are executed.
 
 .. note::
 

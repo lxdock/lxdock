@@ -67,8 +67,8 @@ class Host(with_metaclass(_HostBase)):
     """ Represents a single host.
 
     `Host` subclasses will be used by `Container` instances to perform common operations on the
-    host side. For example they can be used to retrieve some date (SSH pukeys, ...) or to set up
-    contaianers' hosts in the /etc/hosts file. `Host` subclasses should correspond to specific OSes
+    host side. For example they can be used to retrieve some date (SSH pubkeys, ...) or to set up
+    containers' hosts in the /etc/hosts file. `Host` subclasses should correspond to specific OSes
     or distributions that can be used to run LXD and LXDock.
     """
 

@@ -11,7 +11,7 @@ Options
 
 * ``--image`` - this option allows to use a specific container image in the generated configuration
 * ``--project`` - this option allows to define the name of the project that will appear in the LXDock file
-* ``--force`` or ``-f`` - this option allows to overwrite an exsting LXDock file if any
+* ``--force`` or ``-f`` - this option allows to overwrite an existing LXDock file if any
 
 Examples
 --------

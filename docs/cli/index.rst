@@ -5,7 +5,7 @@ Most of your interaction with LXDock will be done using the ``lxdock`` command. 
 many subcommands: ``up``, ``halt``, ``destroy``, etc. These subcommands are described in the
 following pages but you can easily get help using the ``help`` subcommand. ``lxdock help`` will
 display help information for the ``lxdock`` command while ``lxdock help [subcommand]`` will show the
-help for a specifc subcommand. For example:
+help for a specific subcommand. For example:
 
 .. code-block:: console
 

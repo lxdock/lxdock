@@ -98,7 +98,7 @@ class TestConfig:
         assert config['provisioning'][0]['inline'] == 'touch /opt/test01'
         assert config['provisioning'][1]['inline'] == 'echo $thisisatest'
 
-    def test_raises_an_error_if_a_variable_cannot_be_substituded(self):
+    def test_raises_an_error_if_a_variable_cannot_be_substituted(self):
         project_dir = os.path.join(FIXTURE_ROOT, 'project_with_dynamic_variables')
         with pytest.raises(ConfigFileInterpolationError):
             Config.from_base_dir(project_dir)

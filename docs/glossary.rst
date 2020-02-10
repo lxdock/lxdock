@@ -1,7 +1,7 @@
 Glossary
 ========
 
-This is a comprehensive list of the terms used when discussing the functionalities and the
+This is a comprehensive list of the terms used when discussing the functionality and the
 configuration options of LXDock.
 
 .. glossary::

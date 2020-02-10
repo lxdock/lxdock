@@ -18,7 +18,7 @@ def with_metaclass(meta, *bases):
     * if we are considering a subclass of the class to which the `with_metaclass` function was
       applied, the class being constructed will inherit from the `meta` metaclass
 
-    This trick is usefull to differentiate the class to which the `with_metaclass` function was
+    This trick is useful to differentiate the class to which the `with_metaclass` function was
     applied from its subclasses during the execution of the `__new__` magic method (which is defined
     inside the `meta` metaclass). This allows fine control over instances created with the `meta`
     metaclass.
