@@ -16,7 +16,7 @@ class TestConfig:
         project_dir = os.path.join(FIXTURE_ROOT, 'project01')
         config = Config.from_base_dir(project_dir)
         assert config['name'] == 'project01'
-        assert config['image'] == 'ubuntu/xenial'
+        assert config['image'] == 'ubuntu/bionic'
         assert config['mode'] == 'pull'
 
     def test_works_if_multiple_config_files_are_found(self):
@@ -31,7 +31,7 @@ class TestConfig:
         assert config.homedir == os.path.join(FIXTURE_ROOT, 'project01')
         assert config.filename == 'lxdock.yml'
         assert config['name'] == 'project01'
-        assert config['image'] == 'ubuntu/xenial'
+        assert config['image'] == 'ubuntu/bionic'
         assert config['mode'] == 'pull'
 
     def test_raises_an_error_if_the_config_file_cannot_be_found(self):
@@ -58,16 +58,16 @@ class TestConfig:
         project_dir = os.path.join(FIXTURE_ROOT, 'project01')
         config = Config.from_base_dir(project_dir)
         assert config.containers == [
-            {'image': 'ubuntu/xenial', 'mode': 'pull', 'name': 'default'},
+            {'image': 'ubuntu/bionic', 'mode': 'pull', 'name': 'default'},
         ]
 
     def test_can_properly_handle_configurations_defining_multiple_containers(self):
         project_dir = os.path.join(FIXTURE_ROOT, 'project02')
         config = Config.from_base_dir(project_dir)
         assert config.containers == [
-            {'mode': 'pull', 'image': 'ubuntu/xenial', 'name': 'web'},
+            {'mode': 'pull', 'image': 'ubuntu/bionic', 'name': 'web'},
             {
-                'mode': 'pull', 'hostnames': ['ci.local'], 'image': 'debian/jessie', 'name': 'ci',
+                'mode': 'pull', 'hostnames': ['ci.local'], 'image': 'debian/buster', 'name': 'ci',
                 'privileged': True,
             },
         ]
@@ -75,7 +75,7 @@ class TestConfig:
     def test_can_serialize_the_parsed_config(self):
         project_dir = os.path.join(FIXTURE_ROOT, 'project01')
         config = Config.from_base_dir(project_dir)
-        assert config.serialize() == 'image: ubuntu/xenial\nmode: pull\nname: project01\n'
+        assert config.serialize() == 'image: ubuntu/bionic\nmode: pull\nname: project01\n'
 
     def test_can_read_lxc_config(self):
         project_dir = os.path.join(FIXTURE_ROOT, 'lxc_config')

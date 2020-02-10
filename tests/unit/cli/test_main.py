@@ -325,7 +325,7 @@ class TestLXDock:
         assert mock_open.call_args[0] == ('lxdock.yml', )
         assert fd_mock.write.call_count == 1
         assert fd_mock.write.call_args[0][0] == INIT_LXDOCK_FILE_CONTENT.format(
-            project_name=os.path.split(os.getcwd())[1], image='ubuntu/xenial')
+            project_name=os.path.split(os.getcwd())[1], image='ubuntu/bionic')
 
     @unittest.mock.patch('builtins.open')
     @unittest.mock.patch('os.getcwd')
@@ -349,18 +349,18 @@ class TestLXDock:
         assert mock_open.call_args[0] == ('lxdock.yml', )
         assert fd_mock.write.call_count == 1
         assert fd_mock.write.call_args[0][0] == INIT_LXDOCK_FILE_CONTENT.format(
-            project_name=os.path.split(os.getcwd())[1], image='ubuntu/xenial')
+            project_name=os.path.split(os.getcwd())[1], image='ubuntu/bionic')
 
     @unittest.mock.patch('builtins.open')
     def test_can_generate_a_lxdock_file_with_a_custom_image(self, mock_open):
         fd_mock = unittest.mock.Mock()
         mock_open.return_value.__enter__.return_value = fd_mock
-        LXDock(['init', '--image', 'debian/jessie', ])
+        LXDock(['init', '--image', 'debian/buster', ])
         assert mock_open.call_count == 1
         assert mock_open.call_args[0] == ('lxdock.yml', )
         assert fd_mock.write.call_count == 1
         assert fd_mock.write.call_args[0][0] == INIT_LXDOCK_FILE_CONTENT.format(
-            project_name=os.path.split(os.getcwd())[1], image='debian/jessie')
+            project_name=os.path.split(os.getcwd())[1], image='debian/buster')
 
     @unittest.mock.patch('builtins.open')
     def test_can_generate_a_lxdock_file_with_a_custom_project_name(self, mock_open):
@@ -371,4 +371,4 @@ class TestLXDock:
         assert mock_open.call_args[0] == ('lxdock.yml', )
         assert fd_mock.write.call_count == 1
         assert fd_mock.write.call_args[0][0] == INIT_LXDOCK_FILE_CONTENT.format(
-            project_name='customproject', image='ubuntu/xenial')
+            project_name='customproject', image='ubuntu/bionic')

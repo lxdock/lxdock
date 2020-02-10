@@ -17,7 +17,7 @@ Just append an ``ansible`` provisioning operation to your LXDock file as follows
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   provisioning:
     - type: ansible

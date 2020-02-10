@@ -1,5 +1,5 @@
 name: project01
-image: ubuntu/xenial
+image: ubuntu/bionic
 
 provisioning:
   - type: shell
