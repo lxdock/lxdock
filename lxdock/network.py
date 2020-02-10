@@ -5,7 +5,7 @@ import tempfile
 
 
 def get_ip(container):
-    """ Returns the IP adress of a specific container. """
+    """ Returns the IP address of a specific container. """
     state = container.state()
     if state.network is None:  # container is not running
         return ''

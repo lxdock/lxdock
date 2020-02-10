@@ -83,8 +83,8 @@ You can easily get the code coverage of the project using the following command:
 
   $ make coverage
 
-Note: The tests will fail, if you have a `lydock.yml` file lying arund in your source directory.
-  
+Note: The tests will fail, if you have a `lxdock.yml` file lying around in your source directory.
+
 Test environment
 ################
 
@@ -106,8 +106,8 @@ You can delete the VM if you are done with::
 
   vagrant destroy
 
-Note: If you want to run tests on the host and in the VM, you need to run ``make clean`` everytime you switch system, since pycache files are incompatible.
-  
+Note: If you want to run tests on the host and in the VM, you need to run ``make clean`` every time you switch system, since pycache files are incompatible.
+
 Using the issue tracker
 -----------------------
 

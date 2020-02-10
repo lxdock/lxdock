@@ -99,7 +99,7 @@ There are many scenarios to consider when you have to choose the value of the ``
 you choose to set your ``image`` option to ``ubuntu/xenial`` this means that the container will use
 the Ubuntu's Xenial version with the same architecture as your host machine (amd64 in most cases).
 It should be noted that the ``image`` value can also contain a container alias that includes the
-targetted architecture (eg. ``debian/jessie/amd64`` or ``ubuntu/xenial/armhf``).
+target architecture (eg. ``debian/jessie/amd64`` or ``ubuntu/xenial/armhf``).
 
 Here is an example:
 

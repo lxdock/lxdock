@@ -1,5 +1,5 @@
 class ConfigError(Exception):
-    """ An error related to the configuration of the LXDock project occured. """
+    """ An error related to the configuration of the LXDock project occurred. """
 
     def __init__(self, msg):
         self.msg = msg

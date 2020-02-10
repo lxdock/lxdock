@@ -339,7 +339,7 @@ class TestLXDock:
 
     @unittest.mock.patch('builtins.open')
     @unittest.mock.patch('os.getcwd')
-    def test_can_generate_a_lxdock_file_by_overwritting_an_existing_file_with_the_force_option(
+    def test_can_generate_a_lxdock_file_by_overwriting_an_existing_file_with_the_force_option(
             self, mock_getcwd, mock_open):
         mock_getcwd.return_value = os.path.join(FIXTURE_ROOT, 'project01')
         fd_mock = unittest.mock.Mock()

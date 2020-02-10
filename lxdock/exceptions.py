@@ -4,7 +4,7 @@ class LXDockException(Exception):
 
 
 class ProjectError(LXDockException):
-    """ An error occured while excuting some action at the project level. """
+    """ An error occurred while executing some action at the project level. """
 
 
 class ContainerOperationFailed(LXDockException):

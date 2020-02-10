@@ -71,7 +71,7 @@ class Guest(with_metaclass(_GuestBase)):
     `Guest` subclasses will be used by `Container` instances to perform common operations on the
     guest side. For example they can be used to ensure that some packages are installed when doing
     barebone setups, to create some users, ... `Guest` subclasses should correspond to specific OSes
-    or distributions that can be runned as LXD containers.
+    or distributions that can be run as LXD containers.
     """
 
     # The `name` of a guest is a required attribute and should always be set on `Guest` subclasses.

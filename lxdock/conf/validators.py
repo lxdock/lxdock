@@ -7,7 +7,10 @@ from voluptuous.validators import truth
 
 
 hostname_part_re = re.compile(r'(?!-)[A-Z\d-]{1,63}(?<!-)$', re.IGNORECASE)
-lxd_identifier_re = re.compile(r'^(([A-Z]|[A-Z][A-Z0-9\-]*[A-Z0-9])\.)*([A-Z]|[A-Z][A-Z0-9\-]*[A-Z0-9])$', re.IGNORECASE)  # noqa
+lxd_identifier_re = re.compile(
+    r'^(([A-Z]|[A-Z][A-Z0-9\-]*[A-Z0-9])\.)*([A-Z]|[A-Z][A-Z0-9\-]*[A-Z0-9])$',
+    re.IGNORECASE
+)
 
 
 @message('expected a valid hostname')
@@ -23,8 +26,8 @@ def Hostname(v):
 
 
 @message(
-    'expected a valid identifer no longer than 63 characters, starting with letters and made up of '
-    'letters, digits and dashes')
+    'expected a valid identifier no longer than 63 characters, starting with '
+    'letters and made up of letters, digits and dashes')
 @truth
 def LXDIdentifier(v):
     """ Validates an identifier that should obey to the same rules as RFC 952 hostnames. """
