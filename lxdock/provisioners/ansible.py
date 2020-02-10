@@ -84,13 +84,6 @@ class AnsibleProvisioner(Provisioner):
         elif guest.name == 'ol':
             guest.run(['/sbin/service', 'sshd', 'start'])
 
-        # Add the current user's SSH pubkey to the container's root SSH config.
-        ssh_pubkey = self.host.get_ssh_pubkey()
-        if ssh_pubkey is not None:
-            guest.add_ssh_pubkey_to_root_authorized_keys(ssh_pubkey)
-        else:
-            logger.warning('SSH pubkey was not found. Provisioning tools may not work correctly...')
-
     ##################################
     # PRIVATE METHODS AND PROPERTIES #
     ##################################
