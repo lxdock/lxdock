@@ -420,8 +420,8 @@ class Container:
                 name = config.pop('name')
                 self._guest.create_user(name, **config)
                 if ssh_pubkey is not None:
-                    # Use the default home directory for the SSH key, unless explicitely configured
-                    home_dir = '/home/'+name
+                    # Use the default home directory for the SSH key, unless explicitly configured
+                    home_dir = '/home/' + name
                     if 'home' in config:
                         home_dir = config['home']
                     uid, gid = self._guest.uidgid(name)
