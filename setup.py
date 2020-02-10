@@ -36,7 +36,7 @@ setup(
         'colorlog>=2.0,<3.0',
         'pylxd>=2.2.10',
         'python-dotenv>=0.6',
-        'PyYAML>=3.0,<4.0',
+        'PyYAML>=3.0,<6.0',
         'voluptuous>=0.9,<1.0',
     ],
     tests_require=[
