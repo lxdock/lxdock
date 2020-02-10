@@ -206,7 +206,7 @@ class LXDock:
 
         # Compute the content of the LXDock file to write and write it to a lxdock.yml file.
         init_filecontent = INIT_LXDOCK_FILE_CONTENT.format(
-            project_name=project_name, image=args.image or 'ubuntu/xenial')
+            project_name=project_name, image=args.image or 'ubuntu/bionic')
         with open('lxdock.yml', mode='w', encoding='utf-8') as fd:
             fd.write(init_filecontent)
 

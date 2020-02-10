@@ -16,19 +16,19 @@ at ``./.lxdock.yml``.
 A container definition contains parameters that will be used when creating each container of a
 specific project. It should be noted that most of the options that you can define in your LXDock
 file can be applied "globally" or in the context of a specific container. For example you can define
-a global ``image`` option telling to use the ``ubuntu/xenial`` for all your containers and decide to
-use the ``debian/jessie`` image for a specific container:
+a global ``image`` option telling to use the ``ubuntu/bionic`` for all your containers and decide to
+use the ``debian/buster`` image for a specific container:
 
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   containers:
     - name: test01
     - name: test02
     - name: test03
-      image: debian/jessie
+      image: debian/buster
 
 This section contains a list of all configuration options supported by LXDock files.
 
@@ -44,7 +44,7 @@ containers, as follows:
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   containers:
     - name: test01
@@ -59,7 +59,7 @@ affect ``lxdock shell`` and ``lxdock provision`` operations.
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   environment:
     LC_ALL: en_US.utf8
@@ -74,7 +74,7 @@ access your applications or services.
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   containers:
     - name: test01
@@ -96,17 +96,17 @@ supported aliases by visiting https://images.linuxcontainers.org/ or by listing 
   $ lxc image alias list images:
 
 There are many scenarios to consider when you have to choose the value of the ``image`` option. If
-you choose to set your ``image`` option to ``ubuntu/xenial`` this means that the container will use
-the Ubuntu's Xenial version with the same architecture as your host machine (amd64 in most cases).
+you choose to set your ``image`` option to ``ubuntu/bionic`` this means that the container will use
+the Ubuntu's Bionic version with the same architecture as your host machine (amd64 in most cases).
 It should be noted that the ``image`` value can also contain a container alias that includes the
-target architecture (eg. ``debian/jessie/amd64`` or ``ubuntu/xenial/armhf``).
+target architecture (eg. ``debian/buster/amd64`` or ``ubuntu/bionic/armhf``).
 
 Here is an example:
 
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
 You should note that you can also use "local" container aliases. This is not the most common
 scenario but you can manage your own image aliases and decide to use them with LXDock. You'll
@@ -135,7 +135,7 @@ that with an arbitrary number of key-values.
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
   lxc_config:
     global_key: global_value
 
@@ -162,7 +162,7 @@ This option can define the name of your project or the name of a container. In e
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   containers:
     - name: container01
@@ -183,7 +183,7 @@ Here is an example on how to set up a privileged container in your LXDock file:
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   containers:
     - name: web
@@ -203,7 +203,7 @@ to manage profiles as they are system-wide.
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
   profiles:
     - default
     - docker
@@ -233,7 +233,7 @@ can be an Ansible playbook to run:
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   provisioning:
     - type: ansible
@@ -270,7 +270,7 @@ of shared items. Each shared item should define a ``source`` (a path on your hos
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   shares:
     - source: /path/to/my/workspace/project/
@@ -294,7 +294,7 @@ sub-options:
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   shell:
     user: myuser
@@ -314,7 +314,7 @@ for more information:
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   users:
     - name: test01
@@ -344,7 +344,7 @@ could create a LXDock file which looks like:
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   users:
     - name: ${USER}

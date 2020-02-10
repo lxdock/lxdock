@@ -19,6 +19,6 @@ Examples
 .. code-block:: console
 
   $ lxdock init                          # generates a basic LXDock file
-  $ lxdock init --image debian/jessie    # generates a LXDock file defining a debian/jessie container
+  $ lxdock init --image debian/buster    # generates a LXDock file defining a debian/buster container
   $ lxdock init --project myproject      # generates a basic LXDock file defining a "myproject" project
   $ lxdock init --force                  # overwrite an existing LXDock file if applicable

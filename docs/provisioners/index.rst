@@ -8,7 +8,7 @@ defined in your LXDock file using the ``provisioning`` option:
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   provisioning:
     - type: ansible

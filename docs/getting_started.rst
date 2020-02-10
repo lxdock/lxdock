@@ -174,13 +174,13 @@ following:
 
   containers:
     - name: test01
-      image: ubuntu/xenial
+      image: ubuntu/bionic
 
     - name: test02
       image: archlinux
 
 This LXDock file defines a project (``myproject``) and two containers, ``test01`` and ``test02``.
-These containers will be constructed using respectively the ``ubuntu/xenial`` and the ``archlinux``
+These containers will be constructed using respectively the ``ubuntu/bionic`` and the ``archlinux``
 images (which will be pulled from an image server - https://images.linuxcontainers.org by default).
 
 Now from your project directory, start up your containers using the following command:
@@ -191,7 +191,7 @@ Now from your project directory, start up your containers using the following co
   Bringing container "test01" up
   Bringing container "test02" up
   ==> test01: Unable to find container "test01" for directory "[PATH_TO_YOUR_PROJECT]"
-  ==> test01: Creating new container "myproject-test01-11943450" from image ubuntu/xenial
+  ==> test01: Creating new container "myproject-test01-11943450" from image ubuntu/bionic
   ==> test01: Starting container "test01"...
   ==> test01: No IP yet, waiting 10 seconds...
   ==> test01: Container "test01" is up! IP: [CONTAINER_IP]

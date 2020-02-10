@@ -13,7 +13,7 @@ Just append a ``shell`` provisioning operation to your LXDock file as follows:
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   provisioning:
     - type: shell

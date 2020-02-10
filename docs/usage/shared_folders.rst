@@ -12,7 +12,7 @@ containers. For example:
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   shares:
     - source: /path/to/my/workspace/project/
@@ -48,7 +48,7 @@ and will have read/write access to the shared folders:
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   shares:
     - source: /path/to/my/workspace/project/
@@ -72,7 +72,7 @@ may be acceptable for development only containers for example.
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
   privileged: yes
 
   shares:

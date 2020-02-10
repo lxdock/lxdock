@@ -7,7 +7,7 @@ You can define multiple containers in your LXDock file. All you have to do is to
 
 .. code-block:: yaml
 
-  image: ubuntu/xenial
+  image: ubuntu/bionic
   mode: pull
 
   containers:
@@ -16,7 +16,7 @@ You can define multiple containers in your LXDock file. All you have to do is to
         - myproject.local
 
     - name: ci
-      image: debian/jessie
+      image: debian/buster
       privileged: true
       hostnames:
         - ci.local

@@ -24,7 +24,7 @@ playbook as follows:
 .. code-block:: yaml
 
   name: myproject
-  image: ubuntu/xenial
+  image: ubuntu/bionic
 
   provisioning:
     - type: ansible

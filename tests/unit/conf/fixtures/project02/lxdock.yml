@@ -1,5 +1,5 @@
 name: project01
-image: ubuntu/xenial
+image: ubuntu/bionic
 mode: pull
 
 containers:
@@ -8,5 +8,5 @@ containers:
   - hostnames:
       - ci.local
     name: ci
-    image: debian/jessie
+    image: debian/buster
     privileged: true
