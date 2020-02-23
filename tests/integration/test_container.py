@@ -146,7 +146,7 @@ class TestContainer(LXDTestCase):
                 persistent_container.lxd_name, persistent_container._guest_shell_script_file)
         script = persistent_container._container.files.get(
             persistent_container._guest_shell_script_file)
-        assert script == b"""#!/bin/sh\ncd /; ls -l\n"""
+        assert script == b"""#!/bin/sh\nexport SHELL=/bin/sh\ncd /; ls -l\n"""
 
     @unittest.mock.patch('subprocess.call')
     def test_can_run_shell_command_for_a_specific_shelluser(self, mocked_call):
@@ -162,7 +162,7 @@ class TestContainer(LXDTestCase):
             'lxc exec {} -- su -l test -s {}'.format(
                 container.lxd_name, container._guest_shell_script_file)
         script = container._container.files.get(container._guest_shell_script_file)
-        assert script == b"""#!/bin/sh\ncd /; ls -l\n"""
+        assert script == b"""#!/bin/sh\nexport SHELL=/bin/sh\ncd /; ls -l\n"""
 
     @unittest.mock.patch('subprocess.call')
     def test_can_set_shell_environment_variables(self, mocked_call):
