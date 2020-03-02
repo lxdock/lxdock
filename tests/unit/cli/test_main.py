@@ -372,3 +372,42 @@ class TestLXDock:
         assert fd_mock.write.call_count == 1
         assert fd_mock.write.call_args[0][0] == INIT_LXDOCK_FILE_CONTENT.format(
             project_name='customproject', image='ubuntu/bionic')
+
+    @unittest.mock.patch.object(LXDock, 'help')
+    def test_main_function_disables_pylxd_warnings_without_verbose(self, mock_help_action):
+        _environ = os.environ.copy()
+        try:
+            os.environ.clear()
+            main(['help'])
+            assert "PYLXD_WARNINGS" in os.environ
+            assert os.environ["PYLXD_WARNINGS"] == 'none'
+        finally:
+            os.environ.clear()
+            os.environ.update(_environ)
+
+    @unittest.mock.patch.object(LXDock, 'help')
+    def test_main_function_not_disables_pylxd_warnings_with_verbose(self, mock_help_action):
+        _environ = os.environ.copy()
+        try:
+            os.environ.clear()
+            main(['--verbose', 'help'])
+            assert "PYLXD_WARNINGS" not in os.environ
+        finally:
+            os.environ.clear()
+            os.environ.update(_environ)
+
+    @unittest.mock.patch.object(LXDock, 'help')
+    def test_main_function_not_disables_pylxd_warnings_if_environemtvar_set(self, mock_help_action):
+        _environ = os.environ.copy()
+        try:
+            os.environ.clear()
+            os.environ["PYLXD_WARNINGS"] = 'foobar'
+            main(['--verbose', 'help'])
+            assert "PYLXD_WARNINGS" in os.environ
+            assert os.environ["PYLXD_WARNINGS"] == 'foobar'
+            main(['help'])
+            assert "PYLXD_WARNINGS" in os.environ
+            assert os.environ["PYLXD_WARNINGS"] == 'foobar'
+        finally:
+            os.environ.clear()
+            os.environ.update(_environ)
