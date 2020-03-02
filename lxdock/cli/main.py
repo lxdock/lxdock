@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 import sys
 
 from .. import __version__
@@ -125,6 +126,11 @@ class LXDock:
             console_stdout_handler.setLevel(logging.DEBUG)
         else:
             console_stdout_handler.setLevel(logging.INFO)
+            # Disable pylxd warning, unless a manual setting by the user exists
+            # For reference, see https://github.com/lxc/pylxd/pull/361 and
+            # https://github.com/lxc/pylxd/issues/301#issuecomment-383848200
+            if "PYLXD_WARNINGS" not in os.environ:
+                os.environ["PYLXD_WARNINGS"] = 'none'
 
         try:
             # use dispatch pattern to invoke method with same name
